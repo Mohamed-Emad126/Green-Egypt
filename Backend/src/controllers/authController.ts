@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import AuthService from "../services/authService";
-import { IUser } from "../interfaces/interface";
+import { IUser, IUserInput } from "../interfaces/iUser";
 
 export default class AuthController {
 
@@ -11,8 +11,8 @@ export default class AuthController {
 
     async createNewUser(req: Request, res: Response) {
         try {
-            const { email, password }: IUser = req.body;
-            await this.authService.createNewUser({ email, password })? res.status(201).send('User created successfully') : res.status(400).send('User already exists');
+            const { username, email, password }: IUserInput = req.body;
+            await this.authService.createNewUser({ username, email, password })? res.status(201).send('User created successfully') : res.status(400).send('User already exists');
         } catch (err) {
             res.status(500).send({ message: (err as Error).message });
         }
@@ -20,7 +20,7 @@ export default class AuthController {
 
     async login(req: Request, res: Response) {
         try {
-            const { email, password }:IUser = req.body;
+            const { email, password }: IUserInput = req.body;
             switch (await this.authService.login({ email, password })) {
                 case false:
                     res.status(400).send('Wrong email or password');
