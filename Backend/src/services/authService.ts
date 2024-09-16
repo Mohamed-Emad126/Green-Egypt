@@ -1,36 +1,29 @@
-import { IUser } from "../interfaces/interface";
+import { IUser, IUserInput } from "../interfaces/iUser";
+import User from "../models/userModel";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-//* Service Layer => Data Storage and Retrieval
 export default class AuthService {
 
-    constructor(private users : IUser[]) {
-        this.users = users;
-    }
-
-    getUsers() {
-        return this.users;
-    }
-
-    async createNewUser(newUser : IUser) {
-        const findUser = this.users.find(user => newUser.email === user.email);
+    async createNewUser(newUser : IUserInput) : Promise<boolean> {
+        const findUser = await User.findOne({email: newUser.email});
         if(findUser) {
             return false;
         } else {
-            this.users.push({id: this.users.length+1, email: newUser.email, password: await bcrypt.hash(newUser.password, 10) });
+            const user = new User({username: newUser.username, email: newUser.email, password: await bcrypt.hash(newUser.password, 10)});
+            await user.save();
             return true;
         }
     }
 
-    async login(userData : IUser) {
-        const findUser = this.users.find(user => userData.email === user.email );
+    async login(userData : IUserInput): Promise<string | null | boolean> {
+        const findUser = await User.findOne({email: userData.email});
         if(!findUser) {
             return false;
         } else {
             const isPasswordMatch = await bcrypt.compare(userData.password, findUser.password);
             if(isPasswordMatch) {
-                const token = jwt.sign({id : findUser.id}, 'privatekey');
+                const token = jwt.sign({id : findUser.id}, process.env.JWT_SECRET as string);
                 return token;
             }else{
                 return null;
