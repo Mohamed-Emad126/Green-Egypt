@@ -1,21 +1,57 @@
 import express from "express";
 import dotenv from 'dotenv';
+import morgan from 'morgan';
+import path from 'path';
 import connectDB from "./config/db";
-import usersRoute from "./routes/usersRoute";
-import rootRoute from "./routes/rootRoute";
+import { globalErrorMiddleware , notFoundErrorMiddleware } from "./middlewares/errorMiddleware";
+import userRoute from "./routes/userRoute";
+import rootRoute from "./routes/authRoute";
+import treeRoute from "./routes/treeRoute";
 
+
+
+//* Environment variables
 dotenv.config();
-const app = express();
+
+//* Connect to database
 connectDB();
+
+//* Express app
+const app = express();
+
+//* Middlewares
+//? -----Body Parser
 app.use(express.json());
 
+//? -----Static Folder
+app.use("/uploads", express.static(path.join(__dirname, 'uploads')));
 
-app.use('/api', rootRoute);
+//? -----Logging HTTP request
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+    console.log(`mode: ${process.env.NODE_ENV}`);
+}
 
-app.use('/api/users', usersRoute);
+//? -----Mount Routes
+app.use('/api/auth', rootRoute);
+app.use('/api/users', userRoute);
+app.use('/api/trees', treeRoute);
 
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`))
+//? -----Error Handler
+app.use(notFoundErrorMiddleware);
+app.use(globalErrorMiddleware);     // for express errors
 
+//* Running The Server
+const PORT = process.env.PORT || 3000;
+const server = app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+
+//* Handle Rejection outside express
+process.on('unhandledRejection', (err : Error) => {
+    console.error(`Rejection: ${err.name} - ${err.message}`);
+    server.close(() => {
+        console.log('Shutting down server...');
+        process.exit(1);
+    })
+});
 
