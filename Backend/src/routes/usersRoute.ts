@@ -1,13 +1,40 @@
 import { Router } from "express";
-import UsersService from "../services/usersService";
-import UsersController from "../controllers/usersController";
+import UserService from "../services/userService";
+import UserController from "../controllers/userController";
+import { getUserValidator, updateUserValidator, changeUserPasswordValidator, deleteUserValidator, uploadUserImageValidator, deleteUserImageValidator, updateUserPointsValidator} from "../utils/validators/userValidator";
+import { verifyTokenAndAuthorizationMiddleware } from "../middlewares/authMiddleware";
+import { uploadUserImage } from "../middlewares/uploadImageMiddleware";
 
-const usersRouter = Router();
 
-const usersService = new UsersService();
-const { getUsers } = new UsersController(usersService);
+const userRouter = Router();
 
-usersRouter.route('/').get(getUsers);
+const userService = new UserService();
+const { getUsers,
+        getUserById, 
+        updateUser,
+        changeUserPassword,
+        deleteUser,
+        uploadUserPicture,
+        deleteUserPicture, 
+        updateUserPoints} = new UserController(userService);
 
-export default usersRouter;
+userRouter.route('/')
+        .get(getUsers);
+
+userRouter.route('/:id')
+        .get(getUserValidator, getUserById)
+        .patch(verifyTokenAndAuthorizationMiddleware, updateUserValidator, updateUser)
+        .delete(verifyTokenAndAuthorizationMiddleware, deleteUserValidator, deleteUser);
+
+userRouter.route('/activity/:id')
+        .put(verifyTokenAndAuthorizationMiddleware, updateUserPointsValidator, updateUserPoints);
+
+userRouter.route('/image/:id')
+        .post(verifyTokenAndAuthorizationMiddleware, uploadUserImage, uploadUserImageValidator, uploadUserPicture)
+        .delete(verifyTokenAndAuthorizationMiddleware, deleteUserImageValidator, deleteUserPicture);
+
+userRouter.route('/change-password/:id')
+        .put(verifyTokenAndAuthorizationMiddleware, changeUserPasswordValidator, changeUserPassword);
+
+export default userRouter;
 
