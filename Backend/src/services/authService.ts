@@ -1,34 +1,39 @@
-import { IUser, IUserInput } from "../interfaces/iUser";
+import { IAuthInput } from "../interfaces/iUser";
 import User from "../models/userModel";
+import Token from "../models/tokenModel";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+
+// TODO: section authentication and authorization
 
 export default class AuthService {
 
-    async createNewUser(newUser : IUserInput) : Promise<boolean> {
-        const findUser = await User.findOne({email: newUser.email});
-        if(findUser) {
-            return false;
-        } else {
-            const user = new User({username: newUser.username, email: newUser.email, password: await bcrypt.hash(newUser.password, 10)});
-            await user.save();
-            return true;
-        }
+    async createNewUser(newUser : IAuthInput) : Promise<string | boolean> {
+        const user = new User({username: newUser.username, 
+                                email: newUser.email, 
+                                password: await bcrypt.hash(newUser.password, 10)});
+        await user.save();
+
+        const token = user.generateToken();
+        await new Token({ token: token }).save();
+
+        return token;
+        
     }
 
-    async login(userData : IUserInput): Promise<string | null | boolean> {
+    async login(userData : IAuthInput): Promise<string | boolean> {
         const findUser = await User.findOne({email: userData.email});
-        if(!findUser) {
+        if(!findUser || !(await bcrypt.compare(userData.password, findUser.password))) {
             return false;
-        } else {
-            const isPasswordMatch = await bcrypt.compare(userData.password, findUser.password);
-            if(isPasswordMatch) {
-                const token = jwt.sign({id : findUser.id}, process.env.JWT_SECRET as string);
-                return token;
-            }else{
-                return null;
-            } 
         } 
+        
+        const token = findUser.generateToken();
+        await new Token({ token: token }).save();
+
+        return token;
+    }
+
+    async logout(token: string): Promise<void> {
+        await Token.findOneAndUpdate({ token }, { blacklisted: true });
     }
 }
 

@@ -1,14 +1,15 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { ITree } from "../interfaces/iTree";
 
-const TreeSchema: Schema = new mongoose.Schema({
+const TreeSchema: Schema = new Schema({
     species: {
         type: String,
-        required: true
+        trim: true,
+        required: [true, 'Species is required']
     },
     location: {
         type: String,
-        required: true
+        required: [true, 'Location is required']
     },
     healthStatus: {
         type: String,
@@ -16,7 +17,14 @@ const TreeSchema: Schema = new mongoose.Schema({
         required: true
     },
     image: {
-        type: String
+        imageName: {
+            type: String,
+            
+        },
+        imageUrl: {
+            type: String,
+        } 
+        
     }
 });
 
