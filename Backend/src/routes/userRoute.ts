@@ -3,7 +3,7 @@ import UserService from "../services/userService";
 import UserController from "../controllers/userController";
 import { getUserValidator, updateUserValidator, changeUserPasswordValidator, deleteUserValidator, uploadUserImageValidator, deleteUserImageValidator, updateUserPointsValidator} from "../utils/validators/userValidator";
 import { verifyTokenAndAuthorizationMiddleware } from "../middlewares/authMiddleware";
-import { uploadUserImage } from "../middlewares/uploadImageMiddleware";
+import { uploadImage } from "../middlewares/uploadImageMiddleware";
 
 
 const userRouter = Router();
@@ -30,7 +30,7 @@ userRouter.route('/activity/:id')
         .put(verifyTokenAndAuthorizationMiddleware, updateUserPointsValidator, updateUserPoints);
 
 userRouter.route('/image/:id')
-        .post(verifyTokenAndAuthorizationMiddleware, uploadUserImage, uploadUserImageValidator, uploadUserPicture)
+        .post(verifyTokenAndAuthorizationMiddleware, uploadImage, uploadUserImageValidator, uploadUserPicture)
         .delete(verifyTokenAndAuthorizationMiddleware, deleteUserImageValidator, deleteUserPicture);
 
 userRouter.route('/change-password/:id')
