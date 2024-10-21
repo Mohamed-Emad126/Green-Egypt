@@ -1,6 +1,7 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { IUser } from "../interfaces/iUser";
 import jwt from "jsonwebtoken";
+import Token from "./tokenModel";
 
 const UserSchema: Schema = new Schema({
     username: {
@@ -23,7 +24,7 @@ const UserSchema: Schema = new Schema({
         },
         imageUrl: {
             type: String,
-            default: '../uploads/userImages/default-user-avatar.png'
+            default: '../uploads/default-user-avatar.png'
         }
     }
     ,
@@ -37,13 +38,31 @@ const UserSchema: Schema = new Schema({
         type: Number,
         default: 0,
         min: [0, 'Points cannot be negative']
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, { timestamps: true });
 
-UserSchema.methods.generateToken = function (): string {
-    return jwt.sign({ id: this.id }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRE_TIME as string });
+UserSchema.methods.generateToken = async function () : Promise<string> {
+
+    const token = jwt.sign({ id: this.id }, process.env.JWT_SECRET as string , { expiresIn: process.env.JWT_EXPIRE_TIME as string });
+
+    const expireDays = parseInt(process.env.JwT_EXPIRE_TIME as string);
+    const expiresAt = new Date(Date.now() +  expireDays * 24 * 60 * 60 * 1000);
+
+    await Token.create({
+        token: token,
+        expiresAt: expiresAt,
+        blacklisted: false 
+    });
+
+    return token;
 }
+
 
 const UserModel: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
 export default UserModel;
+
 

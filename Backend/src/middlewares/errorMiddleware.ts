@@ -4,7 +4,7 @@ import ApiError from "../utils/apiError";
 
 
 const sendErrorDev = (err : ICustomError, res : Response) : void => {
-    res.status(err.statusCode!).json({
+    res.status(err.statusCode!).json({ 
         error: err,
         message: err.message,
         stack: err.stack
