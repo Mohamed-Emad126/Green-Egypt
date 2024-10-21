@@ -2,7 +2,7 @@ import { Router } from "express";
 import TreeService from "../services/treeService";
 import TreeController from "../controllers/treeController";
 import { getTreeValidator, locateTreeValidator, updateTreeValidator, deleteTreeValidator, uploadTreeImageValidator } from "../utils/validators/treeValidator";
-import { uploadTreeImage } from "../middlewares/uploadImageMiddleware";
+import { uploadImage } from "../middlewares/uploadImageMiddleware";
 
 const treeRouter = Router();
 
@@ -24,7 +24,7 @@ treeRouter.route('/:id')
         .delete(deleteTreeValidator, deleteTree);
 
 treeRouter.route('/:id/image')
-        .post(uploadTreeImage, uploadTreeImageValidator, uploadTreePicture)
+        .post(uploadImage, uploadTreeImageValidator, uploadTreePicture)
 
 export default treeRouter;
 
