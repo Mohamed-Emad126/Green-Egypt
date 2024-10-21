@@ -10,8 +10,10 @@ export interface IUser extends Document {
         imageName: string;
         imageUrl: string
     };
-    generateToken: () => string;
+    isActive: boolean;
+    generateToken(): Promise<string> ;
 }
+
 
 export interface IAuthInput {
     username?: string;
