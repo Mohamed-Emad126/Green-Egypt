@@ -1,5 +1,6 @@
-import { ITreeInput } from "../interfaces/iTree";
+import { ITreeInput, TDeleteReason } from "../interfaces/iTree";
 import Tree from "../models/treeModel";
+import trashTree from "../models/trash/trashTreeModel";
 import uploadToCloud from "../config/cloudinary";
 import fs from "fs";
 
@@ -17,17 +18,39 @@ export default class TreesService {
     }
 
     async LocateTree(newTree : ITreeInput) {
-        const tree = new Tree(newTree);
+        if (newTree.healthStatus === 'Healthy') {
+            newTree.problem = 'No problem';
+        }
+        
+        return Tree.create(newTree);
+    }
+
+    async updateTree(treeID : string, updateData : ITreeInput) {
+        const tree = await Tree.findById(treeID);
+        if (!tree){
+            return false;
+        }
+
+        if (updateData.healthStatus === 'Healthy' && updateData.problem) {
+                updateData.problem = 'No problem';
+        }
+
+        Object.assign(tree, updateData);
         await tree.save();
         return true;
     }
 
-    async updateTree(treeID : string, updateData : ITreeInput) {
-        return await Tree.findByIdAndUpdate(treeID, updateData, {new : true, runValidators : true});
-    }
+    async deleteTree(treeID : string , reason : TDeleteReason) {
+        const tree = await Tree.findById(treeID);
+        if (!tree){
+            return false;
+        }
+        
+        const toTrash = new trashTree({...tree.toObject(), deletionReason : reason});
+        await toTrash.save();
 
-    async deleteTree(TreeID : string) {
-        return await Tree.findByIdAndDelete(TreeID);
+        await tree.deleteOne();
+        return true;
     }
 
     async uploadTreePicture(treeID: string, imageFile: any) {

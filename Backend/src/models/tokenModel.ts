@@ -12,9 +12,11 @@ const TokenSchema: Schema = new Schema({
         default: false,
     },
     expiresAt: {
-        type: Date,
+        type: Date
     },
 });
 
 TokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); 
-export default mongoose.model<IToken>('Token', TokenSchema);
+
+const TokenModel: Model<IToken> = mongoose.model<IToken>('Token', TokenSchema);
+export default TokenModel;

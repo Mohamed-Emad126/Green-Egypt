@@ -1,6 +1,7 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { IUser } from "../interfaces/iUser";
 import jwt from "jsonwebtoken";
+import Token from "./tokenModel";
 
 const UserSchema: Schema = new Schema({
     username: {
@@ -23,10 +24,9 @@ const UserSchema: Schema = new Schema({
         },
         imageUrl: {
             type: String,
-            default: '../uploads/userImages/default-user-avatar.png'
+            default: '../uploads/default-user-avatar.png'
         }
-    }
-    ,
+    },
     password: {
         type: String,
         required: [true, 'Password is required'],
@@ -37,12 +37,57 @@ const UserSchema: Schema = new Schema({
         type: Number,
         default: 0,
         min: [0, 'Points cannot be negative']
-    }
+    },
+    pendingCoupons: {
+        type: Number,
+        default: 0,
+        min: [0, 'Points cannot be negative']
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+    role: {
+        type: String,
+        enum: ['admin', 'user'],
+        default: 'user'
+    },
+    
 }, { timestamps: true });
 
-UserSchema.methods.generateToken = function (): string {
-    return jwt.sign({ id: this.id }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRE_TIME as string });
-}
+
+UserSchema.methods.generateToken = async function (customExpireTime?: string): Promise<string> {
+    const expiresIn = customExpireTime || process.env.JWT_EXPIRE_TIME as string;
+
+    const token = jwt.sign({ id: this.id, role: this.role }, process.env.JWT_SECRET as string, { expiresIn });
+
+    const expireValue = parseInt(expiresIn.slice(0, -1));
+    const expireUnit = expiresIn.slice(-1);
+    let expiresAt;
+
+    switch (expireUnit) {
+        case 'm':
+            expiresAt = new Date(Date.now() + expireValue * 60 * 1000);
+            break;
+        case 'h':
+            expiresAt = new Date(Date.now() + expireValue * 60 * 60 * 1000);
+            break;
+        case 'd':
+            expiresAt = new Date(Date.now() + expireValue * 24 * 60 * 60 * 1000);
+            break;
+        default:
+            throw new Error("Invalid JWT expiration format");
+    }
+
+    await Token.create({
+        token: token,
+        expiresAt: expiresAt,
+        blacklisted: false
+    });
+
+    return token;
+};
+
 
 const UserModel: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
 export default UserModel;

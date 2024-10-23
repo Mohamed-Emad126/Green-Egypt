@@ -25,7 +25,6 @@ export default class TreeController {
         const page: number = req.query.page ? +req.query.page : 1;
         const limit: number = req.query.limit ? +req.query.limit : 5;
         const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
-        console.log(filters);
         const trees = await this.treeService.getTrees(page, limit , filters);
         res.json({ length: trees.length, page: page, trees: trees });
     });
@@ -74,7 +73,7 @@ export default class TreeController {
         
     });
 
-        /**
+    /**
      * @desc      Upload tree picture
      * @route     post /api/trees/:id/image
      * @access    Public
@@ -94,7 +93,7 @@ export default class TreeController {
      * @access    Public
     */
     deleteTree = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const deletedTree = await this.treeService.deleteTree(req.params.id);
+        const deletedTree = await this.treeService.deleteTree(req.params.id, req.body.deletionReason);
         if (deletedTree) {
             res.json({ message: "Tree deleted successfully"});
         } else {

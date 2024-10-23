@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
 
-// TODO: add functionalities for redeem points to vouchers & reset points
+
 
 export default class UserController {
 
@@ -12,6 +12,11 @@ export default class UserController {
         this.getUserById = this.getUserById.bind(this);
         this.updateUser = this.updateUser.bind(this);
         this.deleteUser = this.deleteUser.bind(this);
+        this.changeUserPassword = this.changeUserPassword.bind(this);
+        this.uploadUserPicture = this.uploadUserPicture.bind(this);
+        this.deleteUserPicture = this.deleteUserPicture.bind(this);
+        this.updateUserPoints = this.updateUserPoints.bind(this);
+        this.claimPendingCoupons = this.claimPendingCoupons.bind(this);
     }
 
     /**
@@ -22,7 +27,8 @@ export default class UserController {
     getUsers = asyncHandler(async (req: Request, res: Response) => {
         const page: number = req.query.page ? +req.query.page : 1;
         const limit: number = req.query.limit ? +req.query.limit : 5;
-        const users = await this.userService.getUsers(page, limit);
+        const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
+        const users = await this.userService.getUsers(page, limit, filters);
         res.json({ length: users.length, page: page, users: users });
     });
 
@@ -115,15 +121,30 @@ export default class UserController {
     /**
      * @desc      Update user points
      * @route     PUT /api/users/:id/activity
-     * @access    Private (no one can access this route)
+     * @access    Private
     */
     updateUserPoints = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const result = await this.userService.updateUserPoints(req.params.id, req.body.activity);
-        if (result) {
-            res.json({ message: `Points added successfully, current points: ${result.points}`});
-        } else {
+        if (!result) {
             return next(new ApiError("User not found", 404));
+
+        } else {
+            res.json(result);
         }
         
+    });
+
+    /**
+     * @desc      Claim pending coupons for a user
+     * @route     POST /api/users/:id/claim-pending-coupons
+     * @access    Private
+     */
+    claimPendingCoupons = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.userService.claimPendingCoupons(req.params.id);
+        if (!result) {
+            return next(new ApiError("User not found", 404));
+        } else {
+            res.json(result);
+        }
     });
 }

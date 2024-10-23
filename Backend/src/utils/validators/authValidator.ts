@@ -36,12 +36,36 @@ export const createUserValidator = [
 
 export const loginValidator = [
     check('email')
-    .notEmpty().withMessage('Email is required')
-    .isEmail().withMessage('Please enter a valid email address'),
+        .notEmpty().withMessage('Email is required')
+        .isEmail().withMessage('Please enter a valid email address'),
 
     check('password')
-    .notEmpty().withMessage('Password is required')
-    .isLength({min : 8}).withMessage('Password must be at least 8 characters long'),
+        .notEmpty().withMessage('Password is required')
+        .isLength({min : 8}).withMessage('Password must be at least 8 characters long'),
 
     validatorMiddleware
+];
+
+export const resetPasswordValidator = [
+    check('email')
+        .notEmpty().withMessage('Email is required')
+        .isEmail().withMessage('Please enter a valid email address'),
+
+    validatorMiddleware
+];
+
+export const updatePasswordValidator = [
+    check('password')
+        .notEmpty().withMessage('Password is required')
+        .isLength({min : 8}).withMessage('Password must be at least 8 characters long')
+        .custom((password, { req }) => {
+            if(password !== req.body.passwordConfirmation) {
+                throw new Error('passwords do not match');
+            }
+            return true;
+        }),
+
+    check('passwordConfirmation').notEmpty().withMessage('Confirm password is required'),
+
+    validatorMiddleware,
 ];

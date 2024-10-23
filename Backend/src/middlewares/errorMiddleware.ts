@@ -8,7 +8,7 @@ const sendErrorDev = (err : ICustomError, res : Response) : void => {
         error: err,
         message: err.message,
         stack: err.stack
-    })
+    });
 }
 
 const sendErrorProd = (err : ICustomError, res : Response) : void => {
@@ -29,7 +29,7 @@ export const globalErrorMiddleware = (err : ICustomError, req : Request , res : 
         
         if (err.name === "JsonWebTokenError") {
             err = new ApiError("Invalid token, please login again", 401);
-        }else if (err.name === "TokenExpiredError") {
+        } else if (err.name === "TokenExpiredError") {
             err = new ApiError("Expired token, please login again", 401);
         }
 
