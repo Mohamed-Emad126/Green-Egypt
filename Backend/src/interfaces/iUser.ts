@@ -6,11 +6,14 @@ export interface IUser extends Document {
     password: string;
     passwordChangedAt: Date;
     points: number;
+    pendingCoupons: number;
     profilePic: {
         imageName: string;
         imageUrl: string
     };
-    generateToken: () => string;
+    isActive: boolean;
+    role: string;
+    generateToken(expiration?: string): Promise<string>;
 }
 
 export interface IAuthInput {

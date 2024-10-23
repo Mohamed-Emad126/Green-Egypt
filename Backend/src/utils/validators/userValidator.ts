@@ -62,6 +62,9 @@ export const deleteUserValidator = [
 
 export const uploadUserImageValidator = [
     check('id').isMongoId().withMessage('Invalid user ID Format'),
+
+    check('image').notEmpty().withMessage('Image is required'),
+    
     validatorMiddleware
 ];
 
@@ -74,9 +77,14 @@ export const updateUserPointsValidator = [
     check('id').isMongoId().withMessage('Invalid user ID Format'),
 
     check('activity')
-    .notEmpty().withMessage('Activity is required')
-    .isIn(['locate', 'report', 'care', 'plant']).withMessage('Invalid activity'),
+        .notEmpty().withMessage('Activity is required')
+        .isIn(['locate', 'report', 'care', 'plant']).withMessage('Invalid activity'),
 
+    validatorMiddleware
+];
+
+export const claimPendingCouponsValidator = [
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
     validatorMiddleware
 ];
 
