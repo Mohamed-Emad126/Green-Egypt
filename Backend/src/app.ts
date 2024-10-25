@@ -11,7 +11,6 @@ import partnerRoute from "./routes/partnerRoute";
 import couponRouter from "./routes/couponRoute";
 
 
-
 //* Environment variables
 dotenv.config();
 
@@ -26,7 +25,7 @@ const app = express();
 app.use(express.json());
 
 //? -----Static Folder
-app.use("/uploads", express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, 'uploads'))); //********* */
 
 //? -----Logging HTTP request
 if (process.env.NODE_ENV === 'development') {

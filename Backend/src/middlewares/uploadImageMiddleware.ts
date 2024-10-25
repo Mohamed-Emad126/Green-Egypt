@@ -12,6 +12,16 @@ const storage = multer.diskStorage({
     }
 });
 
+const storage = multer.diskStorage({
+    destination: (req: Request, file, cb) => {
+        cb(null, path.join(__dirname, '../uploads')); 
+    },
+    filename: (req: Request, file, cb) => {
+        const uniqueSuffix = `${Date.now()}-${file.originalname}`;
+        cb(null, uniqueSuffix); 
+    }
+});
+
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
         cb(null, true);
