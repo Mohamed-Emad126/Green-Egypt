@@ -1,8 +1,8 @@
 import { Router } from "express";
 import UserService from "../services/userService";
 import UserController from "../controllers/userController";
-import { getUserValidator, updateUserValidator, changeUserPasswordValidator, deleteUserValidator, uploadUserImageValidator, deleteUserImageValidator, updateUserPointsValidator} from "../utils/validators/userValidator";
-import { verifyTokenAndAuthorizationMiddleware } from "../middlewares/authMiddleware";
+import { getUserValidator, updateUserValidator, changeUserPasswordValidator, deleteUserValidator, uploadUserImageValidator, deleteUserImageValidator, updateUserPointsValidator, claimPendingCouponsValidator} from "../utils/validators/userValidator";
+import { verifyUserMiddleware , verifyToken, verifyAdminMiddleware} from "../middlewares/authMiddleware";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
 
 
@@ -16,25 +16,28 @@ const { getUsers,
         deleteUser,
         uploadUserPicture,
         deleteUserPicture, 
-        updateUserPoints} = new UserController(userService);
+        updateUserPoints,
+        claimPendingCoupons} = new UserController(userService);
 
 userRouter.route('/')
-        .get(getUsers);
+        .get(verifyAdminMiddleware, getUsers);
 
 userRouter.route('/:id')
-        .get(getUserValidator, getUserById)
-        .patch(verifyTokenAndAuthorizationMiddleware, updateUserValidator, updateUser)
-        .delete(verifyTokenAndAuthorizationMiddleware, deleteUserValidator, deleteUser);
+        .get(verifyToken, getUserValidator, getUserById)
+        .patch(verifyUserMiddleware, updateUserValidator, updateUser)
+        .delete(verifyUserMiddleware, deleteUserValidator, deleteUser)
+        .put(verifyUserMiddleware, updateUserPointsValidator, updateUserPoints)
+        .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);
 
 userRouter.route('/activity/:id')
-        .put(verifyTokenAndAuthorizationMiddleware, updateUserPointsValidator, updateUserPoints);
+        .put(verifyUserMiddleware, updateUserPointsValidator, updateUserPoints);
 
 userRouter.route('/image/:id')
-        .post(verifyTokenAndAuthorizationMiddleware, uploadImage, uploadUserImageValidator, uploadUserPicture)
-        .delete(verifyTokenAndAuthorizationMiddleware, deleteUserImageValidator, deleteUserPicture);
+        .post(verifyUserMiddleware, uploadImage, uploadUserImageValidator, uploadUserPicture)
+        .delete(verifyUserMiddleware, deleteUserImageValidator, deleteUserPicture);
 
 userRouter.route('/change-password/:id')
-        .put(verifyTokenAndAuthorizationMiddleware, changeUserPasswordValidator, changeUserPassword);
+        .put(verifyUserMiddleware, changeUserPasswordValidator, changeUserPassword);
 
 export default userRouter;
 

@@ -2,6 +2,15 @@ import { Request } from 'express';
 import multer from 'multer';
 import path from 'path';
 
+const storage = multer.diskStorage({
+    destination: (req: Request, file, cb) => {
+        cb(null, path.join(__dirname, '../uploads')); 
+    },
+    filename: (req: Request, file, cb) => {
+        const uniqueSuffix = `${Date.now()}-${file.originalname}`;
+        cb(null, uniqueSuffix); 
+    }
+});
 
 const storage = multer.diskStorage({
     destination: (req: Request, file, cb) => {

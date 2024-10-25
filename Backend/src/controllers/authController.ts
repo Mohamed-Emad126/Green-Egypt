@@ -7,9 +7,14 @@ import ApiError from "../utils/apiError";
 
 export default class AuthController {
     constructor(private authService: AuthService) {
-    this.createNewUser = this.createNewUser.bind(this);
-    this.login = this.login.bind(this);
+        this.createNewUser = this.createNewUser.bind(this);
+        this.login = this.login.bind(this);
+        this.logout = this.logout.bind(this);
+        this.forgotPassword = this.forgotPassword.bind(this);
+        this.resetPassword = this.resetPassword.bind(this);
+        this.verifyGoogleIdToken = this.verifyGoogleIdToken.bind(this);
     }
+
 
     /**
    * @desc      Register new user
@@ -137,5 +142,5 @@ export default class AuthController {
             next(new ApiError(message as string, 400));
         }
     });
-    
+
 }
