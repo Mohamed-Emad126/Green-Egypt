@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { TransportOptions } from 'nodemailer';
+
 const sendEmail = async (option: any): Promise<void> => {
     // create transporter
     const transporter = nodemailer.createTransport({
@@ -10,6 +11,7 @@ const sendEmail = async (option: any): Promise<void> => {
             pass: process.env.EMAIL_PASS as string
         }
     } as TransportOptions);
+
     // email options
     const emailOptions =({
         from: "gogreenfci2025@gmail.com",
@@ -17,7 +19,10 @@ const sendEmail = async (option: any): Promise<void> => {
         subject: option.subject,
         text: option.message,
     });
+
     // send email
     await transporter.sendMail(emailOptions);
+
 }
-export default sendEmail
+
+export default sendEmail;

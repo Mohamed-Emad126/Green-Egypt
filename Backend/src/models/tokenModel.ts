@@ -12,8 +12,9 @@ const TokenSchema: Schema = new Schema({
         default: false,
     },
     expiresAt: {
-        type: Date
+        type: Date,
     },
+    
 });
 
 TokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); 

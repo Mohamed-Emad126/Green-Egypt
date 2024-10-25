@@ -77,7 +77,6 @@ UserSchema.methods.generateToken = async function (customExpireTime?: string): P
             break;
         default:
             throw new Error("Invalid JWT expiration format");
-    }
 
     await Token.create({
         token: token,
@@ -88,7 +87,7 @@ UserSchema.methods.generateToken = async function (customExpireTime?: string): P
     return token;
 };
 
-
 const UserModel: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
 export default UserModel;
+
 
