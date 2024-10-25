@@ -2,12 +2,14 @@ import { Router } from "express";
 import AuthService from "../services/authService";
 import AuthController from "../controllers/authController";
 import { verifyToken } from "../middlewares/authMiddleware";
-import { createUserValidator, loginValidator, resetPasswordValidator,updatePasswordValidator } from "../utils/validators/authValidator";
+
+import { createUserValidator, loginValidator, resetPasswordValidator, updatePasswordValidator } from "../utils/validators/authValidator";
 
 const rootRouter = Router();
 
 const authService = new AuthService();
-const { createNewUser, login, logout, forgotPassword,resetPassword,verifyGoogleIdToken } = new AuthController(authService);
+
+const { createNewUser, login, logout, forgotPassword, resetPassword, verifyGoogleIdToken } = new AuthController(authService);
 
 rootRouter.route('/register').post(createUserValidator, createNewUser);
 rootRouter.route('/login').post(loginValidator, login);

@@ -1,7 +1,7 @@
 import mongoose, { Schema, Model } from "mongoose";
-import { ITree } from "../interfaces/iTree";
+import { ITree } from "../../interfaces/iTree";
 
-const TreeSchema: Schema = new Schema({
+const trashTreeSchema: Schema = new Schema({
     species: {
         type: String,
         trim: true,
@@ -14,28 +14,28 @@ const TreeSchema: Schema = new Schema({
     healthStatus: {
         type: String,
         enum: ['Healthy', 'Diseased', 'Dying'],
-        required: true,
+        required: true
     },
     problem: {
         type: String,
-        required: function () {
-                return this.healthStatus === 'Diseased' || this.healthStatus === 'Dying';
-            },
-        trim: true,
-        default: 'No problem'
     },
     image: {
         imageName: {
             type: String,
-            default: 'default-tree-picture.png'
+            
         },
         imageUrl: {
             type: String,
-            default: '../uploads/default-tree-picture.png'
         } 
+        
+    },
+    deletionReason: {
+        type: String,
+        enum: ['Died', 'Cut down', 'False Record'],
+        required: true
     }
 });
 
-const TreeModel: Model<ITree> = mongoose.model<ITree>('Tree', TreeSchema);
-export default TreeModel;
+const trashTreeModel: Model<ITree> = mongoose.model<ITree>('TrashTree', trashTreeSchema);
+export default trashTreeModel;
 

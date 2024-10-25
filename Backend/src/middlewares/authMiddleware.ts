@@ -29,14 +29,14 @@ export const verifyToken = asyncHandler( async (req : Request, res : Response, n
             }
         }
 
-        req.body.user = { ...decoded, id: user.id };
+        req.body.user = { ...decoded, id: user.id, role: user.role };
         next();
     } else {
         return next(new ApiError("you are not logged in, please login to access this route", 401));
     }
 });
 
-export const verifyTokenAndAuthorizationMiddleware = (req : Request, res : Response, next : NextFunction) : void => {
+export const verifyUserMiddleware = (req : Request, res : Response, next : NextFunction) : void => {
     verifyToken(req, res, (err) => {
         if(err) {
             return next(err);
@@ -45,8 +45,22 @@ export const verifyTokenAndAuthorizationMiddleware = (req : Request, res : Respo
         if(req.body.user.id === req.params.id) {
             next();
         } else {
-            return next(new ApiError("You are not authorized", 403));
+            return next(new ApiError("You are not authorized to access this route", 403));
         }
     });
 }
+
+export const verifyAdminMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+    verifyToken(req, res, (err) => {
+        if(err) {
+            return next(err);
+        }
+        
+        if (req.body.user && req.body.user.role === 'admin') {
+            next();
+        } else {
+            return next(new ApiError("You are not admin to access this route", 403));
+        }
+    });
+};
 

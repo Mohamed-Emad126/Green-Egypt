@@ -25,6 +25,4 @@ const sendEmail = async (option: any): Promise<void> => {
 
 }
 
-export default sendEmail
-
-
+export default sendEmail;

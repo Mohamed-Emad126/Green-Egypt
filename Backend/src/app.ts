@@ -7,6 +7,8 @@ import { globalErrorMiddleware , notFoundErrorMiddleware } from "./middlewares/e
 import userRoute from "./routes/userRoute";
 import rootRoute from "./routes/authRoute";
 import treeRoute from "./routes/treeRoute";
+import partnerRoute from "./routes/partnerRoute";
+import couponRouter from "./routes/couponRoute";
 
 
 //* Environment variables
@@ -35,7 +37,8 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/api/auth', rootRoute);
 app.use('/api/users', userRoute);
 app.use('/api/trees', treeRoute);
-
+app.use('/api/partners', partnerRoute);
+app.use('/api/coupons', couponRouter);
 
 //? -----Error Handler
 app.use(notFoundErrorMiddleware);
