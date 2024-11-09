@@ -17,6 +17,7 @@ export default class UserController {
         this.deleteUserPicture = this.deleteUserPicture.bind(this);
         this.updateUserPoints = this.updateUserPoints.bind(this);
         this.claimPendingCoupons = this.claimPendingCoupons.bind(this);
+        this.promoteUserToAdmin = this.promoteUserToAdmin.bind(this);
     }
 
     /**
@@ -146,5 +147,22 @@ export default class UserController {
         } else {
             res.json(result);
         }
+    });
+
+    /**
+     * @desc      Promote user to admin
+     * @route     PUT /api/users/promote-admin/:id
+     * @access    Private
+     */
+    promoteUserToAdmin = asyncHandler(async (req: Request, res: Response, next: NextFunction) =>{
+        const userID = req.params.id;
+        
+        const result = await this.userService.promoteUserToAdmin(userID);        
+        if (!result) {
+            return next(new ApiError("Failed to promote user to admin", 500));
+        } else {
+            res.json(result);
+        }
+
     });
 }

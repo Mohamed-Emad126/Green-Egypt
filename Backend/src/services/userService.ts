@@ -6,7 +6,6 @@ import bcrypt from "bcryptjs";
 import fs from "fs";
 import uploadToCloud from "../config/cloudinary";
 
-// TODO: add functionalities for redeem points to vouchers & reset points
 
 
 export default class UserService {
@@ -171,4 +170,22 @@ export default class UserService {
             coupon :claimedCoupons
         };
     }
+
+    async promoteUserToAdmin(userID: string) {
+        try {
+            const user = await User.findById(userID);
+
+            if (!user) {
+                return 'User not found.';
+            }
+
+            user.role = 'admin';
+            await user.save();
+            return 'User promoted to admin successfully';
+        } 
+        catch (error) {
+            return ('Error promoting user to admin');
+        }   
+}
+
 }
