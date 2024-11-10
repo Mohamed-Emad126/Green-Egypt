@@ -1,7 +1,7 @@
-import mongoose, { Schema, Model} from "mongoose";
-import { IEvent } from "../interfaces/iEvent";
+import mongoose, { Schema, Model } from "mongoose";
+import { IEvent } from "../../interfaces/iEvent";
 
-const EventSchema: Schema = new mongoose.Schema({
+const TrashEventSchema: Schema = new Schema({
     eventName: {
         type: String,
         required: true
@@ -21,14 +21,8 @@ const EventSchema: Schema = new mongoose.Schema({
         required: true
     },
     eventImage: {
-        imageName: {
-            type: String,
-            default: 'not-found-image.png'
-        },
-        imageUrl: {
-            type: String,
-            default: '../uploads/not-found-image.png'
-        } 
+        type: String,
+        required: true
     },
     eventStatus: {
         type: String,
@@ -40,9 +34,7 @@ const EventSchema: Schema = new mongoose.Schema({
         ref: 'Partner',
         required: true
     }
-});
+})
 
-const EventModel: Model<IEvent> = mongoose.model<IEvent>('Event', EventSchema);
-
-export default EventModel;
-
+const trashEventModel: Model<IEvent> = mongoose.model<IEvent>('Trash', TrashEventSchema);
+export default trashEventModel;
