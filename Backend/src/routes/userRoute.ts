@@ -1,7 +1,7 @@
 import { Router } from "express";
 import UserService from "../services/userService";
 import UserController from "../controllers/userController";
-import { getUserValidator, updateUserValidator, changeUserPasswordValidator, deleteUserValidator, uploadUserImageValidator, deleteUserImageValidator, updateUserPointsValidator, claimPendingCouponsValidator} from "../utils/validators/userValidator";
+import { getUserValidator, updateUserValidator, changeUserPasswordValidator, deleteUserValidator, uploadUserImageValidator, deleteUserImageValidator, updateUserPointsValidator, claimPendingCouponsValidator,promoteUserValidator} from "../utils/validators/userValidator";
 import { verifyUserMiddleware , verifyToken, verifyAdminMiddleware} from "../middlewares/authMiddleware";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
 
@@ -17,7 +17,8 @@ const { getUsers,
         uploadUserPicture,
         deleteUserPicture, 
         updateUserPoints,
-        claimPendingCoupons} = new UserController(userService);
+        claimPendingCoupons,
+        promoteUserToAdmin,} = new UserController(userService);
 
 userRouter.route('/')
         .get(verifyAdminMiddleware, getUsers);
@@ -39,5 +40,8 @@ userRouter.route('/image/:id')
 userRouter.route('/change-password/:id')
         .put(verifyUserMiddleware, changeUserPasswordValidator, changeUserPassword);
 
+userRouter.route('/promote-admin/:id')
+        .put(verifyAdminMiddleware,promoteUserValidator, promoteUserToAdmin);
+        
 export default userRouter;
 
