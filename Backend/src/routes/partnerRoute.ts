@@ -26,7 +26,7 @@ partnerRoute.route('/:id')
         .patch(verifyAdminMiddleware, updatePartnerValidator, updatePartner)
         .delete(verifyAdminMiddleware, deletePartnerValidator, deletePartner);
 
-partnerRoute.route('/image/:id')
+partnerRoute.route('/:id/image')
         .post(verifyAdminMiddleware, uploadImage, uploadPartnerLogoValidator, uploadPartnerLogo);
 
 export default partnerRoute;

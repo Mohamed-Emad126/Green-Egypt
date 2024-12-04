@@ -18,14 +18,8 @@ const UserSchema: Schema = new Schema({
         lowercase: true
     },
     profilePic: {
-        imageName: {
-            type: String,
-            default: 'default-user-avatar.png'
-        },
-        imageUrl: {
-            type: String,
-            default: '../uploads/default-user-avatar.png'
-        }
+        type: String,
+        default: '../uploads/default-user-avatar.png'
     },
     password: {
         type: String,
@@ -52,6 +46,10 @@ const UserSchema: Schema = new Schema({
         enum: ['admin', 'user'],
         default: 'user'
     },
+    location: {
+        latitude: Number,
+        longitude: Number
+    }
     
 }, { timestamps: true });
 
@@ -77,11 +75,13 @@ UserSchema.methods.generateToken = async function (customExpireTime?: string): P
             break;
         default:
             throw new Error("Invalid JWT expiration format");
+    }
 
     await Token.create({
         token: token,
         expiresAt: expiresAt,
-        blacklisted: false
+        blacklisted: false,
+        user: this.id
     });
 
     return token;

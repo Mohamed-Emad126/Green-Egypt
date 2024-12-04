@@ -1,7 +1,7 @@
 import mongoose, { Schema, Model } from "mongoose";
-import { IReport } from "../interfaces/iReport";
+import { IReport } from "../../interfaces/iReport";
 
-const ReportSchema: Schema<IReport> = new mongoose.Schema({
+const TrashReportSchema: Schema<IReport> = new mongoose.Schema({
     reportType: {
         type: String,
         enum: ['A tree needs care', 'A place needs tree', 'Other'],
@@ -10,14 +10,25 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
     description: {
         type: String,
         required: true,
-        maxLength: [600, 'Description cannot be more than 600 characters']
+        maxLength: [600, 'Description cannot be more than 500 characters']
     },
     location: {
-        latitude: Number,
-        longitude: Number
+        latitude: {
+            type: Number,
+            required: true,
+        },
+        longitude: {
+            type: Number,
+            required: true,
+        }
     },
     images: [{
-        type: String,
+        imageName: {
+            type: String,
+        },
+        imageUrl: {
+            type: String,
+        }
     }],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -31,38 +42,30 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
     },
     upVotes: { 
         type: Number,
-        default: 0, 
-        min: [0, 'Up votes cannot be negative']
+        default: 0 
     },
-    upVoters: [{ 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
     status: {
         type: String,
         default: 'Pending',
         enum: ['Pending', 'In Progress', 'Resolved', 'Rejected'],
         required: true
     },
-    modificationHistory: [{
-        oldData: {
-            type: Map,
-            of: Schema.Types.Mixed,
-        },
-        updatedAt: { 
-            type: Date, 
-            default: Date.now 
+    modificationHistory: [
+        {
+            updatedData: { type: Object },
+            updatedAt: { type: Date, default: Date.now }
         }
-    }],
+    ],
     responses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Response'
     }],
     comments: [{
-        type: mongoose.Schema.Types.ObjectId, 
+        type:mongoose.Schema.Types.ObjectId, 
         ref: 'Comment'
     }]
-}, { timestamps: true });
+});
 
-const Report: Model<IReport> = mongoose.model<IReport>('Report', ReportSchema);
-export default Report;
+const TrashReport: Model<IReport> = mongoose.model<IReport>('TrashReport', TrashReportSchema);
+export default TrashReport;
+

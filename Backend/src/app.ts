@@ -3,13 +3,15 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import path from 'path';
 import connectDB from "./config/db";
-import { globalErrorMiddleware , notFoundErrorMiddleware } from "./middlewares/errorMiddleware";
+import pug from 'pug';
+import rateLimit from 'express-rate-limit';
+import { globalErrorMiddleware, notFoundErrorMiddleware } from "./middlewares/errorMiddleware";
 import userRoute from "./routes/userRoute";
 import rootRoute from "./routes/authRoute";
 import treeRoute from "./routes/treeRoute";
 import partnerRoute from "./routes/partnerRoute";
 import couponRouter from "./routes/couponRoute";
-
+import reportRouter from "./routes/reportRoute";
 
 //* Environment variables
 dotenv.config();
@@ -17,15 +19,22 @@ dotenv.config();
 //* Connect to database
 connectDB();
 
-//* Express app
+//* Create Express App
 const app = express();
+
+//* limit request from same IP
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: 'Too many accounts created from this IP, please try again after an hour',
+});
 
 //* Middlewares
 //? -----Body Parser
 app.use(express.json());
 
 //? -----Static Folder
-app.use("/uploads", express.static(path.join(__dirname, 'uploads'))); //********* */
+app.use("/uploads", express.static(path.join(__dirname, 'uploads')));
 
 //? -----Logging HTTP request
 if (process.env.NODE_ENV === 'development') {
@@ -33,27 +42,19 @@ if (process.env.NODE_ENV === 'development') {
     console.log(`mode: ${process.env.NODE_ENV}`);
 }
 
+//? -----Rate Limiting
+app.use(limiter);
+
 //? -----Mount Routes
 app.use('/api/auth', rootRoute);
 app.use('/api/users', userRoute);
 app.use('/api/trees', treeRoute);
 app.use('/api/partners', partnerRoute);
 app.use('/api/coupons', couponRouter);
+app.use('/api/reports', reportRouter);
 
 //? -----Error Handler
 app.use(notFoundErrorMiddleware);
-app.use(globalErrorMiddleware);     // for express errors
+app.use(globalErrorMiddleware); // for express errors
 
-//* Running The Server
-const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-
-//* Handle Rejection outside express
-process.on('unhandledRejection', (err : Error) => {
-    console.error(`Rejection: ${err.name} - ${err.message}`);
-    server.close(() => {
-        console.log('Shutting down server...');
-        process.exit(1);
-    })
-});
-
+export default app;

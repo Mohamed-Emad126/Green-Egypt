@@ -15,14 +15,8 @@ const trashUserSchema: Schema = new Schema({
         lowercase: true
     },
     profilePic: {
-        imageName: {
-            type: String,
-            default: 'default-user-avatar.png'
-        },
-        imageUrl: {
-            type: String,
-            default: '../uploads/userImages/default-user-avatar.png'
-        }
+        type: String,
+        default: '../uploads/userImages/default-user-avatar.png'
     }
     ,
     password: {
@@ -45,7 +39,12 @@ const trashUserSchema: Schema = new Schema({
     role: {
         type: String,
         enum: ['user', 'admin'],
+    },
+    location: {
+        latitude: Number,
+        longitude: Number
     }
+    
 }, { timestamps: true });
 
 const trashUserModel: Model<IUser> = mongoose.model<IUser>('TrashUser', trashUserSchema);

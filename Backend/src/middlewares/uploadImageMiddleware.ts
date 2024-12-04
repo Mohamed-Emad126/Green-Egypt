@@ -12,16 +12,6 @@ const storage = multer.diskStorage({
     }
 });
 
-const storage = multer.diskStorage({
-    destination: (req: Request, file, cb) => {
-        cb(null, path.join(__dirname, '../uploads')); 
-    },
-    filename: (req: Request, file, cb) => {
-        const uniqueSuffix = `${Date.now()}-${file.originalname}`;
-        cb(null, uniqueSuffix); 
-    }
-});
-
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
         cb(null, true);
@@ -35,4 +25,10 @@ export const uploadImage = multer({
     fileFilter: fileFilter,
     limits: { fileSize: 1024 * 1024 * 5 }
 }).single('image');
+
+export const uploadImages = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: { fileSize: 1024 * 1024 * 5 }
+}).array('images', 5);
 

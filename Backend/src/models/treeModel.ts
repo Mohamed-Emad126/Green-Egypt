@@ -7,9 +7,15 @@ const TreeSchema: Schema = new Schema({
         trim: true,
         required: [true, 'Species is required']
     },
-    location: {
-        type: String,
-        required: [true, 'Location is required']
+    treeLocation: {
+        latitude: {
+            type: Number,
+            required: [true, 'Latitude is required'],
+        },
+        longitude: {
+            type: Number,
+            required: [true, 'Longitude is required'],
+        }
     },
     healthStatus: {
         type: String,
@@ -19,22 +25,16 @@ const TreeSchema: Schema = new Schema({
     problem: {
         type: String,
         required: function () {
-                return this.healthStatus === 'Diseased' || this.healthStatus === 'Dying';
-            },
+            return this.healthStatus === 'Diseased' || this.healthStatus === 'Dying';
+        },
         trim: true,
         default: 'No problem'
     },
     image: {
-        imageName: {
-            type: String,
-            default: 'default-tree-picture.png'
-        },
-        imageUrl: {
-            type: String,
-            default: '../uploads/default-tree-picture.png'
-        } 
+        type: String,
+        default: '../uploads/not-found-image.png'
     }
-});
+}, { timestamps: true });
 
 const TreeModel: Model<ITree> = mongoose.model<ITree>('Tree', TreeSchema);
 export default TreeModel;

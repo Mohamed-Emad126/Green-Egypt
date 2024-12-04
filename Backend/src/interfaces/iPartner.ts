@@ -8,10 +8,7 @@ export interface IPartner extends Document {
     endDate?: Date;
     website?: string;
     description?: string;
-    logo: {
-        imageName: string;
-        imageUrl: string;
-    };
+    logo: string;
     hasExpired: boolean;
 }
 
