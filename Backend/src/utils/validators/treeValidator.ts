@@ -11,7 +11,13 @@ export const getTreeValidator = [
 export const locateTreeValidator = [
     check('species').notEmpty().withMessage('Species is required'),
     
-    check('location').notEmpty().withMessage('Location is required'),
+    check('location.latitude')
+        .notEmpty().withMessage('Latitude is required')
+        .isFloat({ min: -90, max: 90 }).withMessage('Latitude must be between -90 and 90'),
+
+    check('location.longitude')
+        .notEmpty().withMessage('Longitude is required')
+        .isFloat({ min: -180, max: 180 }).withMessage('Longitude must be between -180 and 180'),
 
     check('healthStatus')
         .notEmpty().withMessage('Health status is required')
@@ -30,6 +36,14 @@ export const locateTreeValidator = [
 
 export const updateTreeValidator = [
     check('id').isMongoId().withMessage('Invalid tree ID Format'),
+
+    check('location.latitude')
+        .notEmpty().withMessage('Latitude is required')
+        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+        
+    check('location.longitude')
+    .notEmpty().withMessage('Longitude is required')
+        .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
 
     check('healthStatus')
         .optional()
@@ -59,7 +73,12 @@ export const deleteTreeValidator= [
 export const uploadTreeImageValidator = [
     check('id').isMongoId().withMessage('Invalid tree ID Format'),
 
-    check('image').notEmpty().withMessage('Image is required'),
-    
+    check('image').custom((_, { req }) => {
+        if (!req.file) {
+            throw new Error("Image is required");
+        }
+        return true;
+    }),
+
     validatorMiddleware
 ];

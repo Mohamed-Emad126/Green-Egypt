@@ -7,7 +7,7 @@ const trashTreeSchema: Schema = new Schema({
         trim: true,
         required: [true, 'Species is required']
     },
-    location: {
+    treeLocation: {
         type: String,
         required: [true, 'Location is required']
     },
@@ -19,16 +19,7 @@ const trashTreeSchema: Schema = new Schema({
     problem: {
         type: String,
     },
-    image: {
-        imageName: {
-            type: String,
-            
-        },
-        imageUrl: {
-            type: String,
-        } 
-        
-    },
+    image: String,
     deletionReason: {
         type: String,
         enum: ['Died', 'Cut down', 'False Record'],

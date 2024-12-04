@@ -26,17 +26,19 @@ userRouter.route('/:id')
         .get(verifyToken, getUserValidator, getUserById)
         .patch(verifyUserMiddleware, updateUserValidator, updateUser)
         .delete(verifyUserMiddleware, deleteUserValidator, deleteUser)
-        .put(verifyUserMiddleware, updateUserPointsValidator, updateUserPoints)
         .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);
 
-userRouter.route('/activity/:id')
+userRouter.route('/:id/activity')
         .put(verifyUserMiddleware, updateUserPointsValidator, updateUserPoints);
 
-userRouter.route('/image/:id')
+userRouter.route('/:id/claim-coupon')
+        .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);
+
+userRouter.route('/:id/image')
         .post(verifyUserMiddleware, uploadImage, uploadUserImageValidator, uploadUserPicture)
         .delete(verifyUserMiddleware, deleteUserImageValidator, deleteUserPicture);
 
-userRouter.route('/change-password/:id')
+userRouter.route('/:id/change-password')
         .put(verifyUserMiddleware, changeUserPasswordValidator, changeUserPassword);
 
 export default userRouter;
