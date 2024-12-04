@@ -76,14 +76,13 @@ UserSchema.methods.generateToken = async function (customExpireTime?: string): P
         default:
             throw new Error("Invalid JWT expiration format");
     }
-
     await Token.create({
         token: token,
         expiresAt: expiresAt,
         blacklisted: false,
         user: this.id
     });
-
+    
     return token;
 };
 
