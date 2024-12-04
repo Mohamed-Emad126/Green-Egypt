@@ -101,3 +101,9 @@ export const claimPendingCouponsValidator = [
     validatorMiddleware
 ];
 
+export const promoteUserValidator =[
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
+    validatorMiddleware
+];
+    
+

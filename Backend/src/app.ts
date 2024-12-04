@@ -12,6 +12,8 @@ import treeRoute from "./routes/treeRoute";
 import partnerRoute from "./routes/partnerRoute";
 import couponRouter from "./routes/couponRoute";
 import reportRouter from "./routes/reportRoute";
+import eventRouter from "./routes/eventRoute";
+
 
 //* Environment variables
 dotenv.config();
@@ -52,6 +54,7 @@ app.use('/api/trees', treeRoute);
 app.use('/api/partners', partnerRoute);
 app.use('/api/coupons', couponRouter);
 app.use('/api/reports', reportRouter);
+app.use('/api/events', eventRouter);
 
 //? -----Error Handler
 app.use(notFoundErrorMiddleware);
