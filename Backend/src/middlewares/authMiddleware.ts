@@ -3,37 +3,36 @@ import jwt from "jsonwebtoken";
 import ApiError from "../utils/apiError";
 import User from "../models/userModel";
 import Token from "../models/tokenModel";
+import Report from "../models/reportModel";
 import asyncHandler from 'express-async-handler';
 
 export const verifyToken = asyncHandler( async (req : Request, res : Response, next : NextFunction) => {
-    let token : string | undefined;
-    if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-        token = req.headers.authorization!.split(" ")[1];
-
-        const blacklistedToken = await Token.findOne({ token, blacklisted: true });
-        if (blacklistedToken) {
-            return next(new ApiError("you are not logged in, please login to access this route", 401));
-        }
-
-        const decoded : any = jwt.verify(token, process.env.JWT_SECRET! as string);
-
-        const user = await User.findById(decoded.id);
-        if(!user) {
-            return next(new ApiError("The user belonging to this token does not exist", 401));
-        }
-
-        if (user.passwordChangedAt instanceof Date) {
-            const passChangedTimestamp = Math.floor(user.passwordChangedAt.getTime() / 1000);
-            if (passChangedTimestamp > decoded.iat) {
-                return next(new ApiError('User recently changed his password. please login again..',401));
-            }
-        }
-
-        req.body.user = { ...decoded, id: user.id, role: user.role };
-        next();
-    } else {
-        return next(new ApiError("you are not logged in, please login to access this route", 401));
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return next(new ApiError("Unauthorized access - please log in", 401));
     }
+
+    const token = authHeader.split(" ")[1];
+    const blacklistedToken = await Token.findOne({ token, blacklisted: true });
+    if (blacklistedToken) {
+        return next(new ApiError("Session expired - Please log in again", 401));
+    }
+
+    const decoded : any = jwt.verify(token, process.env.JWT_SECRET! as string);
+    const user = await User.findById(decoded.id);
+    if(!user) {
+        return next(new ApiError("No user found for this token", 401));
+    }
+
+    if (user.passwordChangedAt instanceof Date) {
+        const passChangedTimestamp = Math.floor(user.passwordChangedAt.getTime() / 1000);
+        if (passChangedTimestamp > decoded.iat) {
+            return next(new ApiError("Password recently changed. Please log in again",401));
+        }
+    }
+
+    req.body.user = { id: user.id, role: user.role };
+    next();
 });
 
 export const verifyUserMiddleware = (req : Request, res : Response, next : NextFunction) : void => {
@@ -42,10 +41,10 @@ export const verifyUserMiddleware = (req : Request, res : Response, next : NextF
             return next(err);
         }
         
-        if(req.body.user.id === req.params.id) {
+        if(req.body.user.id === req.params.id || req.body.user.role === 'admin') {
             next();
         } else {
-            return next(new ApiError("You are not authorized to access this route", 403));
+            return next(new ApiError("You are not authorized to perform this action", 403));
         }
     });
 }
@@ -56,11 +55,31 @@ export const verifyAdminMiddleware = (req: Request, res: Response, next: NextFun
             return next(err);
         }
         
-        if (req.body.user && req.body.user.role === 'admin') {
+        if (req.body.user.role === 'admin') {
             next();
         } else {
-            return next(new ApiError("You are not admin to access this route", 403));
+            return next(new ApiError("Admin privileges are required to access this route", 403));
         }
     });
 };
+
+export const verifyReporterMiddleware = asyncHandler(async (req : Request, res : Response, next : NextFunction) => {
+    verifyToken(req, res, async (err) => {
+        if (err) {
+            return next(err);
+        }
+
+        const report = await Report.findById(req.params.id);
+        if (!report) {
+            return next(new ApiError("Report not found", 404));
+        }
+
+        if (req.body.user.id === report.createdBy.toString() || req.body.user.role === 'admin') {
+            next();
+        } else {
+            return next(new ApiError("You are not authorized to perform this action", 403));
+        }
+    });
+});
+
 

@@ -2,7 +2,6 @@ import { Request } from 'express';
 import multer from 'multer';
 import path from 'path';
 
-
 const storage = multer.diskStorage({
     destination: (req: Request, file, cb) => {
         cb(null, path.join(__dirname, '../uploads')); 
@@ -26,4 +25,10 @@ export const uploadImage = multer({
     fileFilter: fileFilter,
     limits: { fileSize: 1024 * 1024 * 5 }
 }).single('image');
+
+export const uploadImages = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: { fileSize: 1024 * 1024 * 5 }
+}).array('images', 5);
 
