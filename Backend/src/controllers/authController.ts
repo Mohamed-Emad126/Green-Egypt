@@ -16,24 +16,27 @@ export default class AuthController {
     }
 
 
-    /*
-        * @desc      Register new user
-        * @route     post /api/auth/register
-        * @access    Public
-    */
+    /**
+     * @desc      Register new user
+     * @route     post /api/auth/register
+     * @access    Public
+   */
     createNewUser = asyncHandler(async (req: Request, res: Response) => {
         const { username, email, password }: IAuthInput = req.body;
-        const token = await this.authService.createNewUser({username,email,password});
+        const result = await this.authService.createNewUser({username,email,password});
         res.status(201)
-            .header("x-auth-token", token as string)
-            .json({ message: "User created successfully" });
+            .header("x-auth-token", result.token)
+            .json({ 
+                message: "User created successfully",
+                user_id: result.user_id
+            });
     });
 
-    /*
-        * @desc      Login user
-        * @route     post /api/auth/login
-        * @access    Public
-    */
+    /**
+     * @desc      Login user
+     * @route     post /api/auth/login
+     * @access    Public
+   */
     login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { email, password }: IAuthInput = req.body;
         const loginResult = await this.authService.login({ email, password });
@@ -41,29 +44,32 @@ export default class AuthController {
         if (!loginResult) {
             next(new ApiError("Wrong email or password", 400));
         } else {
-            res.header("x-auth-token", loginResult as string)
-            .json({ message: "Login successfully" });
+            res.header("x-auth-token", loginResult.token)
+            .json({ 
+                message: "Login successfully",
+                user_id: loginResult.user_id
+            });
         }
     });
 
-    /*
-        * @desc      Logout user
-        * @route     POST /api/auth/logout
-        * @access    Private
-    */
+    /**
+     * @desc      Logout user
+     * @route     POST /api/auth/logout
+     * @access    Private
+   */
     logout = asyncHandler(async (req: Request, res: Response) => {
         const token = req.headers.authorization!.split(" ")[1];
         if (token) {
-        await this.authService.logout(token);
+            await this.authService.logout(token);
         }
 
         res.json({ message: "Logged out successfully" });
     });
 
-    /*
-        * @desc      Send reset link
-        * @route     post /api/auth/forgotPassword
-        * @access    Public
+    /**
+     * @desc      Send reset link
+     * @route     post /api/auth/forgotPassword
+     * @access    Public
     */
     forgotPassword= asyncHandler(async (req: Request, res: Response,next: NextFunction) => {
         // get user by email
@@ -83,10 +89,10 @@ export default class AuthController {
         }
     });
 
-    /*
-        * @desc      Reset password
-        * @route     post /api/auth/reset-password/:token
-        * @access    Private
+    /**
+     * @desc      Reset password
+     * @route     post /api/auth/reset-password/:token
+     * @access    Private
     */
     resetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { password } = req.body;
@@ -116,10 +122,10 @@ export default class AuthController {
         }
     });
 
-    /*
-        * @desc      Verify google id token
-        * @route     post /api/auth/verify-google-id-token
-        * @access    Private
+    /**
+     * @desc      Verify google id token
+     * @route     post /api/auth/verify-google-id-token
+     * @access    Private
     */
     verifyGoogleIdToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { idToken } = req.body;

@@ -20,10 +20,10 @@ export default class UserService {
 
     async updateUser(userID : string, updateData : IUpdateInput) {
         return await User.findByIdAndUpdate(
-                                            userID,
-                                            {username : updateData?.username, email : updateData?.email},
-                                            {new : true, runValidators : true}
-                                        );
+            userID,
+            {username : updateData?.username, email : updateData?.email, location : updateData?.location},
+            {new : true, runValidators : true}
+        );
     }
 
     async changeUserPassword(userID : string, newPassword : string) {
@@ -51,10 +51,7 @@ export default class UserService {
 
         const imageUploadResult = await uploadToCloud(imageFile.path);
 
-        user.profilePic = {
-            imageName: imageFile.filename,
-            imageUrl: imageUploadResult.url
-        };
+        user.profilePic = imageUploadResult.url;
         await user.save();
         fs.unlinkSync(imageFile.path);
 
@@ -67,11 +64,9 @@ export default class UserService {
             return false;
         }
 
-        if(user.profilePic && user.profilePic.imageUrl !== '../uploads/userImages/default-user-avatar.png') {
-            user.profilePic = { imageName: 'default-user-avatar.png', 
-                                imageUrl: '../uploads/userImages/default-user-avatar.png' };
+        if(user.profilePic !== '../uploads/userImages/default-user-avatar.png') {
+            user.profilePic = '../uploads/userImages/default-user-avatar.png';
             await user.save();
-            
         }
 
         return true;

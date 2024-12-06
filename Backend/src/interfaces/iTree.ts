@@ -2,25 +2,25 @@ import { Document } from "mongoose";
 
 export interface ITree extends Document {
     species: string;
-    location: string;
+    treeLocation: {
+        latitude: number;
+        longitude: number;
+    };
     healthStatus: 'Healthy' | 'Diseased' | 'Dying';
     problem?: string;
-    image: {
-        imageName: string;
-        imageUrl: string;
-    };
+    image: string;
     deletionReason?: 'Died'| 'Cut Down'| 'False Record';
 }
 
 export interface ITreeInput {
     species?: string;
-    location?: string;
+    treeLocation?: {
+        latitude?: number;
+        longitude?: number;
+    };
     healthStatus?: 'Healthy' | 'Diseased' | 'Dying';
     problem?: string;
-    image?: {
-        imageName: string;
-        imageUrl: string;
-    };
+    image?: string;
 }
 
 export type TDeleteReason = 'Died'| 'Cut Down'| 'False Record'

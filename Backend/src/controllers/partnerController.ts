@@ -51,7 +51,6 @@ export default class PartnerController {
         const { partnerName, startDate, duration, durationUnit, website = "No website", description } : IPartnerInput = req.body;
         await this.partnerService.createNewPartner({ partnerName, startDate, duration, durationUnit, website, description });
         res.status(201).json({ message: "Partner created successfully"});
-        
     });
 
     /**
@@ -61,13 +60,11 @@ export default class PartnerController {
     */
     updatePartner = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const partnerAfterUpdate = await this.partnerService.updatePartner(req.params.id, req.body);
-
         if (partnerAfterUpdate) {
             res.json({ message: "Partner updated successfully"});
         } else {
             return next(new ApiError("Partner not found", 404));
         }
-        
     });
 
     /**
@@ -82,7 +79,6 @@ export default class PartnerController {
         } else {
             return next(new ApiError("Partner not found", 404));
         }
-
     });
 
     /**
@@ -91,6 +87,9 @@ export default class PartnerController {
      * @access    Private(Admin)
     */
     uploadPartnerLogo = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        if(!req.file) {
+            return next(new ApiError("No file uploaded", 400));
+        }
         const result = await this.partnerService.uploadPartnerLogo(req.params.id, req.file);
         if (result) {
             res.json({ message: "Logo updated successfully"});

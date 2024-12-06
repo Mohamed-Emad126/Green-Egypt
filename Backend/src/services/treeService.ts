@@ -61,10 +61,7 @@ export default class TreesService {
 
         const imageUploadResult = await uploadToCloud(imageFile.path);
 
-        tree.image = {
-            imageName: imageFile.filename,
-            imageUrl: imageUploadResult.url
-        };
+        tree.image =  imageUploadResult.url;
         await tree.save();
         fs.unlinkSync(imageFile.path);
         

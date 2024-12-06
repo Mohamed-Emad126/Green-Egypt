@@ -19,6 +19,14 @@ export const updateUserValidator = [
         .optional()
         .isEmail().withMessage('Please enter a valid email address'),
 
+    check('location.latitude')
+        .optional()
+        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+        
+    check('location.longitude')
+        .optional()
+        .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
+
     validatorMiddleware
 ];
 
@@ -63,8 +71,13 @@ export const deleteUserValidator = [
 export const uploadUserImageValidator = [
     check('id').isMongoId().withMessage('Invalid user ID Format'),
 
-    check('image').notEmpty().withMessage('Image is required'),
-    
+    check('image').custom((_, { req }) => {
+            if (!req.file) {
+                throw new Error("Image is required");
+            }
+            return true;
+    }),
+
     validatorMiddleware
 ];
 
