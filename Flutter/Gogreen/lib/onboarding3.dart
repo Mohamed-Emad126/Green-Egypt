@@ -2,25 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gogreen/Splashscreen.dart';
 import 'package:gogreen/onboarding4.dart';
+import 'package:provider/provider.dart';
+import 'package:gogreen/onboarding_state.dart';
 
-class Onboarding3 extends StatefulWidget {
-  @override
-  _Onboarding3State createState() => _Onboarding3State();
-}
-
-class _Onboarding3State extends State<Onboarding3> {
-  final PageController _pageController = PageController();
-  int _currentIndex = 2;
-  bool _isPressed = false;
-
-  void _onPageChanged(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
+class Onboarding3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, designSize: Size(412, 892), minTextAdapt: true);
+
+    final onboardingState = Provider.of<Onboarding_State>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -33,6 +24,7 @@ class _Onboarding3State extends State<Onboarding3> {
             size: 70.w,
           ),
           onPressed: () {
+            onboardingState.updateCurrentPage(1);
             Navigator.pop(context);
           },
         ),
@@ -73,14 +65,7 @@ class _Onboarding3State extends State<Onboarding3> {
                 color: Color(0xFF147351),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(5.0.w),
-              child: Container(
-                width: 100.w,
-                height: 100.h,
-              ),
-            ),
-            SizedBox(height: 30.h),
+            SizedBox(height: 95.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(4, (index) {
@@ -89,7 +74,9 @@ class _Onboarding3State extends State<Onboarding3> {
                   width: 10.w,
                   height: 10.h,
                   decoration: BoxDecoration(
-                    color: _currentIndex == index ? Colors.green[800] : Colors.grey,
+                    color: onboardingState.currentIndex == index
+                        ? Colors.green[800]
+                        : Colors.grey,
                     shape: BoxShape.circle,
                   ),
                 );
@@ -98,29 +85,28 @@ class _Onboarding3State extends State<Onboarding3> {
             SizedBox(height: 10.h),
             Expanded(
               child: PageView.builder(
-                controller: _pageController,
+                controller: onboardingState.pageController,
                 itemCount: 4,
-                onPageChanged: _onPageChanged,
+                onPageChanged: (index) {
+                  onboardingState.updateCurrentPage(index);
+                },
                 itemBuilder: (context, index) {
+                  return Center();
                 },
               ),
             ),
             InkWell(
               onTap: () {
+                onboardingState.updateCurrentPage(3);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Onboarding4()),
                 );
               },
-              onLongPress: () {
-                setState(() {
-                  _isPressed = !_isPressed;
-                });
-              },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: _isPressed ? Colors.green[700] : Colors.green[800],
+                  color: Colors.green[800],
                   borderRadius: BorderRadius.circular(30.r),
                 ),
                 child: Row(

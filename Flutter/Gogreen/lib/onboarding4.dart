@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:gogreen/Splashscreen.dart';
+import 'onboarding_state.dart';
 
 class Onboarding4 extends StatefulWidget {
   @override
@@ -9,17 +11,16 @@ class Onboarding4 extends StatefulWidget {
 
 class _Onboarding4State extends State<Onboarding4> {
   final PageController _pageController = PageController();
-  int _currentIndex = 3;
 
   void _onPageChanged(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+    Provider.of<Onboarding_State>(context, listen: false).updateCurrentPage(index);
   }
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, designSize: Size(360, 690), minTextAdapt: true);
+    ScreenUtil.init(context, designSize: Size(412, 892), minTextAdapt: true);
+
+    final onboardingState = Provider.of<Onboarding_State>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -33,6 +34,7 @@ class _Onboarding4State extends State<Onboarding4> {
             size: 55.w,
           ),
           onPressed: () {
+            onboardingState.updateCurrentPage(2);
             Navigator.pop(context);
           },
         ),
@@ -43,7 +45,7 @@ class _Onboarding4State extends State<Onboarding4> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(height: 60.h),
+              SizedBox(height: 40.h),
               Padding(
                 padding: EdgeInsets.all(5.0.w),
                 child: Container(
@@ -90,16 +92,28 @@ class _Onboarding4State extends State<Onboarding4> {
                     width: 10.w,
                     height: 10.h,
                     decoration: BoxDecoration(
-                      color: _currentIndex == index ? Colors.green[800] : Colors.grey,
+                      color: onboardingState.currentIndex == index
+                          ? Colors.green[800]
+                          : Colors.grey,
                       shape: BoxShape.circle,
                     ),
                   );
                 }),
               ),
               SizedBox(height: 10.h),
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: 4,
+                  onPageChanged: _onPageChanged,
+                  itemBuilder: (context, index) {
+                    return Center();
+                  },
+                ),
+              ),
               InkWell(
                 onTap: () {
-                  if (_currentIndex < 3) {
+                  if (onboardingState.currentIndex < 3) {
                     _pageController.nextPage(
                       duration: Duration(milliseconds: 300),
                       curve: Curves.easeIn,
@@ -127,7 +141,7 @@ class _Onboarding4State extends State<Onboarding4> {
                   ),
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 192.h),
             ],
           ),
         ),

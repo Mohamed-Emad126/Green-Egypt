@@ -3,16 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gogreen/Homepage.dart';
 import 'package:gogreen/selection_provider.dart';
 
-class TreeplantingGuide extends StatefulWidget {
+class HomeTreee extends StatefulWidget {
   @override
-  _TreeplantingGuideState createState() => _TreeplantingGuideState();
+  _HomeTreeeState createState() => _HomeTreeeState();
 }
 
-class _TreeplantingGuideState extends State<TreeplantingGuide> {
+class _HomeTreeeState extends State<HomeTreee> {
   int _selectedIndex = 0;
   bool _isNotificationPressed = false;
-  bool isCareSelected = true;
+  bool isCareSelected = false;
   bool isTreePlantingSelected = false;
+  bool isTreePlantingGuide = true;
   bool isCharitySelected = false;
   bool isEventsSelected = false;
 
@@ -27,11 +28,7 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
       'title': 'Tree Benefits',
       'description': 'Learn about the environmental and health benefits of planting trees.',
     },
-    {
-      'image': 'images/img_6.png',
-      'title': 'What Are the Essential Needs of Tree for Healthy Growth?',
-      'description': 'Tips on watering, fertilizing, and protecting trees from pests.',
-    },
+
   ];
 
   @override
@@ -338,7 +335,7 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
   }
 
 
-  }
+}
 
 
 Widget buildSmallContainer({
