@@ -3,36 +3,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gogreen/Homepage.dart';
 import 'package:gogreen/selection_provider.dart';
 
-class TreeplantingGuide extends StatefulWidget {
+class PlantingLocation extends StatefulWidget {
   @override
-  _TreeplantingGuideState createState() => _TreeplantingGuideState();
+  _PlantingLocationState createState() => _PlantingLocationState();
 }
 
-class _TreeplantingGuideState extends State<TreeplantingGuide> {
+class _PlantingLocationState extends State<PlantingLocation> {
   int _selectedIndex = 0;
   bool _isNotificationPressed = false;
-  bool isCareSelected = true;
+  bool isCareSelected = false;
   bool isTreePlantingSelected = false;
   bool isCharitySelected = false;
   bool isEventsSelected = false;
+  bool PlantingLocationSelected = true;
 
-  final List<Map<String, String>> gridItems = [
-    {
-      'image': 'images/img_2.png',
-      'title': 'How Choose Suitable Tree?',
-      'description': 'Details on selecting a type of tree suitable for the local climate and soil.',
-    },
-    {
-      'image': 'images/img_4.png',
-      'title': 'Tree Benefits',
-      'description': 'Learn about the environmental and health benefits of planting trees.',
-    },
-    {
-      'image': 'images/img_6.png',
-      'title': 'What Are the Essential Needs of Tree for Healthy Growth?',
-      'description': 'Tips on watering, fertilizing, and protecting trees from pests.',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -158,6 +142,22 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
 
                         },
                       ),
+                      buildSmallContainer(
+                        imagePath: 'images/img_1.png',
+                        text: 'Planting Location',
+                        isSelected: PlantingLocationSelected,
+                        onTap: () {
+                          setState(() {
+                            PlantingLocationSelected=true;
+
+                            isTreePlantingSelected = false;
+                            isCareSelected = false;
+                            isCharitySelected = false;
+                            isEventsSelected = false;
+                          });
+
+                        },
+                      ),
                       SizedBox(width: 2.w),
                       buildSmallContainer(
                         imagePath: 'images/img_32.png',
@@ -185,6 +185,7 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
                           });
                         },
                       ),
+
                       SizedBox(width: 2.w),
                       buildSmallContainer(
                         imagePath: 'images/img_1.png',
@@ -192,8 +193,8 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
                         isSelected: isTreePlantingSelected,
                         onTap: () {
                           setState(() {
-                            isTreePlantingSelected = true;
-                            isCareSelected = false;
+                            isTreePlantingSelected = false;
+                            isCareSelected = true;
                             isCharitySelected = false;
                             isEventsSelected = false;
                           });
@@ -201,43 +202,49 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
                             context,
                             MaterialPageRoute(builder: (context) => Homepage()),
                           );
+
                         },
                       ),
                     ],
                   ),
                 ),
               ),
+
               SizedBox(height: 20.h),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 15.w),
-                height: 470.h,
-                width: 376.w,
-                decoration: BoxDecoration(
-                  color: Color(0xFFEBF3F1),
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: BouncingScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 25.h,
-                      crossAxisSpacing: 20.w,
-                      childAspectRatio: 0.5,
+              Stack(
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 15.w),
+                    height: 430.h,
+                    width: 376.w,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFEBF3F1),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
-                    itemCount: gridItems.length,
-                    itemBuilder: (context, index) {
-                      return buildSmallContainerWithTitleDescriptionAndImage(
-                        gridItems[index]['image']!,
-                        gridItems[index]['title']!,
-                        gridItems[index]['description']!,
-                      );
-                    },
                   ),
-                ),
-              ),
+                  Positioned(
+                    top: 10,
+                    bottom: 0,
+                    left: 20,
+                    right: 20,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                      ),
+                      child: Image.asset(
+                        'images/img_37.png',
+                        fit: BoxFit.cover,
+                        height: 420.h,
+                        width: 376.w,
+                      ),
+                    ),
+                  ),
+
+                ],
+              )
+
+
+
+
             ],
           ),
         ),
@@ -338,7 +345,7 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
   }
 
 
-  }
+}
 
 
 Widget buildSmallContainer({

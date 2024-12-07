@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gogreen/TreeplantingGuide.dart';
+import 'package:gogreen/TreePlantingGuide.dart';
 
 class Homepage extends StatefulWidget {
   @override
@@ -10,10 +10,11 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
   bool _isNotificationPressed = false;
-  bool _isCarePressed = false;
+  bool isCareSelected = true;
   bool isTreePlantingSelected = false;
   bool isCharitySelected = false;
   bool isEventsSelected = false;
+  bool isTreeNurserySelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -117,25 +118,28 @@ class _HomepageState extends State<Homepage> {
                 ),
               ),
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 5.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.w),
               child: SingleChildScrollView(
+
                 scrollDirection: Axis.horizontal,
                 child: Row(
+                  mainAxisAlignment:MainAxisAlignment.start,
                   children: [
-                    buildSmallContainer('images/img_1.png', 'Tree Planting Guide', isTreePlantingSelected, () {
-                      setState(() {
-                        isTreePlantingSelected = !isTreePlantingSelected;
-                        isCharitySelected = false;
-                        isEventsSelected = false;
-                      });
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => TreePlantingGuide()),  // انتقل إلى صفحة TreeplantingGuide
-                      );
-                    }),
-                    SizedBox(width: 2.w),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                        });
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => TreeplantingGuide()),
+                        );
+                      },
+                      child: buildSmallContainerWithSelected('images/img_1.png', 'Tree Planting Guide', isTreePlantingSelected),
+                    ),
+
+                    SizedBox(width: 5.w),
                     buildSmallContainer('images/img_32.png', 'Charity', isCharitySelected, () {
                       setState(() {
                         isCharitySelected = !isCharitySelected;
@@ -143,7 +147,7 @@ class _HomepageState extends State<Homepage> {
                         isEventsSelected = false;
                       });
                     }),
-                    SizedBox(width: 2.w),
+                    SizedBox(width: 5.w),
                     buildSmallContainer('images/img_33.png', 'Events', isEventsSelected, () {
                       setState(() {
                         isEventsSelected = !isEventsSelected;
@@ -151,15 +155,28 @@ class _HomepageState extends State<Homepage> {
                         isCharitySelected = false;
                       });
                     }),
-                    SizedBox(width: 2.w),
-                    buildSmallContainerWithSelected('images/img_31.png', 'Care', _isCarePressed, () {
+                    SizedBox(width: 5.w),
+                    buildSmallContainer('images/img_8.png', 'Tree Nursery', isTreeNurserySelected, () {
                       setState(() {
-                        _isCarePressed = !_isCarePressed;
+                        isCharitySelected = !isCharitySelected;
                         isTreePlantingSelected = false;
-                        isCharitySelected = false;
                         isEventsSelected = false;
                       });
                     }),
+                    SizedBox(width: 5.w),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                        });
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Homepage()),
+                        );
+                      },
+                      child: buildSmallContainerWithSelected('images/img_31.png', 'Care', isCareSelected),
+                    ),
+
+
                   ],
                 ),
               ),
@@ -168,8 +185,8 @@ class _HomepageState extends State<Homepage> {
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
-                  margin: EdgeInsets.only(left: 15.w, right: 10.w),
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+                  margin: EdgeInsets.only(left: 10.w, right: 10.w),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 110.h),
                   decoration: BoxDecoration(
                     color: Color(0xFFEBF3F1),
                     borderRadius: BorderRadius.circular(20.r),
@@ -306,80 +323,69 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
+}
 
-  Widget buildSmallContainer(String imagePath, String text, bool isSelected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.only(left: 2.w),
-        decoration: BoxDecoration(
-          color: isSelected ? Color(0xFF147351) : Color(0xFFEBF3F1),
-          borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(
-            color: isSelected ? Color(0xFF147351) : Colors.transparent,
-            width: 2.w,
+Widget buildSmallContainer(String imagePath, String text, bool isSelected, Function onTapAction) {
+  return GestureDetector(
+    onTap: () => onTapAction(),
+    child: Container(
+      padding: EdgeInsets.all(8.w),
+      decoration: BoxDecoration(
+        color: isSelected ? Color(0xFF147351) : Color(0xFFEBF3F1),
+        borderRadius: BorderRadius.circular(10.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            blurRadius: 4,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Text(
+            text,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Color(0xFF147351),
+              fontSize: 19.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(width: 5.w),
+          Image.asset(imagePath, width: 30.w, height: 30.h),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget buildSmallContainerWithSelected(String imagePath, String text, bool isSelected) {
+  return Container(
+    padding: EdgeInsets.all(10.w),
+    decoration: BoxDecoration(
+      color: isSelected ? Color(0xFF147351) : Color(0xFFEBF3F1),
+      borderRadius: BorderRadius.circular(10.r),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.3),
+          blurRadius: 4,
+          offset: Offset(0, 3),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? Colors.black : Color(0xFF147351),
+            fontSize: 19.sp,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IntrinsicWidth(
-              child: Image.asset(
-                imagePath,
-                width: 40.w,
-                height: 40.h,
-              ),
-            ),
-            SizedBox(width: 8.w),
-            Text(
-              text,
-              style: TextStyle(
-                color: Color(0xFF013D26),
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildSmallContainerWithSelected(String imagePath, String text, bool isSelected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.only(left: 2.w),
-        decoration: BoxDecoration(
-          color: isSelected ? Color(0xFF147351) : Color(0xFFEBF3F1),
-          borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(
-            color: isSelected ? Color(0xFF147351) : Colors.transparent,
-            width: 2.w,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IntrinsicWidth(
-              child: Image.asset(
-                imagePath,
-                width: 40.w,
-                height: 40.h,
-              ),
-            ),
-            SizedBox(width: 8.w),
-            Text(
-              text,
-              style: TextStyle(
-                color: Color(0xFF013D26),
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+        SizedBox(width: 5.w),
+        Image.asset(imagePath, width: 30.w, height: 30.h),
+      ],
+    ),
+  );
 }

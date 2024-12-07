@@ -30,7 +30,7 @@ class Signingup extends StatelessWidget {
                     'images/img_11.png',
                     width: 150.w,
                     height: 150.h,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                   SizedBox(height: 20.h),
                 ],

@@ -2,25 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gogreen/Splashscreen.dart';
 import 'package:gogreen/onboarding3.dart';
+import 'package:provider/provider.dart';
+import 'package:gogreen/onboarding_state.dart';
 
-class Onboarding2 extends StatefulWidget {
-  @override
-  _Onboarding2State createState() => _Onboarding2State();
-}
-
-class _Onboarding2State extends State<Onboarding2> {
-  final PageController _pageController = PageController();
-  int _currentIndex = 1;
-  bool _isPressed = false;
-
-  void _onPageChanged(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
+class Onboarding2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, designSize: Size(412, 892), minTextAdapt: true);
+
+    final onboardingState = Provider.of<Onboarding_State>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -33,6 +24,7 @@ class _Onboarding2State extends State<Onboarding2> {
             size: 70,
           ),
           onPressed: () {
+            onboardingState.updateCurrentPage(0);
             Navigator.pop(context);
           },
         ),
@@ -80,7 +72,9 @@ class _Onboarding2State extends State<Onboarding2> {
                   width: 10.w,
                   height: 10.h,
                   decoration: BoxDecoration(
-                    color: _currentIndex == index ? Colors.green[800] : Colors.grey,
+                    color: onboardingState.currentIndex == index
+                        ? Colors.green[800]
+                        : Colors.grey,
                     shape: BoxShape.circle,
                   ),
                 );
@@ -89,29 +83,28 @@ class _Onboarding2State extends State<Onboarding2> {
             SizedBox(height: 10.h),
             Expanded(
               child: PageView.builder(
-                controller: _pageController,
+                controller: onboardingState.pageController,
                 itemCount: 4,
-                onPageChanged: _onPageChanged,
+                onPageChanged: (index) {
+                  onboardingState.updateCurrentPage(index);
+                },
                 itemBuilder: (context, index) {
+                  return SizedBox();
                 },
               ),
             ),
             InkWell(
               onTap: () {
+                onboardingState.updateCurrentPage(2);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Onboarding3()),
                 );
               },
-              onLongPress: () {
-                setState(() {
-                  _isPressed = !_isPressed;
-                });
-              },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: _isPressed ? Colors.green[700] : Colors.green[800],
+                  color: Colors.green[800],
                   borderRadius: BorderRadius.circular(30.r),
                 ),
                 child: Row(

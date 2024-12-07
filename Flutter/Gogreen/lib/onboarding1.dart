@@ -2,25 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gogreen/Onboarding2.dart';
 import 'package:gogreen/Splashscreen.dart';
+import 'package:provider/provider.dart';
+import 'package:gogreen/onboarding_state.dart';
 
-class Onboarding1 extends StatefulWidget {
-  @override
-  _Onboarding1State createState() => _Onboarding1State();
-}
-
-class _Onboarding1State extends State<Onboarding1> {
-  final PageController _pageController = PageController();
-  int _currentIndex = 0;
-  bool _isPressed = false;
-
-  void _onPageChanged(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
+class Onboarding1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final onboardingState = Provider.of<Onboarding_State>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -59,7 +48,9 @@ class _Onboarding1State extends State<Onboarding1> {
                   width: 10.w,
                   height: 10.h,
                   decoration: BoxDecoration(
-                    color: _currentIndex == index ? Colors.green[800] : Colors.grey,
+                    color: onboardingState.currentIndex == index
+                        ? Colors.green[800]
+                        : Colors.grey,
                     shape: BoxShape.circle,
                   ),
                 );
@@ -68,20 +59,16 @@ class _Onboarding1State extends State<Onboarding1> {
             SizedBox(height: 50.h),
             InkWell(
               onTap: () {
+                onboardingState.updateCurrentPage(1);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Onboarding2()),
                 );
               },
-              onLongPress: () {
-                setState(() {
-                  _isPressed = !_isPressed;
-                });
-              },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: _isPressed ? Colors.green[700] : Colors.green[800],
+                  color: Colors.green[800],
                   borderRadius: BorderRadius.circular(30.r),
                 ),
                 child: Row(
