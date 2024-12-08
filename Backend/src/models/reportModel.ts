@@ -9,21 +9,17 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        maxLength: [600, 'Description cannot be more than 600 characters']
     },
     location: {
+        latitude: Number,
+        longitude: Number
+    },
+    images: [{
         type: String,
-        required: true
-    },
-    image: {
-        type: String,
-        required: true
-    },
-    reportDate: {
-        type: Date,
-        default: Date.now
-    },
-    reportedByUserID: {
+    }],
+    createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -32,9 +28,41 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Tree',
         required: true
-    }
-});
+    },
+    upVotes: { 
+        type: Number,
+        default: 0, 
+        min: [0, 'Up votes cannot be negative']
+    },
+    upVoters: [{ 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    status: {
+        type: String,
+        default: 'Pending',
+        enum: ['Pending', 'In Progress', 'Resolved', 'Rejected'],
+        required: true
+    },
+    modificationHistory: [{
+        oldData: {
+            type: Map,
+            of: Schema.Types.Mixed,
+        },
+        updatedAt: { 
+            type: Date, 
+            default: Date.now 
+        }
+    }],
+    responses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Response'
+    }],
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Comment'
+    }]
+}, { timestamps: true });
 
 const Report: Model<IReport> = mongoose.model<IReport>('Report', ReportSchema);
 export default Report;
-

@@ -35,14 +35,8 @@ const PartnerSchema : Schema = new Schema({
         maxLength: [700, 'Description cannot be more than 700 characters'],
     },
     logo: {
-        imageName: {
-            type: String,
-            default: 'not-found-image.png'
-        },
-        imageUrl: {
-            type: String,
-            default: '../uploads/not-found-image.png'
-        }
+        type: String,
+        default: '../uploads/not-found-image.png'
     },
     hasExpired: {
         type: Boolean,

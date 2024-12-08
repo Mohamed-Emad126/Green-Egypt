@@ -58,10 +58,7 @@ export default class PartnerService {
 
         const imageUploadResult = await uploadToCloud(imageFile.path);
 
-        partner.logo = {
-            imageName: imageFile.filename,
-            imageUrl: imageUploadResult.url
-        };
+        partner.logo = imageUploadResult.url;
         await partner.save();
         fs.unlinkSync(imageFile.path);
 

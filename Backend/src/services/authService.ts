@@ -1,4 +1,5 @@
 import { IAuthInput } from "../interfaces/iUser";
+import { IToken } from "../interfaces/iToken";
 import User from "../models/userModel";
 import Token from "../models/tokenModel";
 import bcrypt from "bcryptjs";
@@ -10,7 +11,7 @@ import { OAuth2Client } from "google-auth-library";
 
 export default class AuthService {
 
-    async createNewUser(newUser : IAuthInput) : Promise<string | boolean> {
+    async createNewUser(newUser : IAuthInput): Promise<{ token: string; user_id: string }> {
         const user = new User({
             username: newUser.username, 
             email: newUser.email, 
@@ -18,19 +19,18 @@ export default class AuthService {
         });
         await user.save();
 
-        const token = user.generateToken();
-        return token;
-        
+        const token = await user.generateToken();
+        return {token, user_id : user.id};
     }
 
-    async login(userData : IAuthInput): Promise<string | boolean> {
+    async login(userData : IAuthInput): Promise<{ token: string; user_id: string } | false> {
         const findUser = await User.findOne({email: userData.email});
         if(!findUser || !(await bcrypt.compare(userData.password, findUser.password))) {
             return false;
         } 
         
-        const token = findUser.generateToken();
-        return token;
+        const token = await findUser.generateToken();
+        return {token, user_id : findUser.id};
     }
 
     async logout(token: string): Promise<void> {

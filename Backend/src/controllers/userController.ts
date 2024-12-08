@@ -97,6 +97,9 @@ export default class UserController {
      * @access    Private
     */
     uploadUserPicture = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        if(!req.file) {
+            return next(new ApiError("No file uploaded", 400));
+        }
         const result = await this.userService.uploadUserPicture(req.params.id, req.file);
         if (result) {
             res.json({ message: "Picture updated successfully"});

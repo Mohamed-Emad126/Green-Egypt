@@ -49,8 +49,8 @@ export default class TreeController {
      * @access    Public
     */
     LocateTree = asyncHandler(async (req: Request, res: Response) => {
-        const { species, location, healthStatus, image }: ITreeInput = req.body;
-        const createdTree = await this.treeService.LocateTree({ species , location, healthStatus, image });
+        const { species, treeLocation, healthStatus }: ITreeInput = req.body;
+        const createdTree = await this.treeService.LocateTree({ species , treeLocation, healthStatus });
         if (createdTree) {
             res.status(201).json({ message: 'Tree located successfully' });
         } else {
@@ -79,6 +79,9 @@ export default class TreeController {
      * @access    Public
     */
     uploadTreePicture = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        if(!req.file) {
+            return next(new ApiError("No file uploaded", 400));
+        }
         const result = await this.treeService.uploadTreePicture(req.params.id, req.file);
         if (result) {
             res.json({ message: "Picture updated successfully"});
@@ -99,7 +102,6 @@ export default class TreeController {
         } else {
             return next(new ApiError("Tree not found", 404));
         }
-
     });
 
 }

@@ -10,14 +10,14 @@ export default class CouponController {
         this.getCoupons = this.getCoupons.bind(this);
         this.getCouponById = this.getCouponById.bind(this);
         this.createNewCoupons = this.createNewCoupons.bind(this);
-        // this.updateCoupon = this.updateCoupon.bind(this);
-        // this.deleteCoupon = this.deleteCoupon.bind(this);
+        this.updateCoupon = this.updateCoupon.bind(this);
+        this.deleteCoupon = this.deleteCoupon.bind(this);
     }
 
     /**
      * @desc      Get all coupons
      * @route     GET /api/coupons
-     * @access    private(Admin)
+     * @access    Private(Admin)
     */
     getCoupons = asyncHandler(async (req: Request, res: Response) => {
         const page: number = req.query.page ? +req.query.page : 1;
@@ -30,7 +30,7 @@ export default class CouponController {
     /**
      * @desc      Get Coupon by id
      * @route     GET /api/Coupons/:id
-     * @access    private(Admin)
+     * @access    Private(Admin)
     */
     getCouponById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const Coupon = await this.CouponService.getCouponById(req.params.id);

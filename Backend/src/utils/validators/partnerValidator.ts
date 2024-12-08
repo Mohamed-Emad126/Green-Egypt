@@ -45,36 +45,36 @@ export const createNewPartnerValidator = [
 
 export const updatePartnerValidator = [
     check('partnerName')
-    .optional()
-    .isLength({min : 3}).withMessage('Partner name must be at least 3 characters long')
-    .isLength({max : 35}).withMessage('Partner name must be at most 35 characters long')
-    .custom(async (partnerName) => {
-        const partner = await Partner.findOne({partnerName});
-        if (partner) {
-            throw new Error('This partner already exists');
-        }
-        return true;
-    }),
+        .optional()
+        .isLength({min : 3}).withMessage('Partner name must be at least 3 characters long')
+        .isLength({max : 35}).withMessage('Partner name must be at most 35 characters long')
+        .custom(async (partnerName) => {
+            const partner = await Partner.findOne({partnerName});
+            if (partner) {
+                throw new Error('This partner already exists');
+            }
+            return true;
+        }),
 
     check('startDate')
-    .optional()
-    .isDate().withMessage('Start date must be a valid date'),
+        .optional()
+        .isDate().withMessage('Start date must be a valid date'),
 
     check('duration')
-    .optional()
-    .isNumeric().withMessage('Duration must be a number'),
+        .optional()
+        .isNumeric().withMessage('Duration must be a number'),
 
     check('durationUnit')
-    .optional()
-    .isIn(['days', 'months', 'years', 'one-time']).withMessage('Invalid duration unit'),
+        .optional()
+        .isIn(['days', 'months', 'years', 'one-time']).withMessage('Invalid duration unit'),
 
     check('website')
-    .optional()
-    .isURL().withMessage('Invalid website URL'),
+        .optional()
+        .isURL().withMessage('Invalid website URL'),
 
     check('description')
-    .optional()
-    .isLength({max : 700}).withMessage('Description must be at most 700 characters long'),
+        .optional()
+        .isLength({max : 700}).withMessage('Description must be at most 700 characters long'),
     
     validatorMiddleware
 ]
@@ -87,7 +87,12 @@ export const deletePartnerValidator = [
 export const uploadPartnerLogoValidator = [
     check('id').isMongoId().withMessage('Invalid partner ID Format'),
 
-    check('image').notEmpty().withMessage('Image is required'),
-    
+    check('image').custom((_, { req }) => {
+        if (!req.file) {
+            throw new Error("Image is required");
+        }
+        return true;
+    }),
+
     validatorMiddleware
 ]
