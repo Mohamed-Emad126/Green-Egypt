@@ -6,10 +6,7 @@ import 'package:gogreen/Home_treee.dart';
 import 'package:gogreen/Loginpage.dart';
 import 'package:gogreen/Registerpage.dart';
 import 'package:gogreen/homepage_provider.dart';
-import 'package:gogreen/onboarding1.dart';
-import 'package:gogreen/onboarding2.dart';
-import 'package:gogreen/onboarding3.dart';
-import 'package:gogreen/onboarding4.dart';
+import 'package:gogreen/Onboarding_pages.dart';
 import 'package:gogreen/Splashscreen.dart';
 import 'package:gogreen/Signingoogle.dart';
 import 'package:gogreen/Signingup.dart';
@@ -52,7 +49,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.green,
           ),
-          home:PlantingLocation()
+          home:OnboardingPages()
         );
       },
     );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gogreen/Home_treee.dart';
 import 'package:gogreen/Homepage.dart';
+import 'package:gogreen/TreeplantingGuide.dart';
 import 'package:gogreen/selection_provider.dart';
 
 class HomeEvent extends StatefulWidget {
@@ -123,77 +125,71 @@ class _HomeEventState extends State<HomeEvent> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 2.w),
                 child: SingleChildScrollView(
+
                   scrollDirection: Axis.horizontal,
                   child: Row(
+                    mainAxisAlignment:MainAxisAlignment.start,
                     children: [
-                      buildSmallContainer(
-                        imagePath: 'images/img_1.png',
-                        text: 'Tree Planting Guide',
-                        isSelected: isTreePlantingSelected,
+                      GestureDetector(
                         onTap: () {
                           setState(() {
-                            isTreePlantingSelected = true;
-                            isCareSelected = false;
-                            isCharitySelected = false;
-                            isEventsSelected = false;
                           });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => TreeplantingGuide()),
+                          );
                         },
+                        child: buildSmallContainerWithSelected('images/img_1.png', 'Tree Planting Guide', isTreePlantingSelected),
                       ),
-                      SizedBox(width: 2.w),
-                      buildSmallContainer(
-                        imagePath: 'images/img_32.png',
-                        text: 'Charity',
-                        isSelected: isCharitySelected,
+
+
+                      SizedBox(width: 5.w),
+                      GestureDetector(
                         onTap: () {
                           setState(() {
-                            isCharitySelected = true;
-                            isTreePlantingSelected = false;
-                            isCareSelected = false;
-                            isEventsSelected = false;
                           });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomeEvent()),
+                          );
                         },
+                        child: buildSmallContainerWithSelected('images/img_33.png', 'Events', !isTreePlantingSelected),
                       ),
-                      SizedBox(width: 2.w),
-                      buildSmallContainer(
-                        imagePath: 'images/img_33.png',
-                        text: 'Events',
-                        isSelected: isEventsSelected,
+                      SizedBox(width: 5.w), GestureDetector(
                         onTap: () {
                           setState(() {
-                            isEventsSelected = true;
-                            isTreePlantingSelected = false;
-                            isCharitySelected = false;
                           });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomeTreee()),
+                          );
                         },
+                        child: buildSmallContainerWithSelected('images/img_8.png', 'Tree Nursery', isTreePlantingSelected),
                       ),
-                      SizedBox(width: 2.w),
-                      buildSmallContainer(
-                        imagePath: 'images/img_1.png',
-                        text: 'Care',
-                        isSelected: isTreePlantingSelected,
+                      SizedBox(width: 5.w),
+                      GestureDetector(
                         onTap: () {
                           setState(() {
-                            isTreePlantingSelected = true;
-                            isCareSelected = false;
-                            isCharitySelected = false;
-                            isEventsSelected = false;
                           });
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => Homepage()),
                           );
                         },
+                        child: buildSmallContainerWithSelected('images/img_31.png', 'Care', isCareSelected),
                       ),
+
+
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 10.h),
               Stack(
                 children: [
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 15.w),
-                    height: 430.h,
+                    height: 400.h,
                     width: 376.w,
                     decoration: BoxDecoration(
                       color: Color(0xFFEBF3F1),
@@ -201,7 +197,7 @@ class _HomeEventState extends State<HomeEvent> {
                     ),
                   ),
                   Positioned(
-                    top: 40,
+                    top: 20,
                     bottom: 0,
                     left: 20,
                     right: 20,
@@ -213,7 +209,7 @@ class _HomeEventState extends State<HomeEvent> {
                       child: Image.asset(
                         'images/img_36.png',
                         fit: BoxFit.cover,
-                        height: 400.h,
+                        height: 380.h,
                         width: 376.w,
                       ),
                     ),
@@ -350,14 +346,15 @@ class _HomeEventState extends State<HomeEvent> {
                     color: Color(0xFF147351).withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 5,
+                    offset: Offset(0, 3),
                   ),
                 ],
               ),
               child: Center(
                 child: Image.asset(
-                  'images/img_26.png',
-                  width: 24.w,
-                  height: 24.h,
+                  'images/img_23.png',
+                  width: 80.w,
+                  height: 80.h,
                 ),
               ),
             ),
@@ -370,7 +367,20 @@ class _HomeEventState extends State<HomeEvent> {
                 BlendMode.srcIn,
               ),
               child: Image.asset(
-                'images/img_31.png',
+                'images/img_26.png',
+                width: 24.w,
+              ),
+            ),
+            label: 'Rewards',
+          ),
+          BottomNavigationBarItem(
+            icon: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                _selectedIndex == 4 ? Color(0xFF147351) : Colors.black,
+                BlendMode.srcIn,
+              ),
+              child: Image.asset(
+                'images/img_27.png',
                 width: 24.w,
               ),
             ),
@@ -380,6 +390,7 @@ class _HomeEventState extends State<HomeEvent> {
       ),
     );
   }
+}
 
   Widget buildSmallContainer({
     required String imagePath,
@@ -390,7 +401,7 @@ class _HomeEventState extends State<HomeEvent> {
     return GestureDetector(
       onTap: () => onTap(),
       child: Container(
-        width: 160.w,
+        width: 60.w,
         height: 125.h,
         decoration: BoxDecoration(
           color: isSelected ? Color(0xFF147351) : Colors.white,
@@ -405,8 +416,8 @@ class _HomeEventState extends State<HomeEvent> {
           children: [
             Image.asset(
               imagePath,
-              width: 50.w,
-              height: 50.h,
+              width: 24.w,
+              height: 24.h,
               color: isSelected ? Colors.white : Colors.black,
             ),
             SizedBox(height: 10.h),
@@ -422,4 +433,36 @@ class _HomeEventState extends State<HomeEvent> {
       ),
     );
   }
+
+
+Widget buildSmallContainerWithSelected(String imagePath, String text, bool isSelected) {
+  return Container(
+    padding: EdgeInsets.all(10.w),
+    decoration: BoxDecoration(
+      color: isSelected ? Color(0xFF147351) : Color(0xFFEBF3F1),
+      borderRadius: BorderRadius.circular(10.r),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.3),
+          blurRadius: 4,
+          offset: Offset(0, 3),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? Colors.black : Color(0xFF147351),
+            fontSize: 19.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(width: 5.w),
+        Image.asset(imagePath, width: 30.w, height: 30.h),
+      ],
+    ),
+  );
 }
+

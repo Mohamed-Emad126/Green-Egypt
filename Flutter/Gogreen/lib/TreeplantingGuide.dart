@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gogreen/Home_event.dart';
+import 'package:gogreen/Home_treee.dart';
 import 'package:gogreen/Homepage.dart';
 import 'package:gogreen/selection_provider.dart';
 
@@ -11,10 +13,11 @@ class TreeplantingGuide extends StatefulWidget {
 class _TreeplantingGuideState extends State<TreeplantingGuide> {
   int _selectedIndex = 0;
   bool _isNotificationPressed = false;
-  bool isCareSelected = true;
-  bool isTreePlantingSelected = false;
+  bool isCareSelected = false;
+  bool isTreePlantingSelected = true;
   bool isCharitySelected = false;
   bool isEventsSelected = false;
+  bool isTreeNurserySelected =false;
 
   final List<Map<String, String>> gridItems = [
     {
@@ -158,42 +161,40 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
 
                         },
                       ),
+
                       SizedBox(width: 2.w),
-                      buildSmallContainer(
-                        imagePath: 'images/img_32.png',
-                        text: 'Charity',
-                        isSelected: isCharitySelected,
+                      GestureDetector(
                         onTap: () {
                           setState(() {
-                            isCharitySelected = true;
-                            isTreePlantingSelected = false;
-                            isCareSelected = false;
-                            isEventsSelected = false;
                           });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomeEvent()),
+                          );
                         },
+                        child: buildSmallContainerWithSelected('images/img_33.png', 'Event', isEventsSelected),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomeTreee()),
+                          );
+                        },
+                        child: buildSmallContainerWithSelected('images/img_8.png', 'Tree Nursery', isTreeNurserySelected),
                       ),
                       SizedBox(width: 2.w),
                       buildSmallContainer(
-                        imagePath: 'images/img_33.png',
-                        text: 'Events',
-                        isSelected: isEventsSelected,
-                        onTap: () {
-                          setState(() {
-                            isEventsSelected = true;
-                            isTreePlantingSelected = false;
-                            isCharitySelected = false;
-                          });
-                        },
-                      ),
-                      SizedBox(width: 2.w),
-                      buildSmallContainer(
-                        imagePath: 'images/img_1.png',
+                        imagePath: 'images/img_20.png',
                         text: 'Care',
-                        isSelected: isTreePlantingSelected,
+                        isSelected: isCareSelected,
                         onTap: () {
                           setState(() {
-                            isTreePlantingSelected = true;
-                            isCareSelected = false;
+                            isTreePlantingSelected = false;
+                            isTreeNurserySelected=false;
+                            isCareSelected = true;
                             isCharitySelected = false;
                             isEventsSelected = false;
                           });
@@ -403,6 +404,38 @@ Widget buildSmallContainerWithTitleDescriptionAndImage(String imagePath, String 
           ),
         ],
       ),
+    ),
+  );
+}
+
+
+Widget buildSmallContainerWithSelected(String imagePath, String text, bool isSelected) {
+  return Container(
+    padding: EdgeInsets.all(10.w),
+    decoration: BoxDecoration(
+      color: isSelected ? Color(0xFF147351) : Color(0xFFEBF3F1),
+      borderRadius: BorderRadius.circular(10.r),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.3),
+          blurRadius: 4,
+          offset: Offset(0, 3),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? Colors.black : Color(0xFF147351),
+            fontSize: 19.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(width: 5.w),
+        Image.asset(imagePath, width: 30.w, height: 30.h),
+      ],
     ),
   );
 }
