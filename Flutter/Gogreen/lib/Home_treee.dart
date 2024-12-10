@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gogreen/Home_event.dart';
-import 'package:gogreen/Home_treee.dart';
 import 'package:gogreen/Homepage.dart';
+import 'package:gogreen/Planting_location.dart';
+import 'package:gogreen/TreePlantingGuide.dart';
 import 'package:gogreen/selection_provider.dart';
 
-class TreeplantingGuide extends StatefulWidget {
+class HomeTreee extends StatefulWidget {
   @override
-  _TreeplantingGuideState createState() => _TreeplantingGuideState();
+  _HomeTreeeState createState() => _HomeTreeeState();
 }
 
-class _TreeplantingGuideState extends State<TreeplantingGuide> {
+class _HomeTreeeState extends State<HomeTreee> {
   int _selectedIndex = 0;
   bool _isNotificationPressed = false;
   bool isCareSelected = false;
-  bool isTreePlantingSelected = true;
+  bool isTreePlantingSelected = false;
+  bool isTreePlantingGuide = false;
   bool isCharitySelected = false;
   bool isEventsSelected = false;
-  bool isTreeNurserySelected =false;
-
+  bool isTreeNurserySelected=true;
   final List<Map<String, String>> gridItems = [
     {
       'image': 'images/img_2.png',
@@ -30,11 +31,7 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
       'title': 'Tree Benefits',
       'description': 'Learn about the environmental and health benefits of planting trees.',
     },
-    {
-      'image': 'images/img_6.png',
-      'title': 'What Are the Essential Needs of Tree for Healthy Growth?',
-      'description': 'Tips on watering, fertilizing, and protecting trees from pests.',
-    },
+
   ];
 
   @override
@@ -144,25 +141,25 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 2.w),
                 child: SingleChildScrollView(
+
                   scrollDirection: Axis.horizontal,
                   child: Row(
+                    mainAxisAlignment:MainAxisAlignment.start,
                     children: [
-                      buildSmallContainer(
-                        imagePath: 'images/img_1.png',
-                        text: 'Tree Planting Guide',
-                        isSelected: isTreePlantingSelected,
+                      GestureDetector(
                         onTap: () {
                           setState(() {
-                            isTreePlantingSelected = true;
-                            isCareSelected = false;
-                            isCharitySelected = false;
-                            isEventsSelected = false;
                           });
-
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => TreeplantingGuide()),
+                          );
                         },
+                        child: buildSmallContainerWithSelected('images/img_1.png', 'Tree Planting Guide', isTreePlantingSelected),
                       ),
 
-                      SizedBox(width: 2.w),
+
+                      SizedBox(width: 5.w),
                       GestureDetector(
                         onTap: () {
                           setState(() {
@@ -172,9 +169,9 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
                             MaterialPageRoute(builder: (context) => HomeEvent()),
                           );
                         },
-                        child: buildSmallContainerWithSelected('images/img_33.png', 'Event', isEventsSelected),
+                        child: buildSmallContainerWithSelected('images/img_33.png', 'Events', isEventsSelected),
                       ),
-                      GestureDetector(
+                      SizedBox(width: 5.w), GestureDetector(
                         onTap: () {
                           setState(() {
                           });
@@ -185,25 +182,20 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
                         },
                         child: buildSmallContainerWithSelected('images/img_8.png', 'Tree Nursery', isTreeNurserySelected),
                       ),
-                      SizedBox(width: 2.w),
-                      buildSmallContainer(
-                        imagePath: 'images/img_20.png',
-                        text: 'Care',
-                        isSelected: isCareSelected,
+                      SizedBox(width: 5.w),
+                      GestureDetector(
                         onTap: () {
                           setState(() {
-                            isTreePlantingSelected = false;
-                            isTreeNurserySelected=false;
-                            isCareSelected = true;
-                            isCharitySelected = false;
-                            isEventsSelected = false;
                           });
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => Homepage()),
                           );
                         },
+                        child: buildSmallContainerWithSelected('images/img_31.png', 'Care', isCareSelected),
                       ),
+
+
                     ],
                   ),
                 ),
@@ -339,7 +331,7 @@ class _TreeplantingGuideState extends State<TreeplantingGuide> {
   }
 
 
-  }
+}
 
 
 Widget buildSmallContainer({
