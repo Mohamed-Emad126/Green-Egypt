@@ -1,443 +1,123 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 import 'package:gogreen/Splashscreen.dart';
-import 'package:gogreen/onboarding_state.dart';
+import 'package:provider/provider.dart';
+import 'onboarding_state.dart';
 
-class Onboarding1 extends StatelessWidget {
+class OnboardingPages extends StatelessWidget {
+  final PageController _controller = PageController();
+
   @override
   Widget build(BuildContext context) {
-    final onboardingState = Provider.of<Onboarding_State>(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: EdgeInsets.all(5.0.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 80.h),
-            Padding(
-              padding: EdgeInsets.all(5.0.w),
-              child: Container(
-                width: 323.w,
-                height: 321.h,
-                child: Image.asset(
-                  'images/img.png',
-                  fit: BoxFit.contain,
-                  alignment: Alignment.center,
-                ),
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              'Join us in making Egypt greener!',
-              style: TextStyle(
-                fontSize: 23.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.green[800],
-              ),
-            ),
-            SizedBox(height: 120.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(4, (index) {
-                return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 5.w),
-                  width: 10.w,
-                  height: 10.h,
-                  decoration: BoxDecoration(
-                    color: onboardingState.currentIndex == index
-                        ? Colors.green[800]
-                        : Colors.grey,
-                    shape: BoxShape.circle,
-                  ),
-                );
-              }),
-            ),
-            SizedBox(height: 50.h),
-            InkWell(
-              onTap: () {
-
-
-                onboardingState.updateCurrentPage(1);
-
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  //  color: Colors.green[800],
-                  borderRadius: BorderRadius.circular(30.r),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(width: 8.w),
-                    Text(
-                      'Next',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20.h),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Splashscreen()),
-                );
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 10.h),
-                decoration: BoxDecoration(),
-                child: Text(
-                  'Skip',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class Onboarding2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    ScreenUtil.init(context, designSize: Size(412, 892), minTextAdapt: true);
-
-    final onboardingState = Provider.of<Onboarding_State>(context);
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-
-      body: Padding(
-        padding: EdgeInsets.all(5.0.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 80.h),
-            Padding(
-              padding: EdgeInsets.all(5.0.w),
-              child: Container(
-                width: 323.w,
-                height: 249.h,
-                child: Image.asset(
-                  'images/img_3.png',
-                  fit: BoxFit.contain,
-                  alignment: Alignment.center,
-                ),
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              'Learn how to plant and care for trees',
-              style: TextStyle(
-                fontSize: 22.sp,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF147351),
-              ),
-            ),
-            SizedBox(height: 200.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(4, (index) {
-                return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 5.w),
-                  width: 10.w,
-                  height: 10.h,
-                  decoration: BoxDecoration(
-                    color: onboardingState.currentIndex == index
-                        ? Colors.green[800]
-                        : Colors.grey,
-                    shape: BoxShape.circle,
-                  ),
-                );
-              }),
-            ),
-            SizedBox(height: 10.h),
-            InkWell(
-              onTap: () {
-                onboardingState.updateCurrentPage(2);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  //  color: Colors.green[800],
-                  borderRadius: BorderRadius.circular(30.r),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(width: 8.w),
-                    Text(
-                      'Next',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 30.h),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Splashscreen()),
-                );
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 10.h),
-                decoration: BoxDecoration(),
-                child: Text(
-                  'Skip',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class Onboarding3 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    ScreenUtil.init(context, designSize: Size(412, 892), minTextAdapt: true);
-
-    final onboardingState = Provider.of<Onboarding_State>(context);
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-
-      body: Padding(
-        padding: EdgeInsets.all(5.0.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 80.h),
-            Padding(
-              padding: EdgeInsets.all(5.0.w),
-              child: Container(
-                width: 247.w,
-                height: 247.h,
-                child: Image.asset(
-                  'images/img_5.png',
-                  fit: BoxFit.contain,
-                  alignment: Alignment.center,
-                ),
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              'Mark trees that need care or ',
-              style: TextStyle(
-                fontSize: 22.sp,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF147351),
-              ),
-            ),
-            SizedBox(height: 5.h),
-            Text(
-              'join community events',
-              style: TextStyle(
-                fontSize: 22.sp,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF147351),
-              ),
-            ),
-            SizedBox(height: 150.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(4, (index) {
-                return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 5.w),
-                  width: 10.w,
-                  height: 10.h,
-                  decoration: BoxDecoration(
-                    color: onboardingState.currentIndex == index
-                        ? Colors.green[800]
-                        : Colors.grey,
-                    shape: BoxShape.circle,
-                  ),
-                );
-              }),
-            ),
-            SizedBox(height: 10.h),
-            InkWell(
-              onTap: () {
-                onboardingState.updateCurrentPage(3);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  // color: Colors.green[800],
-                  borderRadius: BorderRadius.circular(30.r),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(width: 8.w),
-                    Text(
-                      'Next',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20.h),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Splashscreen()),
-                );
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 10.h),
-                decoration: BoxDecoration(),
-                child: Text(
-                  'Skip',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class Onboarding4 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    ScreenUtil.init(context, designSize: Size(412, 892), minTextAdapt: true);
-
-    final onboardingState = Provider.of<Onboarding_State>(context);
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      //
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(5.0.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+      body: Consumer<OnboardingState>(
+        builder: (context, onboardingState, child) {
+          return Column(
             children: [
-              SizedBox(height: 80.h),
-              Padding(
-                padding: EdgeInsets.all(5.0.w),
-                child: Container(
-                  width: 193.w,
-                  height: 247.h,
-                  child: Image.asset(
-                    'images/img_7.png',
-                    fit: BoxFit.contain,
-                    alignment: Alignment.center,
-                  ),
+              SizedBox(height: 80),
+              Container(
+                height: 420,
+                width: double.infinity,
+                child: PageView(
+                  controller: _controller,
+                  onPageChanged: (int page) {
+                    onboardingState.setPage(page);
+                  },
+                  children: [
+                    _buildPage('images/img.png', 'Join us in making Egypt greener!'),
+                    _buildPage('images/img_3.png', 'Learn how to plant and care for trees'),
+                    _buildPage('images/img_5.png', 'Mark trees that need care or join community events.'),
+                    _buildPage('images/img_7.png', 'Earn points and join challenges to promote greening'),
+                  ],
                 ),
               ),
-              SizedBox(height: 20.h),
-              Text(
-                'Earn points and join challenges to',
-                style: TextStyle(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF147351),
-                ),
-              ),
-              SizedBox(height: 5.h),
-              Text(
-                'promote greening',
-                style: TextStyle(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF147351),
-                ),
-              ),
-              SizedBox(height: 150.h),
+              SizedBox(height: 70),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(4, (index) {
-                  return Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5.w),
-                    width: 10.w,
-                    height: 10.h,
+                  return AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    height: 10,
+                    width: onboardingState.currentPage == index ? 20 : 10,
+                    margin: EdgeInsets.symmetric(horizontal: 5),
                     decoration: BoxDecoration(
-                      color: onboardingState.currentIndex == index
-                          ? Colors.green[800]
-                          : Colors.grey,
-                      shape: BoxShape.circle,
+                      color: onboardingState.currentPage == index ? Colors.green[800] : Colors.grey,
+                      borderRadius: BorderRadius.circular(5),
                     ),
                   );
                 }),
               ),
-              SizedBox(height: 70.h),
-              InkWell(
-                onTap: () {
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (onboardingState.currentPage == 3) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Splashscreen()),
+                    );
+                  } else {
+                    _controller.nextPage(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green[800],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                ),
+                child: Text(
+                  onboardingState.currentPage == 3 ? 'Get Started' : 'Next',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+              SizedBox(height: 10),
+              TextButton(
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Splashscreen()),
                   );
                 },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 12.h),
-                  decoration: BoxDecoration(
-                    color: Colors.green[800],
-                    borderRadius: BorderRadius.circular(30.r),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(width: 8.w),
-                      Text(
-                        'Get start ',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                child: Text(
+                  'Skip',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ),
+              SizedBox(height: 150),
             ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPage(String imagePath, String title) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          height: 323,
+          width: 321,
+          child: Image.asset(
+            imagePath,
+            fit: BoxFit.contain,
           ),
         ),
-      ),
+        SizedBox(height: 20),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.green[800],
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }
