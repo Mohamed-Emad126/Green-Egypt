@@ -33,7 +33,6 @@ class HomepageProvider extends ChangeNotifier {
     },
   ];
 
-  // القيم التي يمكن قراءتها
   int get selectedIndex => _selectedIndex;
   bool get isNotificationPressed => _isNotificationPressed;
   int get points => _points;
