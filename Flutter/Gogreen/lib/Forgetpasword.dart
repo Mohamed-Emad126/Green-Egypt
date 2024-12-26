@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gogreen/Onboarding2.dart';
 import 'package:gogreen/Verfication.dart';
 
 class ForgetPassword extends StatelessWidget {
