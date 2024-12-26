@@ -48,12 +48,14 @@ export default class CouponController {
     */
     createNewCoupons = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { codes, value, brand, expiryDate } = req.body;
+        const addByAdmin = req.body.user.id
         const coupons = codes.map((code : string) => ({
             code,
             value,
             brand, 
             expiryDate,
-            redeemed: false
+            redeemed: false,
+            addByAdmin
         }));
         await this.CouponService.createNewCoupons(coupons);
         res.status(201).json({ message: "Coupon created successfully"});
