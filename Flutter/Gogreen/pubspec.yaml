@@ -10,9 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_svg: ^2.0.4
   cupertino_icons: ^1.0.8
   flutter_screenutil: ^5.5.0
-  flutter_svg: ^1.0.3  # إضافة مكتبة flutter_svg لقراءة ملفات SVG
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
@@ -30,6 +31,7 @@ flutter:
     - images/img_5.png
     - images/img_6.png
     - images/img_7.png
+    - images/img_8.png
     - images/img_9.png
     - images/img_10.png
     - images/img_11.png
@@ -56,3 +58,5 @@ flutter:
     - images/img_33.png
     - images/img_34.png
     - images/img_35.png
+    - images/img_36.png
+    - images/img_37.png
