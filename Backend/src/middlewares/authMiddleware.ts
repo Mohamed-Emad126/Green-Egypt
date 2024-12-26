@@ -5,6 +5,7 @@ import User from "../models/userModel";
 import Token from "../models/tokenModel";
 import Report from "../models/reportModel";
 import asyncHandler from 'express-async-handler';
+import Comment from "../models/commentModel";
 
 export const verifyToken = asyncHandler( async (req : Request, res : Response, next : NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -75,6 +76,25 @@ export const verifyReporterMiddleware = asyncHandler(async (req : Request, res :
         }
 
         if (req.body.user.id === report.createdBy.toString() || req.body.user.role === 'admin') {
+            next();
+        } else {
+            return next(new ApiError("You are not authorized to perform this action", 403));
+        }
+    });
+});
+
+export const verifyCommenterMiddleware = asyncHandler(async (req : Request, res : Response, next : NextFunction) => {
+    verifyToken(req, res, async (err) => {
+        if (err) {
+            return next(err);
+        }
+
+        const comment = await Comment.findById(req.params.id);
+        if (!comment) {
+            return next(new ApiError("Comment not found", 404));
+        }
+
+        if (req.body.user.id === comment.createdBy.toString() || req.body.user.role === 'admin') {
             next();
         } else {
             return next(new ApiError("You are not authorized to perform this action", 403));

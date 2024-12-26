@@ -11,13 +11,13 @@ export const getTreeValidator = [
 export const locateTreeValidator = [
     check('species').notEmpty().withMessage('Species is required'),
     
-    check('location.latitude')
+    check('treeLocation.latitude')
         .notEmpty().withMessage('Latitude is required')
-        .isFloat({ min: -90, max: 90 }).withMessage('Latitude must be between -90 and 90'),
+        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
 
-    check('location.longitude')
+    check('treeLocation.longitude')
         .notEmpty().withMessage('Longitude is required')
-        .isFloat({ min: -180, max: 180 }).withMessage('Longitude must be between -180 and 180'),
+        .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
 
     check('healthStatus')
         .notEmpty().withMessage('Health status is required')
@@ -37,12 +37,12 @@ export const locateTreeValidator = [
 export const updateTreeValidator = [
     check('id').isMongoId().withMessage('Invalid tree ID Format'),
 
-    check('location.latitude')
-        .notEmpty().withMessage('Latitude is required')
+    check('treeLocation.latitude')
+        .optional()
         .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
         
-    check('location.longitude')
-    .notEmpty().withMessage('Longitude is required')
+    check('treeLocation.longitude')
+        .optional()
         .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
 
     check('healthStatus')

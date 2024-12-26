@@ -41,6 +41,11 @@ const PartnerSchema : Schema = new Schema({
     hasExpired: {
         type: Boolean,
         default: false
+    },
+    addByAdmin: {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User',
+        require : true
     }
 });
 

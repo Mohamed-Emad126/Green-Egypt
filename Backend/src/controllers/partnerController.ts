@@ -49,7 +49,8 @@ export default class PartnerController {
     */
     createNewPartner = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { partnerName, startDate, duration, durationUnit, website = "No website", description } : IPartnerInput = req.body;
-        await this.partnerService.createNewPartner({ partnerName, startDate, duration, durationUnit, website, description });
+        const addByAdmin = req.body.user.id;
+        await this.partnerService.createNewPartner({ partnerName, startDate, duration, durationUnit, website, description, addByAdmin });
         res.status(201).json({ message: "Partner created successfully"});
     });
 

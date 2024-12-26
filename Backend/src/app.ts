@@ -2,9 +2,7 @@ import express from "express";
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import path from 'path';
-import connectDB from "./config/db";
-import pug from 'pug';
-import rateLimit from 'express-rate-limit';
+import { limiter } from "./middlewares/securityMiddleware";
 import { globalErrorMiddleware, notFoundErrorMiddleware } from "./middlewares/errorMiddleware";
 import userRoute from "./routes/userRoute";
 import rootRoute from "./routes/authRoute";
@@ -18,18 +16,12 @@ import eventRouter from "./routes/eventRoute";
 //* Environment variables
 dotenv.config();
 
-//* Connect to database
-connectDB();
-
 //* Create Express App
 const app = express();
 
-//* limit request from same IP
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: 'Too many accounts created from this IP, please try again after an hour',
-});
+//* View Engine
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
 
 //* Middlewares
 //? -----Body Parser
@@ -37,6 +29,9 @@ app.use(express.json());
 
 //? -----Static Folder
 app.use("/uploads", express.static(path.join(__dirname, 'uploads')));
+
+//? -----Limit Request From Same IP
+app.use(limiter);
 
 //? -----Logging HTTP request
 if (process.env.NODE_ENV === 'development') {
@@ -55,6 +50,10 @@ app.use('/api/partners', partnerRoute);
 app.use('/api/coupons', couponRouter);
 app.use('/api/reports', reportRouter);
 app.use('/api/events', eventRouter);
+
+app.get("/comment", (req, res) => {
+    res.sendFile(path.join(__dirname, "uploads", "comment.html"));
+});
 
 //? -----Error Handler
 app.use(notFoundErrorMiddleware);

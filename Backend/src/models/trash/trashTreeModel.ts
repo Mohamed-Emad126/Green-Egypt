@@ -24,7 +24,18 @@ const trashTreeSchema: Schema = new Schema({
         type: String,
         enum: ['Died', 'Cut down', 'False Record'],
         required: true
+    },
+    plantedRecently: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    byUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", 
+        required: true
     }
+
 });
 
 const trashTreeModel: Model<ITree> = mongoose.model<ITree>('TrashTree', trashTreeSchema);
