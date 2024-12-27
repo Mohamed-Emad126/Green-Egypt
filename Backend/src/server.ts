@@ -1,6 +1,11 @@
 import http from 'http';
 import { Server } from 'socket.io';
+import connectDB from './config/db';
 import app from './app';
+import CommentService from "./services/commentService";
+
+//* Connect to database
+connectDB();
 
 //* Create HTTP Server
 const httpServer = http.createServer(app);
@@ -9,10 +14,22 @@ const httpServer = http.createServer(app);
 const io = new Server(httpServer);
 
 //* Handle socket connections
+const commentService = new CommentService();
+
 io.on('connection', (socket) => {
-    console.log(`Socket connected: ${socket.id}`);
-    socket.on('disconnect', () => {
-        console.log(`Socket disconnected: ${socket.id}`);
+
+    socket.on("newComment", async (comment) => {
+        try {
+            const savedComment = await commentService.createComment({
+                reportID: comment.reportID,
+                createdBy: comment.createdBy,
+                content: comment.content,
+            });
+
+            io.emit("commentBroadcast", savedComment);
+        } catch (error) {
+            console.error("Failed to save comment:", error);
+        }
     });
 });
 

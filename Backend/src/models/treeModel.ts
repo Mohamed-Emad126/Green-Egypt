@@ -2,11 +2,6 @@ import mongoose, { Schema, Model } from "mongoose";
 import { ITree } from "../interfaces/iTree";
 
 const TreeSchema: Schema = new Schema({
-    species: {
-        type: String,
-        trim: true,
-        required: [true, 'Species is required']
-    },
     treeLocation: {
         latitude: {
             type: Number,
@@ -33,7 +28,18 @@ const TreeSchema: Schema = new Schema({
     image: {
         type: String,
         default: '../uploads/not-found-image.png'
+    },
+    plantedRecently: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    byUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", 
+        required: true
     }
+    
 }, { timestamps: true });
 
 const TreeModel: Model<ITree> = mongoose.model<ITree>('Tree', TreeSchema);

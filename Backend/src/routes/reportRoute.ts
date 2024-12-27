@@ -4,6 +4,9 @@ import ReportController from "../controllers/reportController";
 import { uploadImages } from "../middlewares/uploadImageMiddleware";
 import { verifyToken, verifyReporterMiddleware } from "../middlewares/authMiddleware";
 import { getReportValidator, createReportValidator, updateReportValidator, uploadReportImagesValidator, deleteReportImageValidator, deleteReportValidator, toggleUpvoteValidator } from "../utils/validators/reportValidator";
+import CommentController from "../controllers/commentController";
+import CommentService from "../services/commentService";
+import { createCommentValidator, getCommentsByReportValidator } from "../utils/validators/commentValidator";
 
 const reportRouter = Router();
 
@@ -17,6 +20,9 @@ const { getReports,
         deleteReport,
         toggleUpvote} = new ReportController(reportService);
 
+const commentService = new CommentService();
+const { getCommentsByReport, createComment} = new CommentController(commentService);
+
 reportRouter.route('/')
         .get(verifyToken, getReports)
         .post(verifyToken, createReportValidator, createNewReport);
@@ -28,9 +34,13 @@ reportRouter.route('/:id')
 
 reportRouter.route('/:id/image')
         .patch(verifyReporterMiddleware, uploadImages, uploadReportImagesValidator, uploadReportImages)
-        .delete(verifyReporterMiddleware, deleteReportImage);
+        .delete(verifyReporterMiddleware, deleteReportImageValidator, deleteReportImage);
 
 reportRouter.route('/:id/upvote')
         .patch(verifyToken, toggleUpvoteValidator, toggleUpvote);
+
+reportRouter.route('/:id/comment')
+        .get(verifyToken, getCommentsByReportValidator, getCommentsByReport)
+        .post(verifyToken, createCommentValidator, createComment);
 
 export default reportRouter;
