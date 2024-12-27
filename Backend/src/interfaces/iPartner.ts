@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export interface IPartner extends Document {
     partnerName: string;
@@ -10,6 +10,7 @@ export interface IPartner extends Document {
     description?: string;
     logo: string;
     hasExpired: boolean;
+    addByAdmin: mongoose.Schema.Types.ObjectId;
 }
 
 export interface IPartnerInput {
@@ -19,4 +20,5 @@ export interface IPartnerInput {
     durationUnit: 'days' | 'months' | 'years' | 'one-time';
     website?: string;
     description?: string;
+    addByAdmin?: mongoose.Schema.Types.ObjectId;
 }

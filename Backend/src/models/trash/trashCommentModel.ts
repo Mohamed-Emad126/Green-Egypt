@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { IComment } from "../interfaces/iComment";
+import { IComment } from "../../interfaces/iComment";
 
-const CommentSchema: Schema = new Schema({
+const TrashCommentSchema: Schema = new Schema({
     content: {
         type: String,
         required: [true, "Content is required"],
@@ -29,5 +29,5 @@ const CommentSchema: Schema = new Schema({
     }],
 }, { timestamps: true });
 
-const Comment = mongoose.model<IComment>("Comment", CommentSchema);
-export default Comment;
+const TrashComment = mongoose.model<IComment>("TrashComment", TrashCommentSchema);
+export default TrashComment;

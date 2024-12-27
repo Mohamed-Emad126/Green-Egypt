@@ -41,6 +41,11 @@ const TrashPartnerSchema : Schema = new Schema({
     hasExpired: {
         type: Boolean,
         default: true
+    },
+    addByAdmin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        require : true
     }
 });
 

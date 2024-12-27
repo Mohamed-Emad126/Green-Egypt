@@ -1,7 +1,6 @@
 import { ICoupon } from "../interfaces/iCoupon";
 import Coupon from "../models/couponModel";
 import trashCoupon from "../models/trash/trashCouponModel";
-import fs from "fs";
 
 
 export default class CouponService {
