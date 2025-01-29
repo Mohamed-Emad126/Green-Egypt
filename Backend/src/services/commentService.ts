@@ -1,15 +1,48 @@
 import { IComment } from "../interfaces/iComment";
 import Comment from "../models/commentModel";
 import trashComment from "../models/trash/trashCommentModel";
+import Report from "../models/reportModel";
+
 
 export default class CommentService {
 
     async createComment(data: Partial<IComment>) {
-        return await Comment.create(data);
+        const { content, createdBy, reportID, parentCommentID } = data;
+
+        const report = await Report.findById(reportID);
+        if (!report) {
+            return false;
+        }
+    
+        const newComment = await Comment.create({ content, createdBy, reportID, parentCommentID });
+    
+        if (parentCommentID) {
+            const parentComment = await Comment.findById(parentCommentID);
+            if (parentComment) {
+                parentComment.replies!.push(newComment.id);
+                await parentComment.save();
+            }
+        }
+
+        report.comments.push(newComment.id);
+        await report.save();
+    
+        return newComment;
     }
 
     async getCommentsByReport(reportID: string) {
-        return await Comment.find({ reportID }).sort({ createdAt: -1 }).populate("createdBy");
+        const report = await Report.findById(reportID);
+        if(!report) {
+            return false;
+        }
+
+        return await Comment.find({ reportID, parentCommentID: null })
+            .sort({ createdAt: -1 })
+            .populate("createdBy")
+            .populate({
+                path: "replies",
+                populate: { path: "createdBy" },
+            });
     }
 
     async getCommentById(commentID: string) {
@@ -26,7 +59,7 @@ export default class CommentService {
         comment.modificationHistory.push({
             oldData: {
                 content: comment.content,
-                createdAt: comment.id.getTimestamp()
+                createdAt: comment.updatedAt
             },
             updatedAt: new Date(),
         });
@@ -48,4 +81,14 @@ export default class CommentService {
         await comment.deleteOne();
         return true;
     }
+
+    async getCommentReplies(commentID : string) {
+        const comment = await Comment.findById(commentID);
+        if (!comment) {
+            return false;
+        }
+        
+        return Comment.find({ parentCommentID : commentID});
+    }
+
 }
