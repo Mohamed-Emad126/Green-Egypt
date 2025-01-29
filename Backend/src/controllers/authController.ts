@@ -20,7 +20,7 @@ export default class AuthController {
      * @desc      Register new user
      * @route     post /api/auth/register
      * @access    Public
-   */
+    */
     createNewUser = asyncHandler(async (req: Request, res: Response) => {
         const { username, email, password }: IAuthInput = req.body;
         const result = await this.authService.createNewUser({username,email,password});
@@ -36,7 +36,7 @@ export default class AuthController {
      * @desc      Login user
      * @route     post /api/auth/login
      * @access    Public
-   */
+    */
     login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { email, password }: IAuthInput = req.body;
         const loginResult = await this.authService.login({ email, password });
@@ -124,8 +124,8 @@ export default class AuthController {
 
     /**
      * @desc      Verify google id token
-     * @route     post /api/auth/verify-google-id-token
-     * @access    Private
+     * @route     post /api/auth/google/callback
+     * @access    Public
     */
     verifyGoogleIdToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { idToken } = req.body;

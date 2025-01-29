@@ -27,6 +27,16 @@ const CommentSchema: Schema = new Schema({
             default: Date.now 
         }
     }],
+    replies:[{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'comment'
+    }],
+    parentCommentID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'comment',
+        default: null
+    }
+
 }, { timestamps: true });
 
 const Comment = mongoose.model<IComment>("Comment", CommentSchema);

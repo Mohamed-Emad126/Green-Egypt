@@ -47,7 +47,7 @@ const PartnerSchema : Schema = new Schema({
         ref : 'User',
         require : true
     }
-});
+}, { timestamps: true });
 
 
 PartnerSchema.pre('save', function (next) {

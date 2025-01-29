@@ -47,14 +47,14 @@ export default class ReportController {
      * @route     POST /api/reports
      * @access    Public
     */
-    createNewReport = asyncHandler(async (req: Request, res: Response) => {
-        const { reportType, description, location, images, treeID }: IReportInput = req.body;
+    createNewReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const { reportType, description, location, treeID }: IReportInput = req.body;
         const createdBy = req.body.user.id;
-        const createdReport = await this.reportService.createNewReport({ reportType, description, location, images, treeID, createdBy});
+        const createdReport = await this.reportService.createNewReport({ reportType, description, location, treeID, createdBy});
         if (createdReport) {
             res.status(201).json({ message: 'Report created successfully' });
         } else {
-            res.status(400).json({ message: 'Report already exists'});
+            return next(new ApiError("Tree not found", 404));
         }
     });
 
@@ -64,12 +64,11 @@ export default class ReportController {
      * @access    Public
     */
     updateReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-
         const ReportAfterUpdate = await this.reportService.updateReport(req.params.id, req.body);
-        if (ReportAfterUpdate) {
+        if (ReportAfterUpdate === true) {
             res.json({ message: "Report updated successfully"});
         } else {
-            return next(new ApiError("Report not found", 404));
+            return next(new ApiError(ReportAfterUpdate, 404));
         }
         
     });
