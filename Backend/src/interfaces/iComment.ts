@@ -8,5 +8,8 @@ export interface IComment extends Document {
         oldData: Partial<IComment>;
         updatedAt: Date;
     }[];
+    replies?: mongoose.Types.ObjectId[];
+    parentCommentID?: mongoose.Types.ObjectId;
     createdAt?: Date;
+    updatedAt?: Date
 }

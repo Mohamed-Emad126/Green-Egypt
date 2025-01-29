@@ -1,0 +1,549 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "GoGreen API",
+        "version": "1.0.0",
+        "description": "Documentation API of GoGreen Project"
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Operations about Authentication"
+        },
+        {
+            "name": "Users",
+            "description": "Operations about Users & Admins"
+        },
+        {
+            "name": "Trees",
+            "description": "Operations about Trees"
+        },
+        {
+            "name": "Partners",
+            "description": "Operations about Partners"
+        },
+        {
+            "name": "Coupon",
+            "description": "Operations about Coupon"
+        },
+        {
+            "name": "Reports",
+            "description": "Operations about Reports"
+        },
+        {
+            "name": "Comments",
+            "description": "Operations about Comments"
+        },
+        {
+            "name": "Responses",
+            "description": "Operations about Responses"
+        },
+        {
+            "name": "Events",
+            "description": "Operations about Events"
+        },
+        {
+            "name": "Nurseries",
+            "description": "Operations about Nurseries"
+        },
+        {
+            "name": "Content",
+            "description": "Operations about Content"
+        }
+    ],
+    "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Register new user",
+                "description": "Register a new user with username, email, and password.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example" : "Hagar Gamal",
+                                        "length" : {"max" : 15, "min": 3}
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example" : "Hagarelessawy0@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example" : "123_456_789",
+                                        "length" : {"min": 8}
+                                    },
+                                    "passwordConfirmation": {
+                                        "type": "string",
+                                        "example" : "123_456_789",
+                                        "length" : {"min": 8}
+                                    }
+                                },
+                                "required": ["username", "email", "password", "passwordConfirmation"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "headers": {
+                            "x-auth-token": {
+                                "description": "Authentication token for the newly registered user",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User created successfully"
+                                        },
+                                        "user_id": {
+                                            "type": "string",
+                                            "example": "674f5632e57414133c9499f9"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Login user",
+                "description": "Login user with email and password.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example" : "Hagarelessawy0@gmail.com",
+                                        "length" : {"max" : 15, "min": 3}
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example" : "123_456_789",
+                                        "length" : {"min": 8}
+                                    }
+                                },
+                                "required": ["email", "password"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "headers": {
+                            "x-auth-token": {
+                                "description": "Authentication token for the logged-in user",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login successfully"
+                                        },
+                                        "user_id": {
+                                            "type": "string",
+                                            "example": "674f5632e57414133c9499f9"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong email or password",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Wrong email or password"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Logout user",
+                "description": "Logs out current logged in user session by invalidating the token.",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/forgotPassword": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Send reset password link",
+                "description": "Send a reset password link to the user's email.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "Hagarelessawy0@gmail.com"
+                                    }
+                                },
+                                "required": ["email"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email sent successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "There is no user with this email"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email could not be sent - {err}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/reset-password/{token}": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Reset password",
+                "description": "Reset user's password using the token sent to their email.",
+                "parameters": [{
+                    "name": "token",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "password": {
+                                        "type": "string",
+                                        "example" : "123456789",
+                                        "length" : {"min": 8}
+                                    },
+                                    "passwordConfirmation": {
+                                        "type": "string",
+                                        "example" : "123456789",
+                                        "length" : {"min": 8}
+                                    }
+                                },
+                                "required": ["password", "passwordConfirmation"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Invalid token or user not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid token"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "passwords do not match"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/trees": {
+            "get": {
+                "tags": [ "Trees" ],
+                "summary": "Retrieve all trees",
+                "description": "Retrieve a list of all trees registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter, with the ability to filter the tree properties or display all of them.",
+                "parameters": [{
+                    "name": "page",
+                    "in": "query",
+                    "description" : "The number of the page",
+                    "require" : "false",
+                    "schema":{
+                        "type": "number",
+                        "default": 1,
+                        "enum": ["From 1 to (total number of elements / number of elements on one page)"]
+                    }
+                        
+            
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Page number, number of elements, and a list of trees with all their properties",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "length": 2,
+                                    "page": 1,
+                                    "trees": [
+                                        {
+                                            "treeLocation": {
+                                                "latitude": 25,
+                                                "longitude": 26
+                                            },
+                                            "_id": "67978b5804bb6348dd0f63cf",
+                                            "healthStatus": "Diseased",
+                                            "problem": "testt",
+                                            "image": "../uploads/not-found-image.png",
+                                            "plantedRecently": false,
+                                            "byUser": "674f5632e57414133c9499f9",
+                                            "reportsAboutIt": [
+                                                "67978bb904bb6348dd0f63d4"
+                                            ],
+                                            "createdAt": "2025-01-27T13:34:16.460Z",
+                                            "updatedAt": "2025-01-27T17:15:22.357Z",
+                                            "__v": 6
+                                        },
+                                        {
+                                            "treeLocation": {
+                                                "latitude": 25,
+                                                "longitude": 26
+                                            },
+                                            "_id": "6797bb1235f66e923435a858",
+                                            "healthStatus": "Healthy",
+                                            "problem": "No problem",
+                                            "image": "../uploads/not-found-image.png",
+                                            "plantedRecently": false,
+                                            "byUser": "674f5632e57414133c9499f9",
+                                            "reportsAboutIt": [
+                                                "67978c5004bb6348dd0f63da",
+                                                "6797bf003ae87c7a8fcbf45c"
+                                            ],
+                                            "createdAt": "2025-01-27T16:57:54.282Z",
+                                            "updatedAt": "2025-01-27T17:15:21.935Z",
+                                            "__v": 2
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [ "Trees" ],
+                "summary": "Locate a tree",
+                "description": "Retrieve a list of all trees registered in the application in the form of pages. Each page displays 5 items. This is a temporary number. The number of items will be changed according to what we agree upon.",
+                "responses": {
+                    "200": {
+                        "description": "Page number, number of elements, and a list of trees with all their properties",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "length": 2,
+                                    "page": 1,
+                                    "trees": [
+                                        {
+                                            "treeLocation": {
+                                                "latitude": 25,
+                                                "longitude": 26
+                                            },
+                                            "_id": "67978b5804bb6348dd0f63cf",
+                                            "healthStatus": "Diseased",
+                                            "problem": "testt",
+                                            "image": "../uploads/not-found-image.png",
+                                            "plantedRecently": false,
+                                            "byUser": "674f5632e57414133c9499f9",
+                                            "reportsAboutIt": [
+                                                "67978bb904bb6348dd0f63d4"
+                                            ],
+                                            "createdAt": "2025-01-27T13:34:16.460Z",
+                                            "updatedAt": "2025-01-27T17:15:22.357Z",
+                                            "__v": 6
+                                        },
+                                        {
+                                            "treeLocation": {
+                                                "latitude": 25,
+                                                "longitude": 26
+                                            },
+                                            "_id": "6797bb1235f66e923435a858",
+                                            "healthStatus": "Healthy",
+                                            "problem": "No problem",
+                                            "image": "../uploads/not-found-image.png",
+                                            "plantedRecently": false,
+                                            "byUser": "674f5632e57414133c9499f9",
+                                            "reportsAboutIt": [
+                                                "67978c5004bb6348dd0f63da",
+                                                "6797bf003ae87c7a8fcbf45c"
+                                            ],
+                                            "createdAt": "2025-01-27T16:57:54.282Z",
+                                            "updatedAt": "2025-01-27T17:15:21.935Z",
+                                            "__v": 2
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "JWT token for authentication. Example: 'Bearer {token}'"
+            }
+        }
+    }
+}

@@ -11,6 +11,8 @@ export interface IPartner extends Document {
     logo: string;
     hasExpired: boolean;
     addByAdmin: mongoose.Schema.Types.ObjectId;
+    createdAt?: Date
+    updatedAt?: Date
 }
 
 export interface IPartnerInput {

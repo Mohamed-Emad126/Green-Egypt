@@ -9,8 +9,6 @@ export const getTreeValidator = [
 ];
 
 export const locateTreeValidator = [
-    check('species').notEmpty().withMessage('Species is required'),
-    
     check('treeLocation.latitude')
         .notEmpty().withMessage('Latitude is required')
         .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),

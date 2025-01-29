@@ -7,4 +7,6 @@ export interface ICoupon extends Document {
     expiryDate: Date;
     redeemed: boolean;
     addByAdmin: mongoose.Schema.Types.ObjectId;
+    createdAt?: Date
+    updatedAt?: Date
 }

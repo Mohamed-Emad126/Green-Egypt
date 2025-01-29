@@ -13,34 +13,38 @@ export default class CommentController {
         this.createComment = this.createComment.bind(this);
         this.updateComment = this.updateComment.bind(this);
         this.deleteComment = this.deleteComment.bind(this);
+        this.getCommentReplies = this.getCommentReplies.bind(this);
     }
 
     /**
      * @desc      Create comment on specific report
-     * @route     post /api/reports/:id/comment
+     * @route     POST /api/reports/:id/comment
      * @param     {string} id - Report id
      * @access    Public
     */
     createComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const { reportID, createdBy, content } = req.body;
-        const comment = await this.CommentService.createComment({ reportID, createdBy, content });
-        res.status(201).json({ message: "Comment added successfully", comment });
+        const comment = await this.CommentService.createComment(req.body);
+        if (comment) {
+            res.status(201).json({ message: "Comment added successfully", comment });
+        } else {
+            return  next(new ApiError("Report not found", 404))
+        }
     });
 
     /**
      * @desc      Get report's comments
-     * @route     get /api/reports/:id/comment
+     * @route     GET /api/reports/:id/comment
      * @param     {string} id - Report id
      * @access    Public
     */
     getCommentsByReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const reportID = req.params.id;
-
-        if (!reportID) {
-            return next(new ApiError("Report ID is required", 400));
-        }
-        const comments = await this.CommentService.getCommentsByReport(reportID);
-        res.status(200).json({ comments });
+        const comments = await this.CommentService.getCommentsByReport(req.params.id);
+        if(comments === false) {
+            return next(new ApiError("Report not found", 404));
+        } else {
+            res.json({ comments });
+        } 
+        
     });
 
     /**
@@ -54,19 +58,18 @@ export default class CommentController {
         if (comment) {
             res.json(comment);
         } else {
-            return next(new ApiError("Coupon not found", 404));
+            return next(new ApiError("Comment not found", 404));
         }
     });
 
     /**
      * @desc      Update comment
-     * @route     patch /api/comments/:id
+     * @route     PATCH /api/comments/:id
      * @param     {string} id - Comment id
      * @access    Private
     */
     updateComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-
-        const commentAfterUpdate = await this.CommentService.updateComment(req.params.id, req.body);
+        const commentAfterUpdate = await this.CommentService.updateComment(req.params.id, req.body.content);
         if (commentAfterUpdate) {
             res.json({ message: "Comment updated successfully"});
         } else {
@@ -77,7 +80,7 @@ export default class CommentController {
 
     /**
      * @desc      Delete comment
-     * @route     delete /api/comments/:id
+     * @route     DELETE /api/comments/:id
      * @param     {string} id - Comment id
      * @access    Private
     */
@@ -87,6 +90,21 @@ export default class CommentController {
             res.json({ message: "Comment deleted successfully"});
         } else {
             return next(new ApiError('Comment not found', 404));
+        }
+    });
+
+    /**
+     * @desc      Retrieve comment replies
+     * @route     GET /api/comments/:id/replies
+     * @param     {string} id - Comment id
+     * @access    Public
+    */
+    getCommentReplies = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const replies = await this.CommentService.getCommentReplies(req.params.id);
+        if (replies === false) {
+            return next(new ApiError('Comment not found', 404));
+        } else {
+            res.json(replies);
         }
     });
 }

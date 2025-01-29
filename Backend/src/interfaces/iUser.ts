@@ -14,6 +14,8 @@ export interface IUser extends Document {
         latitude?: number;
         longitude?: number;
     };
+    createdAt?: Date
+    updatedAt?: Date
     generateToken(expiration?: string): Promise<string>;
 }
 

@@ -31,7 +31,7 @@ const CouponSchema: Schema = new mongoose.Schema({
         ref : 'User',
         require : true
     }
-});
+}, { timestamps: true });
 
 const CouponModel: Model<ICoupon> = mongoose.model<ICoupon>('Coupon', CouponSchema);
 export default CouponModel;
