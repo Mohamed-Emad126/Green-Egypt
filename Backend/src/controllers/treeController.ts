@@ -49,8 +49,9 @@ export default class TreeController {
      * @access    Public
     */
     LocateTree = asyncHandler(async (req: Request, res: Response) => {
-        const { treeLocation, healthStatus }: ITreeInput = req.body;
-        const createdTree = await this.treeService.LocateTree({ treeLocation, healthStatus });
+        const { treeLocation, healthStatus, problem }: ITreeInput = req.body;
+        const userID = req.body.user.id;
+        const createdTree = await this.treeService.LocateTree({ treeLocation, healthStatus, problem, byUser: userID });
         if (createdTree) {
             res.status(201).json({ message: 'Tree located successfully' });
         } else {

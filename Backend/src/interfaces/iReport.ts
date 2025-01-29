@@ -20,6 +20,7 @@ export interface IReport extends Document {
     responses: mongoose.Schema.Types.ObjectId[];
     comments: mongoose.Schema.Types.ObjectId[];
     createdAt?: Date
+    updatedAt?: Date
 }
 
 export interface IReportInput {

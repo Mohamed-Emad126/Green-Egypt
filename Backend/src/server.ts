@@ -18,24 +18,31 @@ const commentService = new CommentService();
 
 io.on('connection', (socket) => {
 
-    socket.on("newComment", async (comment) => {
+    socket.on('newComment', async (data) => {
+        const { content, createdBy, reportID, parentCommentID } = data;
+
         try {
-            const savedComment = await commentService.createComment({
-                reportID: comment.reportID,
-                createdBy: comment.createdBy,
-                content: comment.content,
+            const newComment = await commentService.createComment({
+                content,
+                createdBy,
+                reportID,
+                parentCommentID: parentCommentID || null,
             });
 
-            io.emit("commentBroadcast", savedComment);
+            io.emit('commentBroadcast', newComment);
         } catch (error) {
-            console.error("Failed to save comment:", error);
+            console.error('Failed to save comment:', error);
         }
     });
 });
 
-//* Running The Server
 const PORT = process.env.PORT || 3000;
-const server = httpServer.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+//* Running The Server
+const server = httpServer.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Swagger docs available at http://localhost:${PORT}/api-docs`);
+
+});
 
 //* Handle Rejection outside express
 process.on('unhandledRejection', (err : Error) => {

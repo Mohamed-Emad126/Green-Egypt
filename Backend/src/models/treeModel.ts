@@ -38,7 +38,11 @@ const TreeSchema: Schema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", 
         required: true
-    }
+    },
+    reportsAboutIt: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Report"
+    }],
     
 }, { timestamps: true });
 

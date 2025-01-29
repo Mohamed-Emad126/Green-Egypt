@@ -3,8 +3,8 @@ import Report from "../models/reportModel";
 import trashReport from "../models/trash/trashReportModel";
 import uploadToCloud from "../config/cloudinary";
 import fs from "fs";
-import { ObjectId } from "mongoose";
-import { report } from "process";
+import Tree from "../models/treeModel"
+import mongoose from "mongoose";
 
 // TODO: Compare the input report with previously created reports (createdReport)
 // TODO: Sort reports by the nearest location (getReports)
@@ -24,7 +24,16 @@ export default class ReportService {
     }
 
     async createNewReport(newReport : IReportInput) {
-        return await Report.create(newReport);
+        const tree = await Tree.findById(newReport.treeID);
+        if(!tree) {
+            return false;
+        }
+
+        const report = await Report.create(newReport);
+        tree.reportsAboutIt.push(report.id);
+        await tree.save();
+
+        return true;
     }
 
     async uploadReportImages(reportID: string, imageFiles: Express.Multer.File[]) {
@@ -52,7 +61,24 @@ export default class ReportService {
     async updateReport(reportID : string, updateData : IReportInput) {
         const report = await Report.findById(reportID);
         if (!report) {
-            return null;
+            return "Report not found";
+        }
+
+        if(updateData.treeID) {
+            const newTree = await Tree.findById(updateData.treeID);
+            if(!newTree) {
+                return "Tree not found";
+            }
+            newTree.reportsAboutIt.push(report.id);
+            await newTree.save();
+
+            const oldTree = await Tree.findById(report.treeID);
+            if (oldTree) {
+                let reportIndex = oldTree.reportsAboutIt.findIndex((v) => v === oldTree.id);
+                oldTree.reportsAboutIt.splice(reportIndex, 1);
+                oldTree.save();
+            }
+            
         }
 
         report.modificationHistory.push({
@@ -62,7 +88,7 @@ export default class ReportService {
                 location: report.location,
                 images: report.images,
                 treeID: report.treeID,
-                createdAt: report.id.getTimestamp()
+                createdAt: report.updatedAt
             },
             updatedAt: new Date(),
         });
@@ -85,7 +111,7 @@ export default class ReportService {
         return true;
     }
 
-    async toggleUpvote(reportID: string, userID: ObjectId) {
+    async toggleUpvote(reportID: string, userID: mongoose.Schema.Types.ObjectId) {
         const report = await Report.findById(reportID);
         if (!report) {
             return null;

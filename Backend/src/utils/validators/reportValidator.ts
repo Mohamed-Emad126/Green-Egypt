@@ -22,21 +22,11 @@ export const createReportValidator = [
 
     check('treeID')
         .notEmpty().withMessage('Tree ID is required')
-        .isMongoId().withMessage('Invalid tree ID Format')
-        .custom(async (treeId) => {
-            const tree = await Tree.findById(treeId);
-            if(!tree) {
-                throw new Error('Tree not found');
-            }
-
-            return true;
-        }),
+        .isMongoId().withMessage('Invalid tree ID Format'),
     
     check('description')
         .notEmpty().withMessage('Description is required')
         .isLength({max : 600}).withMessage('Description must be at most 500 characters long'),
-
-    //check('images').notEmpty().withMessage('Image/images is required'),
 
     validatorMiddleware
 ];
@@ -56,15 +46,7 @@ export const updateReportValidator = [
 
     check('treeID')
         .optional()
-        .isMongoId().withMessage('Invalid tree ID Format')
-        .custom(async (treeId) => {
-            const tree = await Tree.findById(treeId);
-            if(!tree) {
-                throw new Error('Tree not found');
-            }
-
-            return true;
-        }),
+        .isMongoId().withMessage('Invalid tree ID Format'),
     
     check('description')
         .optional()
@@ -77,11 +59,11 @@ export const uploadReportImagesValidator = [
     check('id').isMongoId().withMessage('Invalid report ID Format'),
 
     check('images').custom((_, { req }) => {
-        if (!req.file) {
+        if (!req.files || req.files.length === 0) {
             throw new Error("at least one image is required");
         }
         return true;
-}),
+    }),
 
     validatorMiddleware
 ]

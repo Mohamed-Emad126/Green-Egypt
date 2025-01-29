@@ -57,7 +57,7 @@ export const loginValidator = [
     validatorMiddleware,
 ];
 
-export const resetPasswordValidator = [
+export const forgetPasswordValidator = [
     check("email")
         .notEmpty()
         .withMessage("Email is required")
@@ -67,7 +67,7 @@ export const resetPasswordValidator = [
     validatorMiddleware,
 ];
 
-export const updatePasswordValidator = [
+export const resetPasswordValidator = [
     check('password')
         .notEmpty().withMessage('Password is required')
         .isLength({min : 8}).withMessage('Password must be at least 8 characters long')

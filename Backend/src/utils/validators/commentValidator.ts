@@ -32,3 +32,8 @@ export const deleteCommentValidator = [
     check('id').isMongoId().withMessage('Invalid Comment ID Format'),
     validatorMiddleware
 ]
+
+export const getCommentRepliesValidator = [
+    check('id').isMongoId().withMessage('Invalid Comment ID Format'),
+    validatorMiddleware
+]

@@ -12,6 +12,9 @@ export interface ITree extends Document {
     deletionReason?: 'Died'| 'Cut Down'| 'False Record';
     plantedRecently: boolean,
     byUser: mongoose.Schema.Types.ObjectId,
+    createdAt?: Date,
+    updatedAt?: Date,
+    reportsAboutIt: mongoose.Schema.Types.ObjectId[]
 }
 
 export interface ITreeInput {
