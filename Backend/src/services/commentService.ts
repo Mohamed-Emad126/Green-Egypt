@@ -3,7 +3,6 @@ import Comment from "../models/commentModel";
 import trashComment from "../models/trash/trashCommentModel";
 import Report from "../models/reportModel";
 
-
 export default class CommentService {
 
     async createComment(data: Partial<IComment>) {

@@ -64,6 +64,10 @@ const swaggerDocument = JSON.parse(
 );
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.get("/comment", (req, res) => {
+    res.sendFile(path.join(__dirname, "uploads", "comment.html"));
+});
+
 //? -----Error Handler
 app.use(notFoundErrorMiddleware);
 app.use(globalErrorMiddleware); // for express errors
