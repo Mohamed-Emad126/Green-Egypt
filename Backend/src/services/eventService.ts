@@ -62,21 +62,41 @@ export default class EventService {
         return true;
     }
 
-    async deleteEventPicture(eventID: string) {
+
+    async addInterested(eventID : string, userID : string) {
         const event = await Event.findById(eventID);
         if (!event){
             return false;
         }
 
-        if(event.eventImage && event.eventImage.imageUrl !== '../uploads/not-found-image.png') {
-            event.eventImage = { imageName: 'not-found-image.png', 
-                                imageUrl: '../uploads/not-found-image.png' };
-            await event.save();
-            
+        event.interestedIn = event.interestedIn || [];
+        if (!event.interestedIn.includes(userID)) {
+            event.interestedIn.push(userID);
         }
-
+        
+        await event.save();
         return true;
     }
 
-    
+    async removeInterested(eventID : string, userID : string) {
+        const event = await Event.findById(eventID);
+        if (!event){
+            return false;
+        }
+
+        if (event && event.interestedIn) {
+            event.interestedIn = event.interestedIn.filter(id => id !== userID);
+            await event.save();
+            return true;
+        }
+    }
+
+    async countInterested(eventID : string) {
+        const event = await Event.findById(eventID);
+        if (!event){
+            return false;
+        }
+        return event.interestedIn? event.interestedIn.length : 0;
+    }
 }
+
