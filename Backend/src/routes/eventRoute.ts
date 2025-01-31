@@ -1,7 +1,7 @@
 import { Router } from "express";
 import EventService from "../services/eventService";
 import EventController from "../controllers/eventController";
-import {getEventValidator,createEventValidator ,deleteEventValidator ,updateEventValidator ,uploadEventImageValidator,deleteEventPictureValidator} from "../utils/validators/eventValidator";
+import {getEventValidator,createEventValidator ,deleteEventValidator ,updateEventValidator ,uploadEventImageValidator,addInterestedValidator,removeInterestedValidator,countInterestedValidator} from "../utils/validators/eventValidator";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
 import { verifyToken } from "../middlewares/authMiddleware";
 
@@ -14,7 +14,9 @@ const { getEvents,
         deleteEvent, 
         updateEvent, 
         uploadEventPicture,
-        deleteEventPicture } = new EventController(eventService);
+        addInterested,
+        removeInterested,
+        countInterested } = new EventController(eventService);
 
 eventRouter.route('/')
         .get(getEvents)
@@ -26,9 +28,14 @@ eventRouter.route('/:id')
         .delete(verifyToken, deleteEventValidator, deleteEvent);
 
 eventRouter.route('/image/:id')
-        .post(verifyToken, uploadImage, uploadEventImageValidator, uploadEventPicture)
-        .delete(verifyToken,deleteEventPictureValidator ,deleteEventPicture);
-        
+        .post(verifyToken, uploadImage, uploadEventImageValidator, uploadEventPicture)        
+
+eventRouter.route('/interested/:id')
+        .post(verifyToken, addInterestedValidator, addInterested)
+        .delete(verifyToken, removeInterestedValidator, removeInterested);
+
+eventRouter.route('/interested/:id/count')
+        .get(verifyToken, countInterestedValidator, countInterested);
 
 export default eventRouter;
 

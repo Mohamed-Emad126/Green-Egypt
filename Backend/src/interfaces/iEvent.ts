@@ -3,7 +3,10 @@ import mongoose, { Document } from "mongoose";
 export interface IEvent extends Document {
     eventName: string;
     eventDate: Date;
-    location: string;
+    location: {
+        latitude: number;
+        longitude: number
+    };
     description: string;
     eventImage: {
         imageName: string;
@@ -11,6 +14,7 @@ export interface IEvent extends Document {
     };
     eventStatus: string;
     organizedWithPartnerID: mongoose.Types.ObjectId;
+    interestedIn?: string[];
 }
 
 export interface IEventInput {

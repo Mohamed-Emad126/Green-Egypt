@@ -29,9 +29,6 @@ const { getCommentsByReport, createComment } = new CommentController(commentServ
 const responseService = new ResponseService();
 const { getReportResponses, createResponse } = new ResponseController(responseService);
 
-const commentService = new CommentService();
-const { getCommentsByReport, createComment} = new CommentController(commentService);
-
 reportRouter.route('/')
         .get(verifyToken, getReports)
         .post(verifyToken, createReportValidator, createNewReport);
