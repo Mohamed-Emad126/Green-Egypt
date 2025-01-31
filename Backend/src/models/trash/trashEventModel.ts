@@ -11,9 +11,13 @@ const TrashEventSchema: Schema = new Schema({
         required: true
     },
     location: {
-        longitiude:{
+        latitude: {
             type: Number,
-
+            required: true
+        },
+        longitude:{
+            type: Number,
+            required: true
         }
     },
     description: {
@@ -33,6 +37,9 @@ const TrashEventSchema: Schema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Partner',
         required: true
+    },
+    interestedIn: {
+        type: String,
     }
 })
 
