@@ -2,6 +2,12 @@ import mongoose, { Schema, Model } from "mongoose";
 import { ITree } from "../interfaces/iTree";
 
 const TreeSchema: Schema = new Schema({
+    treeName: {
+        type: String,
+        required: [true, 'Tree name is required'],
+        trim: true,
+        maxLength: [10, 'Tree name cannot be more than 10 characters'],
+    },
     treeLocation: {
         latitude: {
             type: Number,

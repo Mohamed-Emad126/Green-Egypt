@@ -5,6 +5,8 @@ import trashUser from "../models/trash/trashUserModel";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import uploadToCloud from "../config/cloudinary";
+import Tree from "../models/treeModel";
+import Task from "../models/taskModel";
 
 
 
@@ -181,6 +183,16 @@ export default class UserService {
         catch (error) {
             return ('Error promoting user to admin');
         }   
-}
+    }
+
+    async getUserTrees(userID: string) {
+        const user = await User.findById(userID);
+        if (!user) {
+            return false;
+        }
+        const trees = await Tree.find({ byUser: user.id, plantedRecently: true });
+
+        return trees;
+    }
 
 }

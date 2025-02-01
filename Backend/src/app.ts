@@ -15,6 +15,7 @@ import reportRouter from "./routes/reportRoute";
 import eventRouter from "./routes/eventRoute";
 import commentRouter from "./routes/commentRoute";
 import responseRouter from "./routes/responseRoute";
+import TaskRouter from "./routes/taskRoute";
 
 
 //* Environment variables
@@ -22,10 +23,6 @@ dotenv.config();
 
 //* Create Express App
 const app = express();
-
-//* View Engine
-app.set("view engine", "pug");
-app.set("views", path.join(__dirname, "views"));
 
 //* Middlewares
 //? -----Body Parser
@@ -35,6 +32,7 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, 'uploads')));
 
 //? -----Limit Request From Same IP
+
 app.use(limiter);
 
 //? -----Logging HTTP request
@@ -53,6 +51,8 @@ app.use('/api/reports', reportRouter);
 app.use('/api/events', eventRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/responses', responseRouter);
+app.use('/api/tasks', TaskRouter);
+
 
 app.get("/comment", (req, res) => {
     res.sendFile(path.join(__dirname, "uploads", "comment.html"));
