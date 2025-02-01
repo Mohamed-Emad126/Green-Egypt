@@ -11,9 +11,15 @@ const EventSchema: Schema = new mongoose.Schema({
         required: true
     },
     location: {
-        longitiude:{
+        latitude: {
             type: Number,
-
+            required: true,
+            default: 0
+        },
+        longitude:{
+            type: Number,
+            required: true,
+            default: 0
         }
     },
     description: {
@@ -39,6 +45,10 @@ const EventSchema: Schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Partner',
         required: true
+    },
+    interestedIn: {
+        type: [String],
+        default: [] 
     }
 });
 

@@ -36,6 +36,7 @@ const CommentSchema: Schema = new Schema({
         ref: 'comment',
         default: null
     }
+
 }, { timestamps: true });
 
 const Comment = mongoose.model<IComment>("Comment", CommentSchema);

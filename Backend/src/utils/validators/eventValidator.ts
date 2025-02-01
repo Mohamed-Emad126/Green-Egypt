@@ -50,7 +50,19 @@ export const uploadEventImageValidator = [
     validatorMiddleware
 ];
 
-export const deleteEventPictureValidator = [
-    check('id').isMongoId().withMessage('Invalid Event ID Format'),    
+export const addInterestedValidator = [
+    check('id').isMongoId().withMessage('Invalid Event ID Format'),
+    check('interestedUser').notEmpty().withMessage('Interested User is required'),
+    validatorMiddleware
+];
+
+export const removeInterestedValidator = [
+    check('id').isMongoId().withMessage('Invalid Event ID Format'),
+    check('interestedUser').notEmpty().withMessage('Interested User is required'),
+    validatorMiddleware
+];
+
+export const countInterestedValidator = [
+    check('id').isMongoId().withMessage('Invalid Event ID Format'),
     validatorMiddleware
 ];

@@ -16,6 +16,8 @@ import eventRouter from "./routes/eventRoute";
 import commentRouter from "./routes/commentRoute";
 import responseRouter from "./routes/responseRoute";
 import TaskRouter from "./routes/taskRoute";
+import guideRouter from "./routes/guideRoute";
+
 
 
 //* Environment variables
@@ -52,7 +54,7 @@ app.use('/api/events', eventRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/responses', responseRouter);
 app.use('/api/tasks', TaskRouter);
-
+app.use('/api/guide', guideRouter);
 
 app.get("/comment", (req, res) => {
     res.sendFile(path.join(__dirname, "uploads", "comment.html"));
@@ -63,6 +65,10 @@ const swaggerDocument = JSON.parse(
     fs.readFileSync(path.join(__dirname, 'swagger.json'), 'utf-8')
 );
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.get("/comment", (req, res) => {
+    res.sendFile(path.join(__dirname, "uploads", "comment.html"));
+});
 
 //? -----Error Handler
 app.use(notFoundErrorMiddleware);
