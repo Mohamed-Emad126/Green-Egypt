@@ -11,8 +11,24 @@
             "description": "Operations about Authentication"
         },
         {
+            "name": "Care",
+            "description": "Operations about Tasks"
+        },
+        {
+            "name": "Events",
+            "description": "Operations about Events"
+        },
+        {
+            "name": "guides",
+            "description": "Operations about Guides"
+        },
+        {
+            "name": "Nurseries",
+            "description": "Operations about Nurseries"
+        },
+        {
             "name": "Users",
-            "description": "Operations about Users & Admins"
+            "description": "Operations about Users & Admins and their tasks"
         },
         {
             "name": "Trees",
@@ -23,39 +39,23 @@
             "description": "Operations about Partners"
         },
         {
-            "name": "Coupon",
+            "name": "Coupons",
             "description": "Operations about Coupon"
         },
         {
-            "name": "Reports",
-            "description": "Operations about Reports"
+            "name": "Community",
+            "description": "Operations about Reports, Comments , Responses"
         },
         {
-            "name": "Comments",
-            "description": "Operations about Comments"
-        },
-        {
-            "name": "Responses",
-            "description": "Operations about Responses"
-        },
-        {
-            "name": "Events",
-            "description": "Operations about Events"
-        },
-        {
-            "name": "Nurseries",
-            "description": "Operations about Nurseries"
-        },
-        {
-            "name": "Content",
-            "description": "Operations about Content"
+            "name": "notifications",
+            "description": "Operations about Notifications"
         }
     ],
     "paths": {
         "/api/auth/register": {
             "post": {
                 "tags": ["Auth"],
-                "summary": "Register new user",
+                "summary": "Register",
                 "description": "Register a new user with username, email, and password.",
                 "requestBody": {
                     "required": true,
@@ -119,7 +119,20 @@
                         }
                     },
                     "400": {
-                        "description": "Bad request"
+                        "description": "If the user enters an email that already exists, or the two passwords do not match, or enters something that conflicts with the validation rules.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email already exists"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -127,7 +140,7 @@
         "/api/auth/login": {
             "post": {
                 "tags": ["Auth"],
-                "summary": "Login user",
+                "summary": "Login",
                 "description": "Login user with email and password.",
                 "requestBody": {
                     "required": true,
@@ -138,8 +151,7 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "example" : "Hagarelessawy0@gmail.com",
-                                        "length" : {"max" : 15, "min": 3}
+                                        "example" : "Hagarelessawy0@gmail.com"
                                     },
                                     "password": {
                                         "type": "string",
@@ -190,7 +202,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Wrong email or password"
+                                            "example": "Wrong password"
                                         }
                                     }
                                 }
@@ -203,7 +215,7 @@
         "/api/auth/logout": {
             "post": {
                 "tags": ["Auth"],
-                "summary": "Logout user",
+                "summary": "Logout",
                 "description": "Logs out current logged in user session by invalidating the token.",
                 "security": [{
                     "bearerAuth": []
@@ -226,7 +238,7 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized - Invalid token , Session expired or password recently changed",
+                        "description": "Invalid token , Session expired or password recently changed",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -247,7 +259,7 @@
         "/api/auth/forgotPassword": {
             "post": {
                 "tags": ["Auth"],
-                "summary": "Send reset password link",
+                "summary": "forgot password",
                 "description": "Send a reset password link to the user's email.",
                 "requestBody": {
                     "required": true,
@@ -300,7 +312,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad request",
+                        "description": "error sending email or invalid email format",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -321,7 +333,7 @@
         "/api/auth/reset-password/{token}": {
             "post": {
                 "tags": ["Auth"],
-                "summary": "Reset password",
+                "summary": "Reset Password",
                 "description": "Reset user's password using the token sent to their email.",
                 "parameters": [{
                     "name": "token",
@@ -388,7 +400,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad request",
+                        "description": "Passwords do not match or are shorter than 8 characters",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -406,27 +418,170 @@
                 }
             }
         },
-        "api/trees": {
+        "api/users/{id}/tree": {
             "get": {
-                "tags": [ "Trees" ],
-                "summary": "Retrieve all trees",
-                "description": "Retrieve a list of all trees registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter, with the ability to filter the tree properties or display all of them.",
+                "tags": ["Care"],
+                "summary": "Retrieve user trees",
+                "description": "Retrieval of trees planted by the user",
+                "security": [{
+                    "bearerAuth": []
+                }],
                 "parameters": [{
-                    "name": "page",
-                    "in": "query",
-                    "description" : "The number of the page",
-                    "require" : "false",
-                    "schema":{
-                        "type": "number",
-                        "default": 1,
-                        "enum": ["From 1 to (total number of elements / number of elements on one page)"]
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "674f5632e57414133c9499f9"
                     }
-                        
-            
                 }],
                 "responses": {
                     "200": {
-                        "description": "Page number, number of elements, and a list of trees with all their properties",
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "object",
+                                            "example": [
+                                                {
+                                                    "treeLocation": {
+                                                        "latitude": 25,
+                                                        "longitude": 26
+                                                    },
+                                                    "_id": "67978b5804bb6348dd0f63cf",
+                                                    "healthStatus": "Diseased",
+                                                    "problem": "testt",
+                                                    "image": "../uploads/not-found-image.png",
+                                                    "plantedRecently": true,
+                                                    "byUser": "674f5632e57414133c9499f9",
+                                                    "reportsAboutIt": [
+                                                        "67978bb904bb6348dd0f63d4"
+                                                    ],
+                                                    "createdAt": "2025-01-27T13:34:16.460Z",
+                                                    "updatedAt": "2025-01-27T17:15:22.357Z",
+                                                    "__v": 6
+                                                },
+                                                {
+                                                    "treeLocation": {
+                                                        "latitude": 25,
+                                                        "longitude": 26
+                                                    },
+                                                    "_id": "6797bb1235f66e923435a858",
+                                                    "healthStatus": "Healthy",
+                                                    "problem": "No problem",
+                                                    "image": "../uploads/not-found-image.png",
+                                                    "plantedRecently": true,
+                                                    "byUser": "674f5632e57414133c9499f9",
+                                                    "reportsAboutIt": [
+                                                        "67978c5004bb6348dd0f63da",
+                                                        "6797bf003ae87c7a8fcbf45c"
+                                                    ],
+                                                    "createdAt": "2025-01-27T16:57:54.282Z",
+                                                    "updatedAt": "2025-01-27T17:15:21.935Z",
+                                                    "__v": 2
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "if user Enters something that conflicts with the validation rules",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid User ID Format"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [ "Users" ],
+                "summary": "Locate tree",
+                "description": "Retrieve a list of all trees registered in the application in the form of pages. Each page displays 5 items. This is a temporary number. The number of items will be changed according to what we agree upon.",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "674f5632e57414133c9499f9"
+                    }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "location": {
+                                        "type": "object",
+                                        "properties": {
+                                            "latitude": {
+                                            "type": "number",
+                                            "example": 25,
+                                            "length": {"min": 22, "max": 35}
+                                            },
+                                            "longitude": {
+                                                "type": "number",
+                                                "example": 26,
+                                                "length": {"min": 24, "max": 37}
+                                            }
+                                        }
+                                        
+                                    },
+                                    "healthStatus": {
+                                        "type": "string",
+                                        "example": "Healthy",
+                                        "enum": ["Healthy", "Diseased", "Dying"]
+                                    },
+                                    "problem": {
+                                        "type": "string",
+                                        "info": "It's required if healthStatus is Diseased or Dying",
+                                        "default": "No problem"
+                                    }
+                                },
+                                "required": ["location", "healthStatus"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Page number, number of elements in the page, and a list of trees with all their properties",
                         "content": {
                             "application/json": {
                                 "example": {
@@ -474,13 +629,582 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "If user enters something that conflicts with the validation rules",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Latitude must be between 22 and 32"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403":{
+                        "summary": "The user who requested is not the owner of the ID in the path or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/users/{id}/task":{
+            "post":{
+                "tags": ["Care"],
+                "summary": "Add task",
+                "description": "Add task in care page",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "674f5632e57414133c9499f9"
+                        }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example" : "Watering",
+                                        "length" : {"max": 30}
+                                    },
+                                    "treeID": {
+                                        "type": "string",
+                                        "example" : "67978b5804bb6348dd0f63cf"
+                                    },
+                                    "date": {
+                                        "type": "date",
+                                        "example" : "2025-02-27",
+                                        "validation" : "Date must be in the presented date or in the future"
+                                    }
+                                },
+                                "required": ["title", "treeID", "date"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task created successfully"
+                                        },
+                                        "task": {
+                                            "type": "object",
+                                            "example": {
+                                                "title": "Watering",
+                                                "tree": {
+                                                    "treeLocation": {
+                                                        "latitude": 25,
+                                                        "longitude": 26
+                                                    },
+                                                    "_id": "6797bb1235f66e923435a858",
+                                                    "healthStatus": "Healthy",
+                                                    "problem": "No problem",
+                                                    "image": "../uploads/not-found-image.png",
+                                                    "plantedRecently": false,
+                                                    "byUser": "674f5632e57414133c9499f9",
+                                                    "reportsAboutIt": [
+                                                        "67978c5004bb6348dd0f63da",
+                                                        "6797bf003ae87c7a8fcbf45c"
+                                                    ],
+                                                    "createdAt": "2025-01-27T16:57:54.282Z",
+                                                    "updatedAt": "2025-01-27T17:15:21.935Z",
+                                                    "__v": 2
+                                                },
+                                                "user": {
+                                                    "_id": "674f5632e57414133c9499f9",
+                                                    "username": "Hagar",
+                                                    "email": "gamilamohamed@gamil.com",
+                                                    "profilePic": "https://res.cloudinary.com/dvlao566z/image/upload/v1733439630/kjhjxq357ujwlaefpg53.jpg",
+                                                    "password": "$2a$10$gm1o2sVkyBFNlt8rOlWMP.8qArN0NfatJz0r6ASCwAnHYKl2c8S6e",
+                                                    "points": 20,
+                                                    "pendingCoupons": 0,
+                                                    "isActive": true,
+                                                    "role": "admin",
+                                                    "createdAt": "2024-12-03T19:04:18.280Z",
+                                                    "updatedAt": "2025-01-29T11:28:48.753Z",
+                                                    "__v": 0,
+                                                    "passwordChangedAt": "2025-01-29T11:28:48.750Z"
+                                                },
+                                                "date": "2025-02-25T00:00:00.000Z",
+                                                "isDone": false,
+                                                "_id": "679d629638fb51932425aca5",
+                                                "__v": 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "If the user enters a date in the past or a title is longer than the maximum",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Title must be at most 30 characters long"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found or tree not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403":{
+                        "summary": "The user who requested is not the owner of the ID in the path or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": ["Care"],
+                "summary": "Retrieve user tasks",
+                "description": "Get user tasks on specific date (not in past) to be displayed in care page with that date",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "674f5632e57414133c9499f9"
+                    }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "date": {
+                                        "type": "date",
+                                        "example" : "2025-02-25",
+                                        "validation" : "Date must be in the presented date or in the future"
+                                    }
+                                },
+                                "required": ["date"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "example": [
+                                    {
+                                        "_id": "679d629638fb51932425aca5",
+                                        "title": "Watering",
+                                        "tree": "6797bb1235f66e923435a858",
+                                        "user": "674f5632e57414133c9499f9",
+                                        "date": "2025-02-25T00:00:00.000Z",
+                                        "isDone": false,
+                                        "__v": 0
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "IF the date is in the past",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Date cannot be in the past"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403":{
+                        "summary": "The user who requested is not the owner of the ID in the path or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks/{id}": {
+            "patch": {
+                "tags": ["Care"],
+                "summary": "Update task title",
+                "description": "Update task title",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "679d586f1ea9acf426404abc"
+                    }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",   
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Water the tree",
+                                        "length" : {"max": 30}
+                                    }
+                                },
+                                "required": ["title"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task updated successfully"
+                                        },
+                                        "task": {
+                                            "type": "object",
+                                            "example": {
+                                                "_id": "679d629638fb51932425aca5",
+                                                "title": "Water the tree",
+                                                "tree": "6797bb1235f66e923435a858",
+                                                "user": "674f5632e57414133c9499f9",
+                                                "date": "2025-02-25T00:00:00.000Z",
+                                                "isDone": false,
+                                                "__v": 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "summary": "Title is longer than the maximum allowed or not available",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Title must be at most 30 characters long"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403":{
+                        "summary": "The user who requested is not the owner of the task",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
             "post": {
+                "tags": ["Care"],
+                "summary": "Mark task",
+                "description": "Mark task as done or cancel it",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "679d586f1ea9acf426404abc"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task marked as done successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403":{
+                        "summary": "The user who requested is not the owner of the task",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Care"],
+                "summary": "Delete task",
+                "description": "Delete task",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "679d586f1ea9acf426404abc"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {    
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403":{
+                        "summary": "The user who requested is not the owner of the task",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/trees": {
+            "get": {
                 "tags": [ "Trees" ],
-                "summary": "Locate a tree",
-                "description": "Retrieve a list of all trees registered in the application in the form of pages. Each page displays 5 items. This is a temporary number. The number of items will be changed according to what we agree upon.",
+                "summary": "Retrieve all trees",
+                "description": "Retrieve a list of all trees registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter, with the ability to filter the tree properties or display all of them.",
+                "parameters": [{
+                    "name": "page",
+                    "in": "query",
+                    "description" : "The number of the page",
+                    "require" : "false",
+                    "schema":{
+                        "type": "number",
+                        "default": 1,
+                        "validation": "From 1 to (total number of elements / number of elements on one page)"
+                    } 
+                }],
                 "responses": {
                     "200": {
                         "description": "Page number, number of elements, and a list of trees with all their properties",

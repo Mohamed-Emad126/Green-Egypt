@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
 import { ITreeInput } from "../interfaces/iTree";
+import mongoose from "mongoose";
 
 
 
@@ -45,13 +46,12 @@ export default class TreeController {
 
     /**
      * @desc      Locate tree
-     * @route     POST /api/trees
+     * @route     POST /api/users/:id/trees
      * @access    Public
     */
     LocateTree = asyncHandler(async (req: Request, res: Response) => {
-        const { treeLocation, healthStatus, problem }: ITreeInput = req.body;
-        const userID = req.body.user.id;
-        const createdTree = await this.treeService.LocateTree({ treeLocation, healthStatus, problem, byUser: userID });
+        const { treeName, treeLocation, healthStatus, problem } = req.body;
+        const createdTree = await this.treeService.LocateTree({ treeName, treeLocation, healthStatus, problem } , req.params.id);
         if (createdTree) {
             res.status(201).json({ message: 'Tree located successfully' });
         } else {

@@ -1,9 +1,24 @@
 import { Router } from "express";
 import UserService from "../services/userService";
 import UserController from "../controllers/userController";
-import { getUserValidator, updateUserValidator, changeUserPasswordValidator, deleteUserValidator, uploadUserImageValidator, deleteUserImageValidator, updateUserPointsValidator, claimPendingCouponsValidator,promoteUserValidator} from "../utils/validators/userValidator";
+import {getUserValidator,
+        updateUserValidator, 
+        changeUserPasswordValidator, 
+        deleteUserValidator, 
+        uploadUserImageValidator, 
+        deleteUserImageValidator, 
+        updateUserPointsValidator, 
+        claimPendingCouponsValidator,
+        promoteUserValidator, 
+        getUserTreesValidator} from "../utils/validators/userValidator";
+import { createTaskValidator, getUserTasksByDateValidator } from "../utils/validators/taskValidator";
+import { locateTreeValidator } from "../utils/validators/treeValidator";
 import { verifyUserMiddleware , verifyToken, verifyAdminMiddleware} from "../middlewares/authMiddleware";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
+import TaskController from "../controllers/taskController";
+import TaskService from "../services/taskService";
+import TreeController from "../controllers/treeController";
+import TreeService from "../services/treeService";
 
 
 const userRouter = Router();
@@ -18,7 +33,14 @@ const { getUsers,
         deleteUserPicture, 
         updateUserPoints,
         claimPendingCoupons,
-        promoteUserToAdmin,} = new UserController(userService);
+        promoteUserToAdmin,
+        getUserTrees} = new UserController(userService);
+
+const taskService = new TaskService();
+const { createTask, getUserTasksByDate} = new TaskController(taskService);
+
+const treeService = new TreeService();
+const { LocateTree } = new TreeController(treeService);
 
 userRouter.route('/')
         .get(verifyAdminMiddleware, getUsers);
@@ -42,8 +64,18 @@ userRouter.route('/:id/image')
 userRouter.route('/:id/change-password')
         .put(verifyUserMiddleware, changeUserPasswordValidator, changeUserPassword);
 
-userRouter.route('/promote-admin/:id')
+userRouter.route('/:id/promote-admin')
         .put(verifyAdminMiddleware,promoteUserValidator, promoteUserToAdmin);
-        
+
+userRouter.route('/:id/tree')
+        .get(verifyToken, getUserTreesValidator, getUserTrees)
+        .post(verifyToken, locateTreeValidator, LocateTree);
+
+userRouter.route('/:id/task')
+        .post(verifyUserMiddleware, createTaskValidator, createTask)
+        .get(verifyUserMiddleware, getUserTasksByDateValidator, getUserTasksByDate);
+
+
+
 export default userRouter;
 
