@@ -40,9 +40,8 @@ export default class AuthController {
     login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { email, password }: IAuthInput = req.body;
         const loginResult = await this.authService.login({ email, password });
-
-        if (!loginResult) {
-            next(new ApiError("Wrong email or password", 400));
+        if (loginResult.status === 400) {
+            next(new ApiError(loginResult.message!, 400));
         } else {
             res.header("x-auth-token", loginResult.token)
             .json({ 

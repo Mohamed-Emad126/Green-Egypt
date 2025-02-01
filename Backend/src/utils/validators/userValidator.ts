@@ -105,5 +105,8 @@ export const promoteUserValidator =[
     check('id').isMongoId().withMessage('Invalid user ID Format'),
     validatorMiddleware
 ];
-    
 
+export const getUserTreesValidator =[
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
+    validatorMiddleware
+];
