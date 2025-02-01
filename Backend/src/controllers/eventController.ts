@@ -100,19 +100,46 @@ export default class EventController {
         }
     });
 
+
     /**
-     * @desc      Delete event picture
-     * @route     DELETE /api/events/:id/picture
+     * @desc      add interested user
+     * @route     POST /api/events/:id/interested
      * @access    Public
      */
-    deleteEventPicture = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const result = await this.eventService.deleteEventPicture(req.params.id);
+    addInterested = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.eventService.addInterested(req.params.id, req.body.interestedUser);
         if (result) {
-            res.json({ message: "Picture deleted successfully"});
+            res.json({ message: "User added successfully"});
+        } else {
+            return next(new ApiError("Event not found", 404));
+        }
+    });
+    
+    /**
+     * @desc      Remove interested user
+     * @route     DELETE /api/events/:id/interested
+     * @access    Public
+     */
+    removeInterested = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.eventService.removeInterested(req.params.id, req.body.interestedUser);
+        if (result) {
+            res.json({ message: "User removed successfully"});
         } else {
             return next(new ApiError("Event not found", 404));
         }
     });
 
-
+    /**
+     * @desc      Count interested users
+     * @route     GET /api/events/:id/interested/count
+     * @access    Public
+     */
+    countInterested = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.eventService.countInterested(req.params.id);
+        if (result) {
+            res.json({ interestedCount: result});
+        } else {
+            return next(new ApiError("Event not found", 404));
+        }
+    });
 }

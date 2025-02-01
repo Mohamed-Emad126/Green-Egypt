@@ -53,5 +53,4 @@ reportRouter.route('/:id/response')
         .get(verifyToken, getReportResponsesValidator, getReportResponses)
         .post(verifyToken, uploadImages, createResponseValidator, createResponse);
 
-
 export default reportRouter;
