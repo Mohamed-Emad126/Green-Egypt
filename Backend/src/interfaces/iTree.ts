@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Document } from "mongoose";
 
 export interface ITree extends Document {
+    treeName: string;
     treeLocation: {
         latitude: number;
         longitude: number;
@@ -18,15 +19,16 @@ export interface ITree extends Document {
 }
 
 export interface ITreeInput {
-    treeLocation?: {
-        latitude?: number;
-        longitude?: number;
+    treeName: string;
+    treeLocation: {
+        latitude: number;
+        longitude: number;
     };
-    healthStatus?: 'Healthy' | 'Diseased' | 'Dying';
-    problem?: string;
-    image?: string;
-    plantedRecently?: boolean,
-    byUser?: mongoose.Schema.Types.ObjectId,
+    healthStatus: 'Healthy' | 'Diseased' | 'Dying';
+    problem: string;
+    image: string;
+    plantedRecently: boolean,
+    byUser: mongoose.Schema.Types.ObjectId,
 }
 
 export type TDeleteReason = 'Died'| 'Cut Down'| 'False Record'

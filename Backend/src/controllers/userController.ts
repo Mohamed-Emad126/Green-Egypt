@@ -155,7 +155,7 @@ export default class UserController {
     /**
      * @desc      Promote user to admin
      * @route     PUT /api/users/promote-admin/:id
-     * @access    Private
+     * @access    Private(admin)
      */
     promoteUserToAdmin = asyncHandler(async (req: Request, res: Response, next: NextFunction) =>{
         const userID = req.params.id;
@@ -167,5 +167,23 @@ export default class UserController {
             res.json(result);
         }
 
+    });
+
+    /**
+     * @desc      get trees that a user has planted
+     * @route     GET /api/users/:id/trees
+     * @access    Private
+    */
+    getUserTrees = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const trees = await this.userService.getUserTrees(req.params.id);
+        if (trees === false) {
+            return next(new ApiError("User not found", 404));
+        }
+
+        if (trees.length === 0) {
+            res.json({ message: "User has no trees"});
+        } else {
+            res.json(trees);
+        }
     });
 }

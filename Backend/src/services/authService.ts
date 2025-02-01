@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import  sendEmail from "../utils/email";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
+import { stat } from "fs";
 
 
 
@@ -23,14 +24,16 @@ export default class AuthService {
         return {token, user_id : user.id};
     }
 
-    async login(userData : IAuthInput): Promise<{ token: string; user_id: string } | false> {
+    async login(userData : IAuthInput) {
         const findUser = await User.findOne({email: userData.email});
-        if(!findUser || !(await bcrypt.compare(userData.password, findUser.password))) {
-            return false;
-        } 
+        if(!findUser) {
+            return { status: 400, message: "Wrong email" };
+        } else if( !await bcrypt.compare(userData.password, findUser.password)){
+            return { status: 400, message: "Wrong password" };
+        }
         
         const token = await findUser.generateToken();
-        return {token, user_id : findUser.id};
+        return { status: 200, token, user_id : findUser.id};
     }
 
     async logout(token: string): Promise<void> {

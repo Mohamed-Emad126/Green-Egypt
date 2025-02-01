@@ -17,15 +17,15 @@ export default class TreesService {
         return tree ? tree : null;
     }
 
-    async LocateTree(newTree : ITreeInput) {
+    async LocateTree(newTree : Partial<ITreeInput> , userID : string) {
         if (newTree.healthStatus === 'Healthy') {
             newTree.problem = 'No problem';
         }
         
-        return Tree.create(newTree);
+        return Tree.create({ ...newTree, byUser: userID });
     }
 
-    async updateTree(treeID : string, updateData : ITreeInput) {
+    async updateTree(treeID : string, updateData : Partial<ITreeInput>) {
         const tree = await Tree.findById(treeID);
         if (!tree){
             return false;
