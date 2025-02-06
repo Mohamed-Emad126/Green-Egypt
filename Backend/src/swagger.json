@@ -49,6 +49,10 @@
         {
             "name": "notifications",
             "description": "Operations about Notifications"
+        },
+        {
+            "name": "Other",
+            "description": "Operations about more than one thing or anything else that is not in the above categories"
         }
     ],
     "paths": {
@@ -1189,69 +1193,435 @@
                 }
             }
         },
-        "api/trees": {
+        "/search/home/{key}": {
             "get": {
-                "tags": [ "Trees" ],
-                "summary": "Retrieve all trees",
-                "description": "Retrieve a list of all trees registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter, with the ability to filter the tree properties or display all of them.",
+                "tags": ["Other"],
+                "summary": "Search home",
+                "description": "Search for articles, events or Nurseries in the home",
+                "security": [{
+                    "bearerAuth": []
+                }],
                 "parameters": [{
-                    "name": "page",
-                    "in": "query",
-                    "description" : "The number of the page",
-                    "require" : "false",
-                    "schema":{
-                        "type": "number",
-                        "default": 1,
-                        "validation": "From 1 to (total number of elements / number of elements on one page)"
-                    } 
+                    "name": "key",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "test"
+                    }
                 }],
                 "responses": {
                     "200": {
-                        "description": "Page number, number of elements, and a list of trees with all their properties",
+                        "description": "Successful operation",
                         "content": {
                             "application/json": {
-                                "example": {
-                                    "length": 2,
-                                    "page": 1,
-                                    "trees": [
-                                        {
-                                            "treeLocation": {
-                                                "latitude": 25,
-                                                "longitude": 26
-                                            },
-                                            "_id": "67978b5804bb6348dd0f63cf",
-                                            "healthStatus": "Diseased",
-                                            "problem": "testt",
-                                            "image": "../uploads/not-found-image.png",
-                                            "plantedRecently": false,
-                                            "byUser": "674f5632e57414133c9499f9",
-                                            "reportsAboutIt": [
-                                                "67978bb904bb6348dd0f63d4"
-                                            ],
-                                            "createdAt": "2025-01-27T13:34:16.460Z",
-                                            "updatedAt": "2025-01-27T17:15:22.357Z",
-                                            "__v": 6
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Articles": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "string",
+                                                    "description": "Message indicating no articles found",
+                                                    "example": "No article found"
+                                                },
+                                                {
+                                                    "type": "array",
+                                                    "description": "Array of article objects",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "articlePic": {
+                                                                "type": "string",
+                                                                "example": "../uploads/not-found-image.png"
+                                                            },
+                                                            "_id": {
+                                                                "type": "string",
+                                                                "example": "679c185b5996a56b2da3689f"
+                                                            },
+                                                            "articletitle": {
+                                                                "type": "string",
+                                                                "example": "how to care for a tree"
+                                                            },
+                                                            "content": {
+                                                                "type": "string",
+                                                                "example": "rrrrrrrrrrrrrrrrrrrrr"
+                                                            },
+                                                            "createdAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-01-31T00:24:59.736Z"
+                                                            },
+                                                            "__v": {
+                                                                "type": "integer",
+                                                                "example": 0
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         },
-                                        {
-                                            "treeLocation": {
-                                                "latitude": 25,
-                                                "longitude": 26
-                                            },
-                                            "_id": "6797bb1235f66e923435a858",
-                                            "healthStatus": "Healthy",
-                                            "problem": "No problem",
-                                            "image": "../uploads/not-found-image.png",
-                                            "plantedRecently": false,
-                                            "byUser": "674f5632e57414133c9499f9",
-                                            "reportsAboutIt": [
-                                                "67978c5004bb6348dd0f63da",
-                                                "6797bf003ae87c7a8fcbf45c"
-                                            ],
-                                            "createdAt": "2025-01-27T16:57:54.282Z",
-                                            "updatedAt": "2025-01-27T17:15:21.935Z",
-                                            "__v": 2
+                                        "Events": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "array",
+                                                    "description": "Array of event objects",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "location": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "latitude": {
+                                                                        "type": "number",
+                                                                        "example": 30
+                                                                    },
+                                                                    "longitude": {
+                                                                        "type": "number",
+                                                                        "example": 24
+                                                                    }
+                                                                }
+                                                            },
+                                                            "eventImage": {
+                                                                "type": "string",
+                                                                "example": "../uploads/not-found-image.png"
+                                                            } ,
+                                                            "_id": {
+                                                                "type": "string",
+                                                                "example": "672fc5bbfdc6d15f778e25d7"
+                                                            },
+                                                            "eventName": {
+                                                                "type": "string",
+                                                                "example": "spring"
+                                                            },
+                                                            "eventDate": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2024-12-31T22:00:00.000Z"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "description"
+                                                            },
+                                                            "eventStatus": {
+                                                                "type": "string",
+                                                                "example": "completed"
+                                                            },
+                                                            "organizedWithPartnerID": {
+                                                                "type": "string",
+                                                                "example": "6712c34869c17428b80a63c6"
+                                                            },
+                                                            "__v": {
+                                                                "type": "integer",
+                                                                "example": 3
+                                                            },
+                                                            "interestedIn": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                                "example": ["674f5632e57414133c9499f9"]
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string",
+                                                    "description": "Message indicating no events found",
+                                                    "example": "No events found"
+                                                }
+                                            ]
                                         }
-                                    ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "No results found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No results found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "summary": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/search/community/{key}": {
+            "get": {
+                "tags": ["Other"],
+                "summary": "Search community",
+                "description": "Search for users or reports in the community",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "key",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "hagar"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Users": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "array",
+                                                    "description": "Array of user objects",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "_id": {
+                                                                "type": "string",
+                                                                "example": "674f5632e57414133c9499f9"
+                                                            },
+                                                            "username": {
+                                                                "type": "string",
+                                                                "example": "Hagar"
+                                                            },
+                                                            "email": {
+                                                                "type": "string",
+                                                                "example": "hagarelessawy0@gamil.com"
+                                                            },
+                                                            "profilePic": {
+                                                                "type": "string",
+                                                                "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1733439630/kjhjxq357ujwlaefpg53.jpg"
+                                                            },
+                                                            "points": {
+                                                                "type": "number",
+                                                                "example": 20
+                                                            },
+                                                            "pendingCoupons": {
+                                                                "type": "number",
+                                                                "example": 0
+                                                            },
+                                                            "role": {
+                                                                "type": "string",
+                                                                "example": "admin"
+                                                            },
+                                                            "createdAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2024-12-03T19:04:18.280Z"
+                                                            },
+                                                            "updatedAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-01-29T11:28:48.753Z"
+                                                            },
+                                                            "__v": {
+                                                                "type": "number",
+                                                                "example": 0
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string",
+                                                    "description": "Message indicating no users found",
+                                                    "example": "No users found"
+                                                }
+                                            ]
+                                        },
+                                        "Reports": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "string",
+                                                    "description": "Message indicating no reports found",
+                                                    "example": "No reports found"
+                                                },
+                                                {
+                                                    "type": "array",
+                                                    "description": "Array of report objects",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "location": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "latitude": {
+                                                                        "type": "number",
+                                                                        "example": 27
+                                                                    },
+                                                                    "longitude": {
+                                                                        "type": "number",
+                                                                        "example": 24
+                                                                    }
+                                                                }
+                                                            },
+                                                            "_id": {
+                                                                "type": "string",
+                                                                "example": "67978c5004bb6348dd0f63da"
+                                                            },
+                                                            "reportType": {
+                                                                "type": "string",
+                                                                "enum": ["A tree needs care", "A place needs tree", "Other"],
+                                                                "example": "A tree needs care"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "test2"
+                                                            },
+                                                            "images": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1737987149/py1qurh4dfrpmk3ffdmt.png"
+                                                                }
+                                                            },
+                                                            "createdBy": {
+                                                                "type": "string",
+                                                                "description": "user ID",
+                                                                "example": "674f5632e57414133c9499f9"
+                                                            },
+                                                            "treeID": {
+                                                                "type": "string",
+                                                                "example": "6797bb1235f66e923435a858"
+                                                            },
+                                                            "upVotes": {
+                                                                "type": "number",
+                                                                "example": 1
+                                                            },
+                                                            "upVoters": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "description": "users ID",
+                                                                    "example": "674f5632e57414133c9499f9"
+                                                                }
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "enum": ["Pending", "In Progress", "Resolved", "Awaiting Verification"],
+                                                                "example": "Pending"
+                                                            },
+                                                            "responses": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "example": "6798c650f0ddb44f0d7ef905"
+                                                                }
+                                                            },
+                                                            "comments": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "example": "6797904c10d099e3275e0ba6"
+                                                                }
+                                                            },
+                                                            "modificationHistory": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "oldData": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "reportType": {
+                                                                                    "type": "string",
+                                                                                    "example": "A tree needs care"
+                                                                                },
+                                                                                "description": {
+                                                                                    "type": "string",
+                                                                                    "example": "testttt2"
+                                                                                },
+                                                                                "location": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "latitude": {
+                                                                                            "type": "number",
+                                                                                            "example": 27
+                                                                                        },
+                                                                                        "longitude": {
+                                                                                            "type": "number",
+                                                                                            "example": 24
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "images": {
+                                                                                    "type": "array",
+                                                                                    "items": {
+                                                                                        "type": "string",
+                                                                                        "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1737987149/py1qurh4dfrpmk3ffdmt.png"
+                                                                                    }
+                                                                                },
+                                                                                "treeID": {
+                                                                                    "type": "string",
+                                                                                    "example": "67978b5804bb6348dd0f63cf"
+                                                                                },
+                                                                                "createdAt": {
+                                                                                    "type": "string",
+                                                                                    "format": "date-time",
+                                                                                    "example": "2025-01-27T14:12:30.737Z"
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "updatedAt": {
+                                                                            "type": "string",
+                                                                            "format": "date-time",
+                                                                            "example": "2025-01-27T17:08:06.033Z"
+                                                                        },
+                                                                        "_id": {
+                                                                            "type": "string",
+                                                                            "example": "6797bd763ae87c7a8fcbf44f"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            "createdAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-01-27T13:38:24.412Z"
+                                                            },
+                                                            "updatedAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-01-28T11:58:08.371Z"
+                                                            },
+                                                            "__v": {
+                                                                "type": "number",
+                                                                "example": 8
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
                                 }
                             }
                         }
