@@ -1,25 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gogreen/Community.dart';
+
+bool showNurseryContent = false;
+
 
 
 class Homepage extends StatefulWidget {
+  const Homepage({super.key});
+
 
   @override
   _HomepageState createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    if (index == 0) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const Homepage()));
+    }
+
+     else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+
   late List<bool> _isSelected;
   late int _currentIndex;
   int _currentPage = 0;
-  int _selectedIndex = 0;
   bool _isNotificationPressed = false;
-  bool isCareSelected = true;
   bool isTreePlantingSelected = false;
-  bool isCharitySelected = false;
-  bool isEventsSelected = false;
+  bool isCareSelected = false;
   bool isTreeNurserySelected = false;
-  PageController _pageController = PageController();
+
+  bool isEventsSelected = false;
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -37,6 +56,7 @@ class _HomepageState extends State<Homepage> {
       _currentIndex = index;
     });
   }
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
@@ -48,7 +68,6 @@ class _HomepageState extends State<Homepage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // الجزء العلوي من الصفحة
           SizedBox(height: 35.h),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -59,7 +78,7 @@ class _HomepageState extends State<Homepage> {
                   children: [
                     Image.asset(
                       'images/img_11.png',
-                      color: Color(0xFF147351),
+                      color: const Color(0xFF147351),
                       width: 40.w,
                       height: 40.h,
                     ),
@@ -69,7 +88,7 @@ class _HomepageState extends State<Homepage> {
                       style: TextStyle(
                         fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF147351),
+                        color: const Color(0xFF147351),
                       ),
                     ),
                   ],
@@ -105,7 +124,7 @@ class _HomepageState extends State<Homepage> {
               width: 300.w,
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.h),
               decoration: BoxDecoration(
-                color: Color(0xFFEBF3F1),
+                color: const Color(0xFFEBF3F1),
                 borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(
                   color: Colors.black.withOpacity(0.01),
@@ -142,26 +161,42 @@ class _HomepageState extends State<Homepage> {
               ),
             ),
           ),
-          SizedBox(height: 5.h),
-Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
-  child: SingleChildScrollView(
-    scrollDirection: Axis.horizontal,
+          SizedBox(height: 20.h),
+  Padding( padding: EdgeInsets.symmetric(horizontal: 2.w,vertical: 2.h),
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         GestureDetector(
           onTap: () {
             setState(() {
+              _currentPage = 0;
             });
             _pageController.jumpToPage(0);
           },
           child: buildSmallContainerWithSelected(
             'images/img_1.png',
-            'Tree Planting Guide',
+            'The planting guide',
             _currentPage == 0,
           ),
         ),
-        SizedBox(width: 5.w),
+        SizedBox(width: 10.w),
+
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _currentPage = 2;
+            });
+            _pageController.jumpToPage(2);
+          },
+          child: buildSmallContainerWithSelected(
+            'images/img_20.png',
+            'Care',
+            _currentPage == 2,
+          ),
+        ),
+        SizedBox(width: 10.w),
         GestureDetector(
           onTap: () {
             setState(() {
@@ -175,7 +210,24 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
             _currentPage == 1,
           ),
         ),
-        SizedBox(width: 5.w),
+
+        SizedBox(width: 10.w),
+        GestureDetector(
+          onTap: () {
+            showNurseryContent = true;
+
+            setState(() {
+              _currentPage = 4;
+            });
+            _pageController.jumpToPage(4);
+          },
+          child: buildSmallContainerWithSelected(
+            'images/img_8.png',
+            'Planting Location',
+            _currentPage == 4,
+          ),
+        ),
+        /*  SizedBox(width: 5.w),
         GestureDetector(
           onTap: () {
             setState(() {
@@ -188,28 +240,15 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
             'Tree Nursery',
             _currentPage == 2,
           ),
-        ),
-        SizedBox(width: 5.w),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _currentPage = 3;
-            });
-            _pageController.jumpToPage(3);
-          },
-          child: buildSmallContainerWithSelected(
-            'images/img_20.png',
-            'Care',
-            _currentPage == 3,
-          ),
-        ),
+        ),*/
+
       ],
     ),
   ),
 ),
 
     // PageView
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: PageView(
               controller: _pageController,
@@ -218,28 +257,23 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
                   _selectedIndex = index;
                 });
               },
-              physics: NeverScrollableScrollPhysics(),
-
+              physics: const NeverScrollableScrollPhysics(),
               children: [
 
 
                 GestureDetector(
-
-
                   child: Container(
-
                     margin: EdgeInsets.symmetric(horizontal: 15.w),
                     height: 470.h,
                     width: 376.w,
                     decoration: BoxDecoration(
-                      color: Color(0xFFEBF3F1),
+                      color: const Color(0xFFEBF3F1),
                       borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(16.w),
                       child: GridView.builder(
                         shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           mainAxisSpacing: 25.h,
@@ -258,149 +292,121 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
                     ),
                   ),
                 ),
-                Stack(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 15.w),
-                      height: 400.h,
-                      width: 376.w,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFEBF3F1),
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                    ),
-                    Positioned(
-                      top: 20,
-                      bottom: 0,
-                      left: 20,
-                      right: 20,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20.r),
-                          bottomRight: Radius.circular(20.r),
-                        ),
-                        child: Image.asset(
-                          'images/img_36.png',
-                          fit: BoxFit.cover,
-                          height: 380.h,
-                          width: 376.w,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 10.h,
-                      left: 15.w,
-                      child: Row(
-                        children: [
-                          Text(
-                            'Search By',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(width: 5.w),
-                          PopupMenuButton<String>(
-                            onSelected: (value) {
-                              print(value);
-                            },
-                            offset: Offset(0, 40.h),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                            ),
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: "All Nurseries",
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.location_city, color: Colors.green),
-                                    SizedBox(width: 10.w),
-                                    Text("All Nurseries"),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: "My Location",
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.location_on, color: Colors.green),
-                                    SizedBox(width: 10.w),
-                                    Text("My Location"),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            child: Row(
-                              children: [
-                                SizedBox(width: 5.w),
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.location_on,
-                                        color: Colors.black,
-                                      ),
-                                      SizedBox(width: 8.w),
-                                      Text(
-                                        'My Location',
-                                        style: TextStyle(
-                                          fontSize: 16.sp,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                GestureDetector(
 
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15.w),
-                    height: 470.h,
-                    width: 376.w,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFEBF3F1),
-                      borderRadius: BorderRadius.circular(20.r),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(16.w),
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 25.h,
-                          crossAxisSpacing: 20.w,
-                          childAspectRatio: 0.5,
-                        ),
-                        itemCount: gridItems.length,
-                        itemBuilder: (context, index) {
-                          return buildSmallContainerWithTitleDescriptionAndImage(
-                            gridItems[index]['image']!,
-                            gridItems[index]['title']!,
-                            gridItems[index]['description']!,
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                GestureDetector(
 
-                  child:Column(
+    GestureDetector(
+    child: Container(
+    margin: EdgeInsets.symmetric(horizontal: 15.w),
+    height: 350.h,
+    width: 376.w,
+    decoration: BoxDecoration(
+    color: Color(0xFFEBF3F1),
+    borderRadius: BorderRadius.circular(20.r),
+    ),
+    child: Stack(
+    children: [
+    Positioned(
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    child: ClipRRect(
+    borderRadius: BorderRadius.circular(20.r),
+    child: Image.asset(
+    'images/img_36.png',
+    fit: BoxFit.cover,
+    height: 350.h,
+    width: 376.w,
+    ),
+    ),
+    ),
+    Positioned(
+    top: 10.h,
+    left: 15.w,
+    child: Row(
+    children: [
+    Text(
+    'Search By',
+    style: TextStyle(
+    fontSize: 16.sp,
+    color: Colors.black,
+    fontWeight: FontWeight.bold,
+    ),
+    ),
+    SizedBox(width: 5.w),
+    PopupMenuButton<String>(
+    onSelected: (value) {
+    print(value);
+    },
+    offset: Offset(0, 40.h),
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(10.r),
+    ),
+    itemBuilder: (context) => [
+    PopupMenuItem(
+    value: "All Nurseries",
+    child: Row(
+    children: [
+    Icon(Icons.location_city, color: Colors.green),
+    SizedBox(width: 10.w),
+    Text("All Nurseries"),
+    ],
+    ),
+    ),
+    PopupMenuItem(
+    value: "My Location",
+    child: Row(
+    children: [
+    Icon(Icons.location_on, color: Colors.green),
+    SizedBox(width: 10.w),
+    Text("My Location"),
+    ],
+    ),
+    ),
+    ],
+    child: Row(
+    children: [
+    SizedBox(width: 5.w),
+    Container(
+    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+    decoration: BoxDecoration(
+    color: Colors.grey[200],
+    borderRadius: BorderRadius.circular(8.r),
+    ),
+    child: Row(
+    children: [
+    Icon(
+    Icons.location_on,
+    color: Colors.black,
+    ),
+    SizedBox(width: 8.w),
+    Text(
+    'My Location',
+    style: TextStyle(
+    fontSize: 16.sp,
+    color: Colors.black,
+    ),
+    ),
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
+
+    ),
+
+
+
+    SingleChildScrollView(
+                  physics: ClampingScrollPhysics(),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
@@ -408,7 +414,7 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
                         height: 430.h,
                         width: 376.w,
                         decoration: BoxDecoration(
-                          color: Color(0xFFEBF3F1),
+                          color: const Color(0xFFEBF3F1),
                           borderRadius: BorderRadius.circular(20.r),
                         ),
                         padding: EdgeInsets.all(16.w),
@@ -447,16 +453,127 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
                     ],
                   ),
                 ),
-              ],
+    GestureDetector(
+    child: Container(
+    margin: EdgeInsets.symmetric(horizontal: 15.w),
+    height: 350.h,
+    width: 376.w,
+    decoration: BoxDecoration(
+    color: Color(0xFFEBF3F1),
+    borderRadius: BorderRadius.circular(20.r),
+    ),
+    child: Stack(
+    children: [
+    Positioned(
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    child: ClipRRect(
+    borderRadius: BorderRadius.circular(20.r),
+    child: Image.asset(
+    'images/img_41.png',
+    fit: BoxFit.cover,
+    height: 350.h,
+    width: 376.w,
+    ),
+    ),
+    ),
+    Positioned(
+    top: 10.h,
+    left: 15.w,
+    child: Row(
+    children: [
+    Text(
+    'Search By',
+    style: TextStyle(
+    fontSize: 16.sp,
+    color: Colors.black,
+    fontWeight: FontWeight.bold,
+    ),
+    ),
+    SizedBox(width: 5.w),
+    PopupMenuButton<String>(
+    onSelected: (value) {
+    print(value);
+    },
+    offset: Offset(0, 40.h),
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(10.r),
+    ),
+    itemBuilder: (context) => [
+    PopupMenuItem(
+    value: "All Nurseries",
+    child: Row(
+    children: [
+    Icon(Icons.location_city, color: Colors.green),
+    SizedBox(width: 10.w),
+    Text("All Nurseries"),
+    ],
+    ),
+    ),
+    PopupMenuItem(
+    value: "My Location",
+    child: Row(
+    children: [
+    Icon(Icons.location_on, color: Colors.green),
+    SizedBox(width: 10.w),
+    Text("My Location"),
+    ],
+    ),
+    ),
+    ],
+    child: Row(
+    children: [
+    SizedBox(width: 5.w),
+    Container(
+    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+    decoration: BoxDecoration(
+    color: Colors.grey[200],
+    borderRadius: BorderRadius.circular(8.r),
+    ),
+    child: Row(
+    children: [
+    Icon(
+    Icons.location_on,
+    color: Colors.black,
+    ),
+    SizedBox(width: 8.w),
+    Text(
+    'My Location',
+    style: TextStyle(
+    fontSize: 16.sp,
+    color: Colors.black,
+    ),
+    ),
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
+    )
+    ],
             ),
-          ),
+          )
+
         ],
+
       ),
+
+
+
       bottomNavigationBar: BottomNavigationBar(
 
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Color(0xFF147351),
+        selectedItemColor: const Color(0xFF147351),
         unselectedItemColor: Colors.black,
         currentIndex: _selectedIndex,
         onTap: (index) {
@@ -468,12 +585,12 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
           BottomNavigationBarItem(
             icon: ColorFiltered(
               colorFilter: ColorFilter.mode(
-                _selectedIndex == 0 ? Color(0xFF147351) : Colors.black,
+                _selectedIndex == 0 ? const Color(0xFF147351) : Colors.black,
                 BlendMode.srcIn,
               ),
               child: Image.asset(
                 'images/img_35.png',
-                width: 24,
+                width: 24.w,
               ),
             ),
             label: 'Home',
@@ -481,37 +598,38 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
           BottomNavigationBarItem(
             icon: ColorFiltered(
               colorFilter: ColorFilter.mode(
-                _selectedIndex == 1 ? Color(0xFF147351) : Colors.black,
+                _selectedIndex == 1 ? const Color(0xFF147351) : Colors.black,
                 BlendMode.srcIn,
               ),
               child: Image.asset(
                 'images/img_25.png',
-                width: 24,
+                width: 24.w,
               ),
             ),
-            label: 'Community',
+            label: 'Comunity',
           ),
+
           BottomNavigationBarItem(
             icon: Container(
-              width: 70,
-              height: 70,
+              width: 70.w,
+              height: 70.h,
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0xFF147351).withOpacity(0.2),
+                    color: const Color(0xFF147351).withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
               child: Center(
                 child: Image.asset(
                   'images/img_23.png',
-                  width: 80,
-                  height: 80,
+                  width: 80.w,
+                  height: 80.h,
                 ),
               ),
             ),
@@ -520,12 +638,12 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
           BottomNavigationBarItem(
             icon: ColorFiltered(
               colorFilter: ColorFilter.mode(
-                _selectedIndex == 3 ? Color(0xFF147351) : Colors.black,
+                _selectedIndex == 3 ? const Color(0xFF147351) : Colors.black,
                 BlendMode.srcIn,
               ),
               child: Image.asset(
                 'images/img_26.png',
-                width: 24,
+                width: 24.w,
               ),
             ),
             label: 'Rewards',
@@ -533,12 +651,12 @@ Padding( padding: EdgeInsets.symmetric(horizontal: 2.w),
           BottomNavigationBarItem(
             icon: ColorFiltered(
               colorFilter: ColorFilter.mode(
-                _selectedIndex == 4 ? Color(0xFF147351) : Colors.black,
+                _selectedIndex == 4 ? const Color(0xFF147351) : Colors.black,
                 BlendMode.srcIn,
               ),
               child: Image.asset(
                 'images/img_27.png',
-                width: 24,
+                width: 24.w,
               ),
             ),
             label: 'Profile',
@@ -556,13 +674,13 @@ Widget buildSmallContainer(String imagePath, String text, bool isSelected, Funct
     child: Container(
       padding: EdgeInsets.all(8.w),
       decoration: BoxDecoration(
-        color: isSelected ? Color(0xFF147351) : Color(0xFFEBF3F1),
+        color: isSelected ? const Color(0xFF147351) : const Color(0xFFEBF3F1),
         borderRadius: BorderRadius.circular(10.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.3),
             blurRadius: 4,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -571,7 +689,7 @@ Widget buildSmallContainer(String imagePath, String text, bool isSelected, Funct
           Text(
             text,
             style: TextStyle(
-              color: isSelected ? Colors.white : Color(0xFF147351),
+              color: isSelected ? Colors.white : const Color(0xFF147351),
               fontSize: 19.sp,
               fontWeight: FontWeight.bold,
             ),
@@ -589,13 +707,13 @@ Widget buildSmallContainerWithSelected(String imagePath, String text, bool isSel
 
       padding: EdgeInsets.all(10.w),
       decoration: BoxDecoration(
-        color: isSelected ? Color(0xFF147351) : Color(0xFFEBF3F1),
+        color: isSelected ? const Color(0xFFADCEC2) : const Color(0xFFEBF3F1),
         borderRadius: BorderRadius.circular(10.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.3),
             blurRadius: 4,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -604,7 +722,7 @@ Widget buildSmallContainerWithSelected(String imagePath, String text, bool isSel
           Text(
             text,
             style: TextStyle(
-              color: isSelected ? Colors.black : Color(0xFF147351),
+              color: isSelected ? Colors.black : const Color(0xFF147351),
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
             ),
@@ -614,40 +732,42 @@ Widget buildSmallContainerWithSelected(String imagePath, String text, bool isSel
         ],
       ));
 }
-
 Widget buildSmallContainerWithTitleDescriptionAndImage(String imagePath, String title, String description) {
   return Container(
+    padding: EdgeInsets.all(8.w),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(10.r),
+      border: Border.all(color: Colors.green, width: 2.w),
     ),
-    child: Padding(
-      padding: EdgeInsets.all(10.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.asset(imagePath, width: 100.w, height: 100.h),
-          SizedBox(height: 10.h),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-            ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min, // السماح للحاوية بأن تأخذ الحجم المناسب
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Image.asset(imagePath, width: 100.w, height: 100.h),
+        SizedBox(height: 10.h),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.bold,
           ),
-          SizedBox(height: 5.h),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey,
-            ),
+        ),
+        SizedBox(height: 5.h),
+        Text(
+          description,
+          style: TextStyle(
+            fontSize: 10.sp,
+
+            color: Colors.grey,
           ),
-        ],
-      ),
+        ),
+      ],
     ),
   );
-}final List<Map<String, String>> gridItems = [
+}
+
+final List<Map<String, String>> gridItems = [
   {
     'image': 'images/img_2.png',
     'title': 'How Choose Suitable Tree?',
