@@ -41,7 +41,7 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
     status: {
         type: String,
         default: 'Pending',
-        enum: ['Pending', 'In Progress', 'Resolved', 'Rejected'],
+        enum: ['Pending', 'In Progress', 'Resolved', 'Awaiting Verification'],
         required: true
     },
     modificationHistory: [{
