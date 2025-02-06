@@ -23,9 +23,6 @@ const { getReports,
         deleteReport,
         toggleUpvote } = new ReportController(reportService);
 
-const commentService = new CommentService();
-const { getCommentsByReport, createComment } = new CommentController(commentService);
-
 const responseService = new ResponseService();
 const { getReportResponses, createResponse } = new ResponseController(responseService);
 
