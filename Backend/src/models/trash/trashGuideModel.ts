@@ -9,12 +9,7 @@ const TrashGuideSchema: Schema = new Schema({
         type: String,
     },
     articlePic:  {
-        imageName: {
-            type: String,
-        },
-        imageUrl: {
-            type: String,
-        } 
+            type: String, 
     },
     createdAt:{
         type: Date,
@@ -22,5 +17,5 @@ const TrashGuideSchema: Schema = new Schema({
 })
 
 const TrashGuideModel: Model<IGuide> = 
-    mongoose.models.Trash || mongoose.model<IGuide>('Trash', TrashGuideSchema);
+    mongoose.models.trashGuideModel || mongoose.model<IGuide>('TrashGuideModel', TrashGuideSchema);
 export default TrashGuideModel;

@@ -28,11 +28,15 @@ export default class EventService {
     }
 
     async updateEvent(eventID : string, eventData : IEventInput) {
-        return await Event.findByIdAndUpdate(eventID, eventData,{new : true, runValidators : true});
+        return await Event.findByIdAndUpdate(
+            eventID, 
+            {eventName: eventData?.eventName, eventDate: eventData?.eventDate, location: eventData?.location, description: eventData?.description, eventStatus: eventData?.eventStatus, organizedWithPartnerID: eventData?.organizedWithPartnerID},
+            {new : true, runValidators : true});
+
     }
 
     async deleteEvent(eventID : string) {
-        const event = await Event.findByIdAndUpdate(eventID, {eventStatus : 'cancelled'}, {new : true, runValidators : true});
+        const event = await Event.findByIdAndUpdate(eventID, {eventStatus : 'cancelled'},{new : true, runValidators : true});
         if (!event){
             return false;
         }
@@ -52,10 +56,7 @@ export default class EventService {
 
         const imageUploadResult = await uploadToCloud(imageFile.path);
 
-        event.eventImage = {
-            imageName: imageFile.filename,
-            imageUrl: imageUploadResult.url
-        };
+        event.eventImage = imageUploadResult.url;
         await event.save();
         fs.unlinkSync(imageFile.path);
 
