@@ -4,8 +4,13 @@ import 'package:gogreen/Signingoogle.dart';
 import 'package:gogreen/Forgetpasword.dart';
 import 'package:gogreen/Homepage.dart';
 import 'package:gogreen/Registerpage.dart';
+import 'package:gogreen/main.dart';
+import 'package:gogreen/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -17,14 +22,15 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, designSize: Size(360, 690), minTextAdapt: true);
+    ScreenUtil.init(context,
+        designSize: const Size(360, 690), minTextAdapt: true);
 
     return Scaffold(
       body: Column(
         children: [
           Container(
             height: 0.35.sh,
-            color: Color(0xFF147351),
+            color: const Color(0xFF147351),
             child: Stack(
               children: [
                 Center(
@@ -61,7 +67,8 @@ class _LoginPageState extends State<LoginPage> {
                   top: 40.h,
                   left: 20.w,
                   child: IconButton(
-                    icon: Icon(Icons.chevron_left_outlined, color: Colors.white, size: 40.w),
+                    icon: Icon(Icons.chevron_left_outlined,
+                        color: Colors.white, size: 40.w),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -88,10 +95,11 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.all(20.w),
               child: Column(
                 children: [
-                  _buildIconTextField('images/img_14.png', 'Email Address', emailController),
+                  _buildIconTextField(
+                      'images/img_14.png', 'Email Address', emailController),
                   SizedBox(height: 20.h),
                   _buildPasswordContainer(),
-                  SizedBox(height: 0),
+                  const SizedBox(height: 0),
                   _buildRememberMeCheckbox(),
                   SizedBox(height: 60.h),
                   Row(
@@ -101,13 +109,14 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Homepage()),
+                            MaterialPageRoute(builder: (context) => const Homepage()),
                           );
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 90.w, vertical: 13.h),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 90.w, vertical: 13.h),
                           decoration: BoxDecoration(
-                            color: Color(0xFF147351),
+                            color: const Color(0xFF147351),
                             borderRadius: BorderRadius.circular(30.r),
                           ),
                           child: Text(
@@ -126,46 +135,42 @@ class _LoginPageState extends State<LoginPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      InkWell(
-                        onTap: () {
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFEAF3F0),
+                          padding: EdgeInsets.symmetric(horizontal: 35.w, vertical: 13.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          side: BorderSide(color: const Color(0xFF147351)),
+                          shadowColor: Colors.black.withOpacity(0.2),
+                          elevation: 1,
+                        ),
+                        onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Signingoogle()),
+                            MaterialPageRoute(
+                                builder: (context) => const Signingoogle()),
                           );
                         },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 35.w, vertical: 13.h),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFEAF3F0),
-                            borderRadius: BorderRadius.circular(30.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                spreadRadius: 1,
-                                blurRadius: 1,
-                                offset: Offset(0, 3),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Image.asset(
+                              'images/img_15.png',
+                              width: 24.w,
+                              height: 24.h,
+                            ),
+                            SizedBox(width: 5.w),
+                            Text(
+                              'Sign in with Google',
+                              style: TextStyle(
+                                color: const Color(0xFF147351),
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                'images/img_15.png',
-                                width: 24.w,
-                                height: 24.h,
-                              ),
-                              SizedBox(width: 5.w),
-                              Text(
-                                'Sign in with Google',
-                                style: TextStyle(
-                                  color: Color(0xFF147351),
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -185,13 +190,14 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Registerpage()),
+                            MaterialPageRoute(
+                                builder: (context) => RegisterPage()),
                           );
                         },
                         child: Text(
                           'Sign Up ',
                           style: TextStyle(
-                            color: Color(0xFF147351),
+                            color: const Color(0xFF147351),
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                           ),
@@ -213,7 +219,8 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildIconTextField('images/img_12.png', 'Password', passwordController, isPassword: true),
+        _buildIconTextField('images/img_12.png', 'Password', passwordController,
+            isPassword: true),
         SizedBox(height: 5.h),
         Align(
           alignment: Alignment.centerRight,
@@ -221,12 +228,15 @@ class _LoginPageState extends State<LoginPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ForgetPassword()),
+                MaterialPageRoute(builder: (context) => const ForgetPassword()),
               );
             },
             child: Text(
               'Forgot Password?',
-              style: TextStyle(color: Color(0xFF147351), fontSize: 15.sp, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: const Color(0xFF147351),
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.bold),
             ),
           ),
         ),
@@ -248,9 +258,9 @@ class _LoginPageState extends State<LoginPage> {
             padding: EdgeInsets.all(5.w),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _isChecked ? Color(0xFF147351) : Colors.transparent,
+              color: _isChecked ? const Color(0xFF147351) : Colors.transparent,
               border: Border.all(
-                color: Color(0xFF147351),
+                color: const Color(0xFF147351),
                 width: 2.w,
               ),
             ),
@@ -260,7 +270,7 @@ class _LoginPageState extends State<LoginPage> {
               color: Colors.white,
               size: 8.w,
             )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
           ),
         ),
         SizedBox(width: 5.w),
@@ -283,11 +293,13 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildIconTextField(String imagePath, String label, TextEditingController controller, {bool isPassword = false}) {
+  Widget _buildIconTextField(
+      String imagePath, String label, TextEditingController controller,
+      {bool isPassword = false}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 7.h),
       decoration: BoxDecoration(
-        color: Color(0xFFEAF3F0),
+        color: const Color(0xFFEAF3F0),
         borderRadius: BorderRadius.circular(10.r),
       ),
       child: Row(
