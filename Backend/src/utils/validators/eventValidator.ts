@@ -28,11 +28,6 @@ export const createEventValidator = [
 
 export const updateEventValidator = [
     check('id').isMongoId().withMessage('Invalid Event ID Format'),
-
-    check('eventStatus')
-        .notEmpty().withMessage('Event status is required')
-        .isIn(['upcoming' , 'ongoing' , 'completed' , 'cancelled']).withMessage('Invalid event status'),
-
     validatorMiddleware
 ];
 

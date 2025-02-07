@@ -50,6 +50,7 @@ export default class EventController {
         const { eventName,eventDate,description,location,eventImage,eventStatus,organizedWithPartnerID }: IEventInput = req.body;
         const event = await this.eventService.createEvent({eventName,eventDate,description,location,eventImage,eventStatus,organizedWithPartnerID});
         if (event) {
+            console.log(event.eventDate);
             res.json({ message: 'Event created successfully' });
         } else {
             return next(new ApiError("Error creating event", 500));

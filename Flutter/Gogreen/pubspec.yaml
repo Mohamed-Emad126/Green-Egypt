@@ -8,6 +8,7 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
+  dio: ^5.4.0 
   flutter:
     sdk: flutter
   flutter_svg: ^2.0.4
@@ -60,3 +61,7 @@ flutter:
     - images/img_35.png
     - images/img_36.png
     - images/img_37.png
+    - images/img_38.png
+    - images/img_39.png
+    - images/img_40.png
+    - images/img_41.png
