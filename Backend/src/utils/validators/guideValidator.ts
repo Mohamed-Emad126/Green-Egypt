@@ -11,7 +11,7 @@ export const getArticleValidator = [
 export const createArticleValidator = [
     check('articletitle').notEmpty().withMessage('Article Title is required'),
 
-    check('content').notEmpty().withMessage('Article Date is required'),
+    check('content').notEmpty().withMessage('content is required'),
 
         validatorMiddleware
 ];

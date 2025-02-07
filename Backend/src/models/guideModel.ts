@@ -6,23 +6,20 @@ const GuideSchema: Schema = new Schema({
         type: String,
         required: [true, 'articletitle is required'],
         minlength: [3, 'articletitle must be at least 3 characters long'],
-        maxlength: [30, 'articletitle must not exceed 30 characters'],
+        maxlength: [60, 'articletitle must not exceed 60 characters'],
     },
     content: {
         type: String,
-        required: [true, 'content is required'],
+        required: true,
     },
     articlePic:  {
-        imageName: {
-            type: String,
-            default: 'not-found-image.png'
-        },
-        imageUrl: {
             type: String,
             default: '../uploads/not-found-image.png'
-        } 
     },
-    createdAt: Date,
+    createdAt:{
+        type: Date,
+        default: Date.now
+    }
 });
 
 
