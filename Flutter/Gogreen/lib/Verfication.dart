@@ -3,9 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gogreen/ValidVerfication.dart';
 
 class Verfication extends StatelessWidget {
+  const Verfication({super.key});
+
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, designSize: Size(360, 690), minTextAdapt: true);
+    ScreenUtil.init(context, designSize: const Size(360, 690), minTextAdapt: true);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -13,7 +15,7 @@ class Verfication extends StatelessWidget {
         children: [
           Container(
             height: MediaQuery.of(context).size.height,
-            color: Color(0xFF147351),
+            color: const Color(0xFF147351),
           ),
           Positioned(
             top: MediaQuery.of(context).size.height * 0.1,
@@ -39,7 +41,7 @@ class Verfication extends StatelessWidget {
                   topLeft: Radius.circular(40.w),
                   topRight: Radius.circular(40.w),
                 ),
-                border: Border.all(color: Color(0xFF147351), width: 3.w),
+                border: Border.all(color: const Color(0xFF147351), width: 3.w),
               ),
               child: Padding(
                 padding: EdgeInsets.all(20.w),
@@ -62,7 +64,7 @@ class Verfication extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 35.sp,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF013D26),
+                        color: const Color(0xFF013D26),
                       ),
                     ),
                     SizedBox(height: 10.h),
@@ -77,7 +79,7 @@ class Verfication extends StatelessWidget {
                             text: "example@gmail.com",
                             style: TextStyle(
                               fontSize: 18.sp,
-                              color: Color(0xFF147351),
+                              color: const Color(0xFF147351),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -99,12 +101,12 @@ class Verfication extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ValidVerification()),
+                          MaterialPageRoute(builder: (context) => const ValidVerification()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 60.w),
-                        backgroundColor: Color(0xFF147351),
+                        backgroundColor: const Color(0xFF147351),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.w),
                         ),
@@ -119,7 +121,7 @@ class Verfication extends StatelessWidget {
                       text: TextSpan(
                         text: "If you didn't receive ",
                         style: TextStyle(color: Colors.black, fontSize: 17.sp),
-                        children: [
+                        children: const [
                           TextSpan(
                             text: "resend code",
                             style: TextStyle(
@@ -145,7 +147,7 @@ class Verfication extends StatelessWidget {
       width: 50.w,
       height: 50.h,
       decoration: BoxDecoration(
-        color: Color(0xFFEBF3F1),
+        color: const Color(0xFFEBF3F1),
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(10.w),
       ),
@@ -155,7 +157,7 @@ class Verfication extends StatelessWidget {
           style: TextStyle(fontSize: 20.sp, color: Colors.black),
           keyboardType: TextInputType.number,
           maxLength: 1,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             counterText: "",
             border: InputBorder.none,
             hintText: "–",

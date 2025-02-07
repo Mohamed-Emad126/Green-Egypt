@@ -26,7 +26,10 @@ export default class GuideService {
     }
 
     async updateArticle(articleID : string, articleData : IGuideInput) {
-        return await Guide.findByIdAndUpdate(articleID, articleData,{new : true, runValidators : true});
+        return await Guide.findByIdAndUpdate(
+            articleID, 
+            {articletitle: articleData?.articletitle, content: articleData?.content, articlePic: articleData?.articlePic,createdAt:Date.now()},
+            {new : true, runValidators : true})
     }
 
     async deleteArticle(articleID : string) {
@@ -50,10 +53,7 @@ export default class GuideService {
 
         const imageUploadResult = await uploadToCloud(imageFile.path);
 
-        article.articlePic = {
-            imageName: imageFile.filename,
-            imageUrl: imageUploadResult.url
-        };
+        article.articlePic = imageUploadResult.url
         await article.save();
         fs.unlinkSync(imageFile.path);
 

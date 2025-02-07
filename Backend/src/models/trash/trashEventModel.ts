@@ -39,7 +39,7 @@ const TrashEventSchema: Schema = new Schema({
         required: true
     },
     interestedIn: {
-        type: String,
+        type: [String],
     }
 })
 

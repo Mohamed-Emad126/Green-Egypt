@@ -3,10 +3,7 @@ import { Document } from "mongoose";
 export interface IGuide extends Document {
     articletitle: string;
     content: string;
-    articlePic: {
-        imageName:string;
-        imageUrl:string;
-    },
+    articlePic:string;
     createdAt: Date;
 }
 
