@@ -17,6 +17,7 @@ import commentRouter from "./routes/commentRoute";
 import responseRouter from "./routes/responseRoute";
 import TaskRouter from "./routes/taskRoute";
 import guideRouter from "./routes/guideRoute";
+import nurseryRouter from "./routes/nurseryRoute";
 
 
 
@@ -55,6 +56,8 @@ app.use('/api/comments', commentRouter);
 app.use('/api/responses', responseRouter);
 app.use('/api/tasks', TaskRouter);
 app.use('/api/guide', guideRouter);
+app.use('/api/nursery', nurseryRouter);
+
 
 app.get("/comment", (req, res) => {
     res.sendFile(path.join(__dirname, "uploads", "comment.html"));

@@ -27,14 +27,8 @@ const EventSchema: Schema = new mongoose.Schema({
         required: true
     },
     eventImage: {
-        imageName: {
-            type: String,
-            default: 'not-found-image.png'
-        },
-        imageUrl: {
             type: String,
             default: '../uploads/not-found-image.png'
-        } 
     },
     eventStatus: {
         type: String,

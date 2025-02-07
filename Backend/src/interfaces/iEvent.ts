@@ -8,10 +8,7 @@ export interface IEvent extends Document {
         longitude: number
     };
     description: string;
-    eventImage: {
-        imageName: string;
-        imageUrl: string
-    };
+    eventImage: string;
     eventStatus: string;
     organizedWithPartnerID: mongoose.Types.ObjectId;
     interestedIn?: string[];
@@ -21,7 +18,7 @@ export interface IEventInput {
     eventName: string;
     eventDate: Date;
     location: string;
-    description?: string;
+    description: string;
     eventImage?: string;
     eventStatus: string;
     organizedWithPartnerID: mongoose.Types.ObjectId;
