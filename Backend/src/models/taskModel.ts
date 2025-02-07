@@ -4,8 +4,8 @@ import { ITask } from '../interfaces/iTask';
 const TaskSchema: Schema = new Schema({
     title: {
         type: String,
+        enum: ['Water the tree', 'Prune dead branches', 'Check for pests', 'Fertilize the soil'],
         required: true,
-        maxLength: [30, 'Title cannot be more than 30 characters']
     },
     tree: {
         type: mongoose.Types.ObjectId,
@@ -13,7 +13,7 @@ const TaskSchema: Schema = new Schema({
         required: true,
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: 'User',
         required: true,
     },
