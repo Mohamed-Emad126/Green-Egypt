@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ForgetPassword2 extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
 
+  ForgetPassword2({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,7 +13,7 @@ class ForgetPassword2 extends StatelessWidget {
         children: [
           Container(
             height: MediaQuery.of(context).size.height,
-            color: Color(0xFF147351),
+            color: const Color(0xFF147351),
           ),
           Positioned(
             top: MediaQuery.of(context).size.height * 0.1,
@@ -37,7 +39,7 @@ class ForgetPassword2 extends StatelessWidget {
                   topLeft: Radius.circular(40.r),
                   topRight: Radius.circular(40.r),
                 ),
-                border: Border.all(color: Color(0xFF147351), width: 3),
+                border: Border.all(color: const Color(0xFF147351), width: 3),
               ),
               child: Padding(
                 padding: EdgeInsets.all(20.w),
@@ -51,7 +53,7 @@ class ForgetPassword2 extends StatelessWidget {
                         icon: Icon(
                           Icons.chevron_left,
                           size: 40.sp,
-                          color: Color(0xFF013D26),
+                          color: const Color(0xFF013D26),
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -64,7 +66,7 @@ class ForgetPassword2 extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 30.sp,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF013D26),
+                        color: const Color(0xFF013D26),
                       ),
                     ),
                     SizedBox(height: 15.h),
@@ -85,7 +87,7 @@ class ForgetPassword2 extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                       decoration: BoxDecoration(
-                        color: Color(0xFFEBF3F1),
+                        color: const Color(0xFFEBF3F1),
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Row(
@@ -103,7 +105,7 @@ class ForgetPassword2 extends StatelessWidget {
                                 hintText: 'Password ',
                                 border: InputBorder.none,
                                 hintStyle: TextStyle(
-                                  color: Color(0xFF147351),
+                                  color: const Color(0xFF147351),
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -117,7 +119,7 @@ class ForgetPassword2 extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                       decoration: BoxDecoration(
-                        color: Color(0xFFEBF3F1),
+                        color: const Color(0xFFEBF3F1),
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Row(
@@ -135,7 +137,7 @@ class ForgetPassword2 extends StatelessWidget {
                                 hintText: 'Confirm password ',
                                 border: InputBorder.none,
                                 hintStyle: TextStyle(
-                                  color: Color(0xFF147351),
+                                  color: const Color(0xFF147351),
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -150,7 +152,7 @@ class ForgetPassword2 extends StatelessWidget {
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 100.w),
-                        backgroundColor: Color(0xFF147351),
+                        backgroundColor: const Color(0xFF147351),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.r),
                         ),

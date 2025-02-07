@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Signingoogle extends StatelessWidget {
+  const Signingoogle({super.key});
+
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, designSize: Size(360, 690), minTextAdapt: true);
+    ScreenUtil.init(context, designSize: const Size(360, 690), minTextAdapt: true);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF147351),
+        backgroundColor: const Color(0xFF147351),
         leading: IconButton(
-          icon: Icon(Icons.chevron_left, size: 60, color: Colors.white),
+          icon: const Icon(Icons.chevron_left, size: 60, color: Colors.white),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -20,7 +22,7 @@ class Signingoogle extends StatelessWidget {
         children: [
           Container(
             height: MediaQuery.of(context).size.height * 0.35,
-            color: Color(0xFF147351),
+            color: const Color(0xFF147351),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -47,7 +49,7 @@ class Signingoogle extends StatelessWidget {
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.black,
                     padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.w),
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.zero,
                     ),
                   ),
@@ -90,7 +92,7 @@ class Signingoogle extends StatelessWidget {
                         Text(
                           'Go Green ',
                           style: TextStyle(
-                            color: Color(0xFF147351),
+                            color: const Color(0xFF147351),
                             fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
                           ),
@@ -113,7 +115,7 @@ class Signingoogle extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     backgroundColor: Colors.green,
                     child: Text("R", style: TextStyle(color: Colors.white)),
                   ),
@@ -129,7 +131,7 @@ class Signingoogle extends StatelessWidget {
                     style: TextStyle(fontSize: 16.sp),
                   ),
                 ),
-                Divider(),
+                const Divider(),
                 ListTile(
                   leading: Icon(
                     Icons.account_circle,

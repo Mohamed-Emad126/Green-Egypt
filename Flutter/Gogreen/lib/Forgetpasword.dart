@@ -3,16 +3,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gogreen/Verfication.dart';
 
 class ForgetPassword extends StatelessWidget {
+  const ForgetPassword({super.key});
+
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, designSize: Size(375, 812), minTextAdapt: true);
+    ScreenUtil.init(context, designSize: const Size(375, 812), minTextAdapt: true);
 
     return Scaffold(
       body: Stack(
         children: [
           Container(
             height: MediaQuery.of(context).size.height,
-            color: Color(0xFF147351),
+            color: const Color(0xFF147351),
           ),
           Positioned(
             top: MediaQuery.of(context).size.height * 0.1,
@@ -38,7 +40,7 @@ class ForgetPassword extends StatelessWidget {
                   topLeft: Radius.circular(40.r),
                   topRight: Radius.circular(40.r),
                 ),
-                border: Border.all(color: Color(0xFF147351), width: 3),
+                border: Border.all(color: const Color(0xFF147351), width: 3),
               ),
               child: Padding(
                 padding: EdgeInsets.all(20.w),
@@ -49,7 +51,7 @@ class ForgetPassword extends StatelessWidget {
                     Align(
                       alignment: Alignment.topLeft,
                       child: IconButton(
-                        icon: Icon(Icons.chevron_left, size: 45.w, color: Color(0xFF013D26)),
+                        icon: Icon(Icons.chevron_left, size: 45.w, color: const Color(0xFF013D26)),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -61,7 +63,7 @@ class ForgetPassword extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 30.sp,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF013D26),
+                        color: const Color(0xFF013D26),
                       ),
                     ),
                     SizedBox(height: 20.h),
@@ -79,7 +81,7 @@ class ForgetPassword extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
                       decoration: BoxDecoration(
-                        color: Color(0xFFEBF3F1),
+                        color: const Color(0xFFEBF3F1),
                         borderRadius: BorderRadius.circular(10.r),
                       ),
                       child: Row(
@@ -95,7 +97,7 @@ class ForgetPassword extends StatelessWidget {
                           Text(
                             'Email address',
                             style: TextStyle(
-                              color: Color(0xFF147351),
+                              color: const Color(0xFF147351),
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
                             ),
@@ -108,7 +110,7 @@ class ForgetPassword extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Verfication()),
+                          MaterialPageRoute(builder: (context) => const Verfication()),
                         );
                       },
                       child: Container(
