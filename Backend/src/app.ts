@@ -60,7 +60,6 @@ app.use('/api/guide', guideRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/nursery', nurseryRouter);
 
-
 app.get("/comment", (req, res) => {
     res.sendFile(path.join(__dirname, "uploads", "comment.html"));
 });
