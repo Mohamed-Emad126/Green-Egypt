@@ -13,23 +13,22 @@ const TrashReportSchema: Schema<IReport> = new mongoose.Schema({
         maxLength: [600, 'Description cannot be more than 500 characters']
     },
     location: {
-        latitude: {
-            type: Number,
+        type: {
+            type: String,
+            enum: ['Point'],
             required: true,
         },
-        longitude: {
-            type: Number,
-            required: true,
+        coordinates: {
+            type: [Number],
+            required: true, 
+            length: 2
         }
     },
-    images: [{
-        imageName: {
-            type: String,
-        },
-        imageUrl: {
+    images: [
+        {
             type: String,
         }
-    }],
+    ],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -38,24 +37,33 @@ const TrashReportSchema: Schema<IReport> = new mongoose.Schema({
     treeID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Tree',
-        required: true
     },
     upVotes: { 
         type: Number,
         default: 0 
     },
+    upVoters: [
+        { 
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
     status: {
         type: String,
         default: 'Pending',
-        enum: ['Pending', 'In Progress', 'Resolved', 'Rejected'],
+        enum: ['Pending', 'In Progress', 'Resolved', 'Awaiting Verification'],
         required: true
     },
-    modificationHistory: [
-        {
-            updatedData: { type: Object },
-            updatedAt: { type: Date, default: Date.now }
+    modificationHistory: [{
+        oldData: {
+            type: Map,
+            of: Schema.Types.Mixed,
+        },
+        updatedAt: { 
+            type: Date, 
+            default: Date.now 
         }
-    ],
+    }],
     responses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Response'

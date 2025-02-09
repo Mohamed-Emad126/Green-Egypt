@@ -24,7 +24,7 @@ const UserSchema: Schema = new Schema({
     password: {
         type: String,
         required: [true, 'Password is required'],
-        minlength: [6, 'Password must be at least 6 characters long']
+        minlength: [8, 'Password must be at least 8 characters long']
     },
     passwordChangedAt: Date,
     points: {
@@ -47,12 +47,22 @@ const UserSchema: Schema = new Schema({
         default: 'user'
     },
     location: {
-        latitude: Number,
-        longitude: Number
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point',
+            required: true,
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+            length: 2
+        }
     }
     
 }, { timestamps: true });
 
+UserSchema.index({ location: '2dsphere' });
 
 UserSchema.methods.generateToken = async function (customExpireTime?: string): Promise<string> {
     const expiresIn = customExpireTime || process.env.JWT_EXPIRE_TIME as string;

@@ -48,9 +48,7 @@ export default class ReportController {
      * @access    Public
     */
     createNewReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const { reportType, description, location, treeID }: IReportInput = req.body;
-        const createdBy = req.body.user.id;
-        const createdReport = await this.reportService.createNewReport({ reportType, description, location, treeID, createdBy});
+        const createdReport = await this.reportService.createNewReport({ ...req.body, createdBy: req.body.user.id });
         if (createdReport) {
             res.status(201).json({ message: 'Report created successfully' });
         } else {

@@ -1,6 +1,5 @@
 import { check } from "express-validator";
 import { validatorMiddleware } from "../../middlewares/validatorMiddleware";
-import Tree from "../../models/treeModel";
 
 export const getReportValidator = [
     check('id').isMongoId().withMessage('Invalid report ID Format'),
@@ -12,15 +11,34 @@ export const createReportValidator = [
         .notEmpty().withMessage('Report type is required')
         .isIn(['A tree needs care', 'A place needs tree', 'Other']).withMessage('Invalid report type'),
 
-    check('location.latitude')
-        .optional()
-        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+    check('location')
+        .if(check('reportType').isIn(['A place needs tree']))
+        .notEmpty().withMessage('Location is required')
+        .isObject().withMessage('Location must be an object'),
+
+    check('location.type')
+        .if(check('location').exists())
+        .notEmpty().withMessage('Location type is required')
+        .isIn(['Point']).withMessage('Location must be a Point'),
         
-    check('location.longitude')
-        .optional()
+    check('location.coordinates')
+        .if(check('location').exists())
+        .notEmpty().withMessage('Location coordinates is required')
+        .isArray().withMessage('Location must be an array')
+        .isLength({min : 2, max : 2}).withMessage('Location must have exactly two elements'),
+        
+    check('location.coordinates.0')
+        .if(check('location.coordinates').exists())
+        .notEmpty().withMessage('Longitude is required')
         .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
 
+    check('location.coordinates.1')
+        .if(check('location.coordinates').exists())
+        .notEmpty().withMessage('Latitude is required')
+        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+
     check('treeID')
+        .if(check('reportType').isIn(['A tree needs care']))
         .notEmpty().withMessage('Tree ID is required')
         .isMongoId().withMessage('Invalid tree ID Format'),
     
@@ -36,13 +54,30 @@ export const updateReportValidator = [
         .optional()
         .isIn(['A tree needs care', 'A place needs tree', 'Other']).withMessage('Invalid report type'),
 
-    check('location.latitude')
+    check('location')
         .optional()
-        .isFloat({ min: -90, max: 90 }).withMessage('Latitude must be between -90 and 90'),
+        .isObject().withMessage('Location must be an object'),
+
+    check('location.type')
+        .if(check('location').exists())
+        .notEmpty().withMessage('Location type is required')
+        .isIn(['Point']).withMessage('Location must be a Point'),
         
-    check('location.longitude')
-        .optional()
-        .isFloat({ min: -180, max: 180 }).withMessage('Longitude must be between -180 and 180'),
+    check('location.coordinates')
+        .if(check('location').exists())
+        .notEmpty().withMessage('Location coordinates is required')
+        .isArray().withMessage('Location must be an array')
+        .isLength({min : 2, max : 2}).withMessage('Location must have exactly two elements'),
+        
+    check('location.coordinates.0')
+        .if(check('location.coordinates').exists())
+        .notEmpty().withMessage('Longitude is required')
+        .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
+
+    check('location.coordinates.1')
+        .if(check('location.coordinates').exists())
+        .notEmpty().withMessage('Latitude is required')
+        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
 
     check('treeID')
         .optional()

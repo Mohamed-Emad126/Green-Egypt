@@ -20,7 +20,7 @@ export default class GuideController {
 
     getArticles = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const page: number = req.query.page ? +req.query.page : 1;
-        const limit: number = req.query.limit ? +req.query.limit : 5;
+        const limit: number = req.query.limit ? +req.query.limit : 6;
         const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
         const articles = await this.guideService.getArticles(page, limit , filters);
         res.json({ length: articles.length, page: page, articles: articles });

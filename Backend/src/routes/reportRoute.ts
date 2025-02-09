@@ -23,6 +23,9 @@ const { getReports,
         deleteReport,
         toggleUpvote } = new ReportController(reportService);
 
+const commentService = new CommentService();
+const { getCommentsByReport, createComment } = new CommentController(commentService);
+
 const responseService = new ResponseService();
 const { getReportResponses, createResponse } = new ResponseController(responseService);
 
@@ -44,7 +47,7 @@ reportRouter.route('/:id/upvote')
 
 reportRouter.route('/:id/comment')
         .get(verifyToken, getCommentsByReportValidator, getCommentsByReport)
-        .post(verifyToken, createCommentValidator, createComment);
+        .post(verifyToken, createCommentValidator, createComment);      
 
 reportRouter.route('/:id/response')
         .get(verifyToken, getReportResponsesValidator, getReportResponses)
