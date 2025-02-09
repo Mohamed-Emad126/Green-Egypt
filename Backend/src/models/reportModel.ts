@@ -13,12 +13,22 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         maxLength: [600, 'Description cannot be more than 600 characters']
     },
     location: {
-        latitude: Number,
-        longitude: Number
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true,
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+            length: 2
+        }
     },
-    images: [{
-        type: String,
-    }],
+    images: [
+        {
+            type: String,
+        }
+    ],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -27,17 +37,18 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
     treeID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Tree',
-        required: true
     },
     upVotes: { 
         type: Number,
         default: 0, 
         min: [0, 'Up votes cannot be negative']
     },
-    upVoters: [{ 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+    upVoters: [
+        { 
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
     status: {
         type: String,
         default: 'Pending',
@@ -63,6 +74,8 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         ref: 'Comment'
     }]
 }, { timestamps: true });
+
+ReportSchema.index({ location: '2dsphere' });
 
 const Report: Model<IReport> = mongoose.model<IReport>('Report', ReportSchema);
 export default Report;

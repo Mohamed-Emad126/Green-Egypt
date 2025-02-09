@@ -2,13 +2,13 @@ import User from "../models/userModel";
 import Report from "../models/reportModel";
 import Guide from "../models/guideModel";
 import Event from "../models/eventModel";
-// import Nursery from "../models/nurseryModel";
+import Nursery from "../models/nurseryModel";
 
 
 export default class SearchService {
 
     async homeSearch(key : string) {
-        const [articles, events] = await Promise.all([
+        const [articles, events, nurseries] = await Promise.all([
             Guide.find(
                 {
                     "$or":[
@@ -25,17 +25,25 @@ export default class SearchService {
                     ]
                 }
             ),
+            Nursery.find(
+                {
+                    "$or":[
+                        {nurseryname: {$regex: key, $options: 'i'}}, 
+                        {location: {$regex: key, $options: 'i'}}
+                    ]
+                }
+            ),
         ]);
 
         const articlesResult = articles || "No articles found";
         const eventsResult = events || "No events found";
-        //const nurseriesResult = nurseries || "No nurseries found";
+        const nurseriesResult = nurseries || "No nurseries found";
 
-        if(articlesResult.length === 0 && eventsResult.length === 0) {
+        if(articlesResult.length === 0 && eventsResult.length === 0 && nurseriesResult.length === 0) {
             return 404;
         }
 
-        return [articlesResult, eventsResult];
+        return [articlesResult, eventsResult, nurseriesResult];
     }
 
 

@@ -24,14 +24,25 @@ export default class ReportService {
     }
 
     async createNewReport(newReport : IReportInput) {
-        const tree = await Tree.findById(newReport.treeID);
-        if(!tree) {
-            return false;
-        }
 
-        const report = await Report.create(newReport);
-        tree.reportsAboutIt.push(report.id);
-        await tree.save();
+        let report;
+
+        if(newReport.treeID && newReport.reportType === "A tree needs care") {
+            const tree = await Tree.findById(newReport.treeID);
+            if(!tree) {
+                return false;
+            }
+
+            newReport.location = tree.treeLocation;
+            report = await Report.create(newReport);
+
+            tree.reportsAboutIt.push(report.id);
+            await tree.save();
+
+        } else {
+            newReport.treeID = undefined;
+            report = await Report.create(newReport);
+        }
 
         return true;
     }

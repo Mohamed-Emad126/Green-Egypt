@@ -4,8 +4,8 @@ import { Document } from "mongoose";
 export interface ITree extends Document {
     treeName: string;
     treeLocation: {
-        latitude: number;
-        longitude: number;
+        type: string;
+        coordinates: [number, number]
     };
     healthStatus: 'Healthy' | 'Diseased' | 'Dying';
     problem?: string;
@@ -21,8 +21,8 @@ export interface ITree extends Document {
 export interface ITreeInput {
     treeName: string;
     treeLocation: {
-        latitude: number;
-        longitude: number;
+        type: string;
+        coordinates: [number, number]
     };
     healthStatus: 'Healthy' | 'Diseased' | 'Dying';
     problem: string;

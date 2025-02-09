@@ -16,13 +16,11 @@ const trashUserSchema: Schema = new Schema({
     },
     profilePic: {
         type: String,
-        default: '../uploads/userImages/default-user-avatar.png'
     }
     ,
     password: {
         type: String,
         required: [true, 'Password is required'],
-        minlength: [6, 'Password must be at least 6 characters long']
     },
     passwordChangedAt: Date,
     points: {
@@ -41,8 +39,17 @@ const trashUserSchema: Schema = new Schema({
         enum: ['user', 'admin'],
     },
     location: {
-        latitude: Number,
-        longitude: Number
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point',
+            required: true,
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+            length: 2
+        }
     }
     
 }, { timestamps: true });
