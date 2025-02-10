@@ -2,6 +2,7 @@ import TaskService from "../services/taskService";
 import { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
+import { Result } from "express-validator";
 
 
 
@@ -9,24 +10,25 @@ export default class TaskController {
 
     constructor(private taskService: TaskService) {
         this.createTask = this.createTask.bind(this);
-        this.doneTask = this.doneTask.bind(this);
-        this.updateTaskTitle = this.updateTaskTitle.bind(this);
+        this.markTask = this.markTask.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
-        this.getUserTasksByDate = this.getUserTasksByDate.bind(this);
+        this.getUserTreesWithTasks = this.getUserTreesWithTasks.bind(this);
     }
 
     /**
-     * @desc      get trees that a user has planted
+     * @desc      create a new task for a user and a tree
      * @route     GET /api/users/:id/tasks
      * @param     {string} id - user id
      * @access    Private
     */
     createTask = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const result = await this.taskService.createTask(req.params.id, req.body.treeID, req.body.date, req.body.title);
+        const result = await this.taskService.createTask(req.params.id, req.body.treeID, req.body.title);
         if (result.status === 404) {
             return next(new ApiError(result.msg!, 404));
+        } else if (result.status === 403) {
+            return next(new ApiError(result.msg!, 403));
         } else {
-            res.status(201).json({massage: result.msg , task: result.task});
+            res.status(201).json({massage: result.msg , task: result.task?.title});
         }
     });
 
@@ -36,20 +38,9 @@ export default class TaskController {
      * @param     {string} id - task id
      * @access    Private
     */
-    doneTask = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const result = await this.taskService.doneTask(req.params.id);
+    markTask = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.taskService.markTask(req.params.id);
         res.status(200).json({massage: result});
-    });
-
-    /**
-     * @desc      update a task title
-     * @route     PUT /api/tasks/:id
-     * @param     {string} id - task id
-     * @access    Private
-    */
-    updateTaskTitle = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const taskAfterUpdate = await this.taskService.updateTaskTitle(req.params.id, req.body.title);
-        res.json({massage: "Task updated successfully", task: taskAfterUpdate});
     });
 
     /**
@@ -64,16 +55,30 @@ export default class TaskController {
     });
 
     /**
-     * @desc      get all tasks of a user by date
+     * @desc      get all list of tasks for a user tree
      * @route     GET /api/users/:id/tasks
      * @param     {string} id - user id
      * @access    Private
     */
-    getUserTasksByDate = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const tasks = await this.taskService.getUserTasksByDate(req.params.id, new Date(req.params.date));
-        if (tasks === null) {
-            res.json({massage: 'There are no tasks on this date'});
+    getUserTreesWithTasks = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const tasks = await this.taskService.getUserTreesWithTasks(req.params.id, req.body.treeIDs);
+        if (tasks.length === 0) {
+            res.json({massage: 'There are no tasks today'});
         }
         res.json(tasks);
+    });
+
+    /**
+     * @desc      Delete all tree tasks
+     * @route     GET /api/tasks/:id
+     * @param     {string} id - tree id
+     * @access    Private
+    */
+    deleteAllTreeTasks = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.taskService.deleteAllTreeTasks(req.params.id);
+        if (!result) {
+            next(new ApiError("Tree not found", 404));
+        }
+        res.json({massage: 'Tasks deleted successfully'});
     });
 }

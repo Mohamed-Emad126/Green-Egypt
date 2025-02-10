@@ -1,24 +1,40 @@
 import User from "../models/userModel";
 import Task from "../models/taskModel";
 import Tree from "../models/treeModel";
+import { start } from "repl";
+import e from "express";
 
 
 export default class TaskService {
 
-    async createTask(userID: string, treeID: string, date: Date, title: string) {
+    async createTask(userID: string, treeID: string, title: string) {
         const user = await User.findById(userID);
         const tree = await Tree.findById(treeID);
         if (!user) {
             return { status: 404, msg:'User not found'};
         } else if (!tree) {
             return { status: 404, msg:'Tree not found'};
+        } else if (!tree.plantedRecently || tree.byUser.toString() !== userID) {
+            return { status: 403, msg:'This tree not belongs to this user'};
         }
-        const task =  await Task.create({ user, tree, date, title });
+
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+    
+        const endOfDay = new Date(startOfDay);
+        endOfDay.setHours(23, 59, 59, 999);
+        
+        const isTaskExists = await Task.findOne({ user, tree, date : { $gte: startOfDay, $lte: endOfDay}, title });
+        if (isTaskExists) {
+            return { status: 400, msg:'Task already exists'};
+        }
+
+        const task =  await Task.create({ user, tree, date : new Date(), title });
         return { status: 201, msg:'Task created successfully', task };
         
     }
 
-    async doneTask(taskID: string) {
+    async markTask(taskID: string) {
         const task = await Task.findById(taskID);
 
         let msg= '';
@@ -43,25 +59,44 @@ export default class TaskService {
         return true;
     }
 
-    async updateTaskTitle(taskID: string, newTitle: string) {
-        const task = await Task.findById(taskID);
-        task!.title = newTitle;
-        await task!.save();
-        return task;
+
+    async getUserTreesWithTasks(userID: string, treeIDs: string[]) {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+    
+        const endOfDay = new Date(startOfDay);
+        endOfDay.setHours(23, 59, 59, 999);
+    
+        const tasksPromises = treeIDs.map(async (treeID) => {
+            const tasks = await Task.find({
+                user: userID,
+                tree: treeID,
+                date: { $gte: startOfDay, $lte: endOfDay }
+            }).populate('tree', 'treeName')
+            .lean();
+    
+            if (tasks.length === 0) return null;
+    
+            return {
+                treeID,
+                treeName: (tasks[0].tree as any).treeName,
+                pendingTasks: tasks.filter(task => !task.isDone),
+                completedTasks: tasks.filter(task => task.isDone)
+            };
+        });
+    
+        const treesWithTasks = await Promise.all(tasksPromises);
+    
+        return treesWithTasks.filter(tree => tree !== null);
     }
+    
 
-    async getUserTasksByDate(userID: string, date: Date) {
-        const user = await User.findById(userID);
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const tasks = await Task.find({ user, date: { $gte: today } });
-
-        if (tasks.length === 0) {
-            return null;
+    async deleteAllTreeTasks(treeID: string) {
+        const tree = await Tree.findById(treeID);
+        if (!tree) {
+            return false;
         }
-
-        return tasks;
+        await Task.deleteMany({ tree: treeID });
+        return true;
     }
-
 }

@@ -9,13 +9,15 @@ const TreeSchema: Schema = new Schema({
         maxLength: [10, 'Tree name cannot be more than 10 characters'],
     },
     treeLocation: {
-        latitude: {
-            type: Number,
-            required: [true, 'Latitude is required'],
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true,
         },
-        longitude: {
-            type: Number,
-            required: [true, 'Longitude is required'],
+        coordinates: {
+            type: [Number],
+            required: true,
+            length: 2
         }
     },
     healthStatus: {
@@ -51,6 +53,8 @@ const TreeSchema: Schema = new Schema({
     }],
     
 }, { timestamps: true });
+
+TreeSchema.index({ location: '2dsphere' });
 
 const TreeModel: Model<ITree> = mongoose.model<ITree>('Tree', TreeSchema);
 export default TreeModel;

@@ -23,7 +23,7 @@ export default class UserService {
     async updateUser(userID : string, updateData : IUpdateInput) {
         return await User.findByIdAndUpdate(
             userID,
-            {username : updateData?.username, email : updateData?.email, location : updateData?.location},
+            {$set: updateData},
             {new : true, runValidators : true}
         );
     }

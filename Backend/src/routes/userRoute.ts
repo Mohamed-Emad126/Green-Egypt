@@ -11,7 +11,7 @@ import {getUserValidator,
         claimPendingCouponsValidator,
         promoteUserValidator, 
         getUserTreesValidator} from "../utils/validators/userValidator";
-import { createTaskValidator, getUserTasksByDateValidator } from "../utils/validators/taskValidator";
+import { createTaskValidator, getUserTreesWithTasksValidator } from "../utils/validators/taskValidator";
 import { locateTreeValidator } from "../utils/validators/treeValidator";
 import { verifyUserMiddleware , verifyToken, verifyAdminMiddleware} from "../middlewares/authMiddleware";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
@@ -37,7 +37,7 @@ const { getUsers,
         getUserTrees} = new UserController(userService);
 
 const taskService = new TaskService();
-const { createTask, getUserTasksByDate} = new TaskController(taskService);
+const { createTask, getUserTreesWithTasks } = new TaskController(taskService);
 
 const treeService = new TreeService();
 const { LocateTree } = new TreeController(treeService);
@@ -73,7 +73,7 @@ userRouter.route('/:id/tree')
 
 userRouter.route('/:id/task')
         .post(verifyUserMiddleware, createTaskValidator, createTask)
-        .get(verifyUserMiddleware, getUserTasksByDateValidator, getUserTasksByDate);
+        .get(verifyUserMiddleware, getUserTreesWithTasksValidator,  getUserTreesWithTasks);
 
 
 

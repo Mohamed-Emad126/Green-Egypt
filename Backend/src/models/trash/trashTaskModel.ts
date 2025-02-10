@@ -4,6 +4,7 @@ import { ITask } from '../../interfaces/iTask';
 const TrashTaskSchema: Schema = new Schema({
     title: {
         type: String,
+        enum: ['Water the tree', 'Prune dead branches', 'Check for pests', 'Fertilize the soil'],
         required: true
     },
     tree: {
@@ -12,7 +13,7 @@ const TrashTaskSchema: Schema = new Schema({
         required: true,
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: 'User',
         required: true,
     },

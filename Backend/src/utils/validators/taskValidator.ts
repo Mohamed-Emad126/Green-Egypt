@@ -1,5 +1,6 @@
 import { check } from "express-validator";
 import { validatorMiddleware } from "../../middlewares/validatorMiddleware";
+import Tree from "../../models/treeModel";
 
 export const createTaskValidator = [
     check('id').isMongoId().withMessage('Invalid user ID Format'),
@@ -8,39 +9,15 @@ export const createTaskValidator = [
     .notEmpty().withMessage('Tree ID is required')
     .isMongoId().withMessage('Invalid tree ID Format'),
 
-    check('date')
-    .notEmpty().withMessage('Date is required')
-    .isDate().withMessage('Invalid date format')  // isISO8601()
-    .custom((value) => {
-        const inputDate = new Date(value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (inputDate < today) {
-            throw new Error('Date cannot be in the past');
-        }
-        return true;
-    }),
-
     check('title')
     .notEmpty().withMessage('Title is required')
-    .isLength({ max: 30 }).withMessage('Title must be at most 30 characters long'),
+    .isIn(['Water the tree', 'Prune dead branches', 'Check for pests', 'Fertilize the soil']).withMessage('Invalid task title'),
 
     validatorMiddleware
 ];
 
-export const doneTaskValidator = [
+export const markTaskValidator = [
     check('id').isMongoId().withMessage('Invalid task ID Format'),
-    validatorMiddleware
-];
-
-export const updateTitleValidator = [
-    check('id').isMongoId().withMessage('Invalid task ID Format'),
-
-    check('title')
-    .notEmpty().withMessage('New title is required')
-    .isLength({ max: 30 }).withMessage('Title must be at most 30 characters long'),
-
     validatorMiddleware
 ];
 
@@ -49,23 +26,32 @@ export const deleteTaskValidator = [
     validatorMiddleware
 ];
 
-export const getUserTasksByDateValidator = [
+export const getUserTreesWithTasksValidator = [
     check('id').isMongoId().withMessage('Invalid user ID Format'),
 
-    check('date')
-    .notEmpty().withMessage('Date is required')
-    .isDate().withMessage('Invalid date format')  // isISO8601()
-    .custom((value) => {
-        const inputDate = new Date(value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+    check('treeIDs')
+        .isArray({ min: 1 }).withMessage('Tree IDs must be provided as an array')
+        .custom((treeIDs) => {
+            const uniqueIDs = [...new Set(treeIDs)];
+            return uniqueIDs.length === treeIDs.length;
+        }).withMessage('Tree IDs must be unique'),
 
-        if (inputDate < today) {
-            throw new Error('Date cannot be in the past');
-        }
-        return true;
-    }),
+    check('treeIDs.*')
+        .isMongoId().withMessage('Invalid tree ID Format')
+        .custom(async (id) => {
+            const existingTree = await Tree.findOne({ _id : id });
+            if (!existingTree) {
+                throw new Error(`Tree with ID ${id} does not exists`);
+            }
+            return true;
+        }),
+        
 
+    validatorMiddleware
+];
+
+export const deleteAllTreeTasksValidator = [
+    check('id').isMongoId().withMessage('Invalid tree ID Format'),
     validatorMiddleware
 ];
 

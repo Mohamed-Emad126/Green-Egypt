@@ -9,13 +9,26 @@ export const getTreeValidator = [
 ];
 
 export const locateTreeValidator = [
-    check('treeLocation.latitude')
-        .notEmpty().withMessage('Latitude is required')
-        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+    check('treeLocation')
+        .notEmpty().withMessage('Location is required')
+        .isObject().withMessage('Location must be an object'),
 
-    check('treeLocation.longitude')
+    check('treeLocation.type')
+        .notEmpty().withMessage('Location type is required')
+        .isIn(['Point']).withMessage('Location must be a Point'),
+        
+    check('treeLocation.coordinates')
+        .notEmpty().withMessage('Location coordinates is required')
+        .isArray().withMessage('Location must be an array')
+        .isLength({min : 2, max : 2}).withMessage('Location must have exactly two elements'),
+        
+    check('treeLocation.coordinates.0')
         .notEmpty().withMessage('Longitude is required')
         .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
+
+    check('treeLocation.coordinates.1')
+        .notEmpty().withMessage('Latitude is required')
+        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
 
     check('healthStatus')
         .notEmpty().withMessage('Health status is required')
@@ -35,13 +48,30 @@ export const locateTreeValidator = [
 export const updateTreeValidator = [
     check('id').isMongoId().withMessage('Invalid tree ID Format'),
 
-    check('treeLocation.latitude')
+    check('treeLocation')
         .optional()
-        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+        .isObject().withMessage('Location must be an object'),
+
+    check('treeLocation.type')
+        .if(check('treeLocation').exists())
+        .notEmpty().withMessage('Location type is required')
+        .isIn(['Point']).withMessage('Location must be a Point'),
         
-    check('treeLocation.longitude')
-        .optional()
+    check('treeLocation.coordinates')
+        .if(check('treeLocation').exists())
+        .notEmpty().withMessage('Location coordinates is required')
+        .isArray().withMessage('Location must be an array')
+        .isLength({min : 2, max : 2}).withMessage('Location must have exactly two elements'),
+        
+    check('treeLocation.coordinates.0')
+        .if(check('treeLocation.coordinates').exists())
+        .notEmpty().withMessage('Longitude is required')
         .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
+
+    check('treeLocation.coordinates.1')
+        .if(check('treeLocation.coordinates').exists())
+        .notEmpty().withMessage('Latitude is required')
+        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
 
     check('healthStatus')
         .optional()

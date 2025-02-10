@@ -15,8 +15,9 @@ import reportRouter from "./routes/reportRoute";
 import eventRouter from "./routes/eventRoute";
 import commentRouter from "./routes/commentRoute";
 import responseRouter from "./routes/responseRoute";
-import TaskRouter from "./routes/taskRoute";
+import taskRouter from "./routes/taskRoute";
 import guideRouter from "./routes/guideRoute";
+import searchRouter from "./routes/searchRoute";
 import nurseryRouter from "./routes/nurseryRoute";
 
 
@@ -54,10 +55,10 @@ app.use('/api/reports', reportRouter);
 app.use('/api/events', eventRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/responses', responseRouter);
-app.use('/api/tasks', TaskRouter);
+app.use('/api/tasks', taskRouter);
 app.use('/api/guide', guideRouter);
+app.use('/api/search', searchRouter);
 app.use('/api/nursery', nurseryRouter);
-
 
 app.get("/comment", (req, res) => {
     res.sendFile(path.join(__dirname, "uploads", "comment.html"));

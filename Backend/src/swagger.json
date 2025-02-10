@@ -19,7 +19,7 @@
             "description": "Operations about Events"
         },
         {
-            "name": "guides",
+            "name": "Guides",
             "description": "Operations about Guides"
         },
         {
@@ -441,50 +441,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "object",
-                                            "example": [
-                                                {
-                                                    "treeLocation": {
-                                                        "latitude": 25,
-                                                        "longitude": 26
-                                                    },
-                                                    "_id": "67978b5804bb6348dd0f63cf",
-                                                    "healthStatus": "Diseased",
-                                                    "problem": "testt",
-                                                    "image": "../uploads/not-found-image.png",
-                                                    "plantedRecently": true,
-                                                    "byUser": "674f5632e57414133c9499f9",
-                                                    "reportsAboutIt": [
-                                                        "67978bb904bb6348dd0f63d4"
-                                                    ],
-                                                    "createdAt": "2025-01-27T13:34:16.460Z",
-                                                    "updatedAt": "2025-01-27T17:15:22.357Z",
-                                                    "__v": 6
-                                                },
-                                                {
-                                                    "treeLocation": {
-                                                        "latitude": 25,
-                                                        "longitude": 26
-                                                    },
-                                                    "_id": "6797bb1235f66e923435a858",
-                                                    "healthStatus": "Healthy",
-                                                    "problem": "No problem",
-                                                    "image": "../uploads/not-found-image.png",
-                                                    "plantedRecently": true,
-                                                    "byUser": "674f5632e57414133c9499f9",
-                                                    "reportsAboutIt": [
-                                                        "67978c5004bb6348dd0f63da",
-                                                        "6797bf003ae87c7a8fcbf45c"
-                                                    ],
-                                                    "createdAt": "2025-01-27T16:57:54.282Z",
-                                                    "updatedAt": "2025-01-27T17:15:21.935Z",
-                                                    "__v": 2
-                                                }
-                                            ]
-                                        }
+                                    "type": "array",
+                                    "description": "array of trees which user was planted",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Tree"
                                     }
                                 }
                             }
@@ -580,52 +540,19 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Page number, number of elements in the page, and a list of trees with all their properties",
                         "content": {
                             "application/json": {
-                                "example": {
-                                    "length": 2,
-                                    "page": 1,
-                                    "trees": [
-                                        {
-                                            "treeLocation": {
-                                                "latitude": 25,
-                                                "longitude": 26
-                                            },
-                                            "_id": "67978b5804bb6348dd0f63cf",
-                                            "healthStatus": "Diseased",
-                                            "problem": "testt",
-                                            "image": "../uploads/not-found-image.png",
-                                            "plantedRecently": false,
-                                            "byUser": "674f5632e57414133c9499f9",
-                                            "reportsAboutIt": [
-                                                "67978bb904bb6348dd0f63d4"
-                                            ],
-                                            "createdAt": "2025-01-27T13:34:16.460Z",
-                                            "updatedAt": "2025-01-27T17:15:22.357Z",
-                                            "__v": 6
-                                        },
-                                        {
-                                            "treeLocation": {
-                                                "latitude": 25,
-                                                "longitude": 26
-                                            },
-                                            "_id": "6797bb1235f66e923435a858",
-                                            "healthStatus": "Healthy",
-                                            "problem": "No problem",
-                                            "image": "../uploads/not-found-image.png",
-                                            "plantedRecently": false,
-                                            "byUser": "674f5632e57414133c9499f9",
-                                            "reportsAboutIt": [
-                                                "67978c5004bb6348dd0f63da",
-                                                "6797bf003ae87c7a8fcbf45c"
-                                            ],
-                                            "createdAt": "2025-01-27T16:57:54.282Z",
-                                            "updatedAt": "2025-01-27T17:15:21.935Z",
-                                            "__v": 2
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree located successfully"
                                         }
-                                    ]
+                                    }
+                                    
                                 }
                             }
                         }
@@ -681,7 +608,7 @@
                 }
             }
         },
-        "api/users/{id}/task":{
+        "api/users/{id}/task": {
             "post":{
                 "tags": ["Care"],
                 "summary": "Add task",
@@ -707,20 +634,15 @@
                                 "properties": {
                                     "title": {
                                         "type": "string",
-                                        "example" : "Watering",
-                                        "length" : {"max": 30}
+                                        "example": "Water the tree",
+                                        "enum": ["Water the tree", "Prune dead branches", "Check for pests", "Fertilize the soil"]
                                     },
                                     "treeID": {
                                         "type": "string",
                                         "example" : "67978b5804bb6348dd0f63cf"
-                                    },
-                                    "date": {
-                                        "type": "date",
-                                        "example" : "2025-02-27",
-                                        "validation" : "Date must be in the presented date or in the future"
                                     }
                                 },
-                                "required": ["title", "treeID", "date"]
+                                "required": ["title", "treeID"]
                             }
                         }
                     }
@@ -738,48 +660,8 @@
                                             "example": "Task created successfully"
                                         },
                                         "task": {
-                                            "type": "object",
-                                            "example": {
-                                                "title": "Watering",
-                                                "tree": {
-                                                    "treeLocation": {
-                                                        "latitude": 25,
-                                                        "longitude": 26
-                                                    },
-                                                    "_id": "6797bb1235f66e923435a858",
-                                                    "healthStatus": "Healthy",
-                                                    "problem": "No problem",
-                                                    "image": "../uploads/not-found-image.png",
-                                                    "plantedRecently": false,
-                                                    "byUser": "674f5632e57414133c9499f9",
-                                                    "reportsAboutIt": [
-                                                        "67978c5004bb6348dd0f63da",
-                                                        "6797bf003ae87c7a8fcbf45c"
-                                                    ],
-                                                    "createdAt": "2025-01-27T16:57:54.282Z",
-                                                    "updatedAt": "2025-01-27T17:15:21.935Z",
-                                                    "__v": 2
-                                                },
-                                                "user": {
-                                                    "_id": "674f5632e57414133c9499f9",
-                                                    "username": "Hagar",
-                                                    "email": "gamilamohamed@gamil.com",
-                                                    "profilePic": "https://res.cloudinary.com/dvlao566z/image/upload/v1733439630/kjhjxq357ujwlaefpg53.jpg",
-                                                    "password": "$2a$10$gm1o2sVkyBFNlt8rOlWMP.8qArN0NfatJz0r6ASCwAnHYKl2c8S6e",
-                                                    "points": 20,
-                                                    "pendingCoupons": 0,
-                                                    "isActive": true,
-                                                    "role": "admin",
-                                                    "createdAt": "2024-12-03T19:04:18.280Z",
-                                                    "updatedAt": "2025-01-29T11:28:48.753Z",
-                                                    "__v": 0,
-                                                    "passwordChangedAt": "2025-01-29T11:28:48.750Z"
-                                                },
-                                                "date": "2025-02-25T00:00:00.000Z",
-                                                "isDone": false,
-                                                "_id": "679d629638fb51932425aca5",
-                                                "__v": 0
-                                            }
+                                            "type": "string",
+                                            "example": "Water the tree"
                                         }
                                     }
                                 }
@@ -787,7 +669,7 @@
                         }
                     },
                     "400": {
-                        "description": "If the user enters a date in the past or a title is longer than the maximum",
+                        "description": "If the user enters something that conflicts with the validation rules",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -795,7 +677,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Title must be at most 30 characters long"
+                                            "example": "Invalid task title"
                                         }
                                     }
                                 }
@@ -819,7 +701,7 @@
                         }
                     },
                     "403":{
-                        "summary": "The user who requested is not the owner of the ID in the path or admin",
+                        "summary": "The user who requested is not the owner of the ID in the path or the tree or admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -839,7 +721,7 @@
             "get": {
                 "tags": ["Care"],
                 "summary": "Retrieve user tasks",
-                "description": "Get user tasks on specific date (not in past) to be displayed in care page with that date",
+                "description": "Display the daily tasks for each tree, classified as completed or pending",
                 "security": [{
                     "bearerAuth": []
                 }],
@@ -859,13 +741,12 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "date": {
-                                        "type": "date",
-                                        "example" : "2025-02-25",
-                                        "validation" : "Date must be in the presented date or in the future"
+                                    "treeIDs": {
+                                        "type": "array",
+                                        "example" : ["6797bb1235f66e923435a858", "67978b5804bb6348dd0f63cf"]
                                     }
                                 },
-                                "required": ["date"]
+                                "required": ["treeIDs"]
                             }
                         }
                     }
@@ -875,22 +756,43 @@
                         "description": "Successful operation",
                         "content": {
                             "application/json": {
-                                "example": [
-                                    {
-                                        "_id": "679d629638fb51932425aca5",
-                                        "title": "Watering",
-                                        "tree": "6797bb1235f66e923435a858",
-                                        "user": "674f5632e57414133c9499f9",
-                                        "date": "2025-02-25T00:00:00.000Z",
-                                        "isDone": false,
-                                        "__v": 0
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "treeID": {
+                                                "type": "string",
+                                                "description": "Unique identifier for the tree",
+                                                "example": "67978b5804bb6348dd0f63cf"
+                                            },
+                                            "treeName": {
+                                                "type": "string",
+                                                "description": "Name of the tree",
+                                                "example": "tree 1"
+                                            },
+                                            "pendingTasks": {
+                                                "type": "array",
+                                                "description": "List of pending tasks for the tree",
+                                                "items": {
+                                                    "$ref": "#/components/schemas/Task"
+                                                }
+                                            },
+                                            "completedTasks": {
+                                                "type": "array",
+                                                "description": "List of completed tasks for the tree",
+                                                "items": {
+                                                    "$ref": "#/components/schemas/Task"
+                                                }
+                                            }
+                                        }
                                     }
-                                ]
+                                }
                             }
                         }
                     },
                     "400": {
-                        "description": "IF the date is in the past",
+                        "description": "If something is entered that conflicts with the validation rules",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -898,7 +800,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Date cannot be in the past"
+                                            "example": "If enter something that conflicts with the validation rules"
                                         }
                                     }
                                 }
@@ -906,7 +808,7 @@
                         }
                     },
                     "404": {
-                        "summary": "User not found",
+                        "summary": "User not found or tree not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -941,119 +843,6 @@
             }
         },
         "/api/tasks/{id}": {
-            "patch": {
-                "tags": ["Care"],
-                "summary": "Update task title",
-                "description": "Update task title",
-                "security": [{
-                    "bearerAuth": []
-                }],
-                "parameters": [{
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                        "type": "string",
-                        "example": "679d586f1ea9acf426404abc"
-                    }
-                }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",   
-                                "properties": {
-                                    "title": {
-                                        "type": "string",
-                                        "example": "Water the tree",
-                                        "length" : {"max": 30}
-                                    }
-                                },
-                                "required": ["title"]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Task updated successfully"
-                                        },
-                                        "task": {
-                                            "type": "object",
-                                            "example": {
-                                                "_id": "679d629638fb51932425aca5",
-                                                "title": "Water the tree",
-                                                "tree": "6797bb1235f66e923435a858",
-                                                "user": "674f5632e57414133c9499f9",
-                                                "date": "2025-02-25T00:00:00.000Z",
-                                                "isDone": false,
-                                                "__v": 0
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "summary": "Title is longer than the maximum allowed or not available",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Title must be at most 30 characters long"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "summary": "Task not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Task not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "403":{
-                        "summary": "The user who requested is not the owner of the task",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "You are not authorized to perform this action"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "post": {
                 "tags": ["Care"],
                 "summary": "Mark task",
@@ -1189,75 +978,435 @@
                 }
             }
         },
-        "api/trees": {
-            "get": {
-                "tags": [ "Trees" ],
-                "summary": "Retrieve all trees",
-                "description": "Retrieve a list of all trees registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter, with the ability to filter the tree properties or display all of them.",
+        "/api/tasks/{id}/delete-all-tasks": {
+            "delete": {
+                "tags": ["Care"],
+                "summary": "Delete all tasks of a tree",
+                "description": "Delete all tasks of a tree",
+                "security": [{
+                    "bearerAuth": []
+                }],
                 "parameters": [{
-                    "name": "page",
-                    "in": "query",
-                    "description" : "The number of the page",
-                    "require" : "false",
-                    "schema":{
-                        "type": "number",
-                        "default": 1,
-                        "validation": "From 1 to (total number of elements / number of elements on one page)"
-                    } 
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "679d586f1ea9acf426404abc"
+                    }
                 }],
                 "responses": {
                     "200": {
-                        "description": "Page number, number of elements, and a list of trees with all their properties",
+                        "description": "Successful operation",
+                        "content": {    
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tasks deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "Tree not found",
                         "content": {
                             "application/json": {
-                                "example": {
-                                    "length": 2,
-                                    "page": 1,
-                                    "trees": [
-                                        {
-                                            "treeLocation": {
-                                                "latitude": 25,
-                                                "longitude": 26
-                                            },
-                                            "_id": "67978b5804bb6348dd0f63cf",
-                                            "healthStatus": "Diseased",
-                                            "problem": "testt",
-                                            "image": "../uploads/not-found-image.png",
-                                            "plantedRecently": false,
-                                            "byUser": "674f5632e57414133c9499f9",
-                                            "reportsAboutIt": [
-                                                "67978bb904bb6348dd0f63d4"
-                                            ],
-                                            "createdAt": "2025-01-27T13:34:16.460Z",
-                                            "updatedAt": "2025-01-27T17:15:22.357Z",
-                                            "__v": 6
-                                        },
-                                        {
-                                            "treeLocation": {
-                                                "latitude": 25,
-                                                "longitude": 26
-                                            },
-                                            "_id": "6797bb1235f66e923435a858",
-                                            "healthStatus": "Healthy",
-                                            "problem": "No problem",
-                                            "image": "../uploads/not-found-image.png",
-                                            "plantedRecently": false,
-                                            "byUser": "674f5632e57414133c9499f9",
-                                            "reportsAboutIt": [
-                                                "67978c5004bb6348dd0f63da",
-                                                "6797bf003ae87c7a8fcbf45c"
-                                            ],
-                                            "createdAt": "2025-01-27T16:57:54.282Z",
-                                            "updatedAt": "2025-01-27T17:15:21.935Z",
-                                            "__v": 2
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree not found"
                                         }
-                                    ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403":{
+                        "summary": "The user who requested is not the owner of the tree",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        },
+        "/api/search/home/{key}": {
+            "get": {
+                "tags": ["Guides", "Events", "Nurseries"],
+                "summary": "Search home",
+                "description": "Search for articles, events or Nurseries in the home",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "key",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "test"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Articles": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "string",
+                                                    "description": "Message indicating no articles found",
+                                                    "example": "No article found"
+                                                },
+                                                {
+                                                    "type": "array",
+                                                    "description": "Array of article objects",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Article"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "Events": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "array",
+                                                    "description": "Array of event objects",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Event"
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string",
+                                                    "description": "Message indicating no events found",
+                                                    "example": "No events found"
+                                                }
+                                            ]
+                                        },
+                                        "Nurseries": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "string",
+                                                    "description": "Message indicating no nurseries found",
+                                                    "example": "No nurseries found"
+                                                },
+                                                {
+                                                    "type": "array",
+                                                    "description": "Array of nursery objects",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Nursery"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "No results found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No results found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "summary": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/search/community/{key}": {
+            "get": {
+                "tags": ["Community"],
+                "summary": "Search community",
+                "description": "Search for users or reports in the community",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "key",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "hagar"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Users": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "array",
+                                                    "description": "Array of user objects",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/User"
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string",
+                                                    "description": "Message indicating no users found",
+                                                    "example": "No users found"
+                                                }
+                                            ]
+                                        },
+                                        "Reports": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "string",
+                                                    "description": "Message indicating no reports found",
+                                                    "example": "No reports found"
+                                                },
+                                                {
+                                                    "type": "array",
+                                                    "description": "Array of report objects",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Report"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/nursery/": {
+            "get": {
+                "tags": ["Nurseries"],
+                "summary": "Get all nurseries",
+                "description": "Display all nurseries registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description" : "The number of the page",
+                        "require" : "false",
+                        "schema":{
+                            "type": "number",
+                            "default": 1,
+                            "validation": "From 1 to (total number of elements / number of elements on one page)"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description" : "The number of elements on one page",
+                        "require" : "false",
+                        "schema":{
+                            "type": "number",
+                            "default": 5
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "description": "Number of nurseries in the current page",
+                                            "example": 6
+                                        },
+                                        "page": {
+                                            "type": "integer",
+                                            "description": "Current page number",
+                                            "example": 1
+                                        },
+                                        "nurseries": {
+                                            "type": "array",
+                                            "description": "List of nurseries",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Nursery"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/guide/": {
+            "get": {
+                "tags": ["Guides"],
+                "summary": "Get all guides",
+                "description": "Display all guides registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description" : "The number of the page",
+                        "require" : "false",
+                        "schema":{
+                            "type": "number",
+                            "default": 1,
+                            "validation": "From 1 to (total number of elements / number of elements on one page)"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description" : "The number of elements on one page",
+                        "require" : "false",
+                        "schema":{
+                            "type": "number",
+                            "default": 6
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "description": "Number of nurseries in the current page",
+                                            "example": 6
+                                        },
+                                        "page": {
+                                            "type": "integer",
+                                            "description": "Current page number",
+                                            "example": 1
+                                        },
+                                        "articles": {
+                                            "type": "array",
+                                            "description": "List of articles",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Article"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/event/": {
+            "get": {
+                "tags": ["Events"],
+                "summary": "Get all events",
+                "description": "Display all events registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description" : "The number of the page",
+                        "require" : "false",
+                        "schema":{
+                            "type": "number",
+                            "default": 1,
+                            "validation": "From 1 to (total number of elements / number of elements on one page)"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description" : "The number of elements on one page",
+                        "require" : "false",
+                        "schema":{
+                            "type": "number",
+                            "default": 6
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "description": "Number of events in the current page",
+                                            "example": 6
+                                        },
+                                        "page": {
+                                            "type": "integer",
+                                            "description": "Current page number",
+                                            "example": 1
+                                        },
+                                        "events": {
+                                            "type": "array",
+                                            "description": "List of events",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Event"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }   
         }
     },
     "components": {
@@ -1267,6 +1416,449 @@
                 "scheme": "bearer",
                 "bearerFormat": "JWT",
                 "description": "JWT token for authentication. Example: 'Bearer {token}'"
+            }
+        },
+        "schemas": {
+            "Article": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "example": "67a51fcea73325d93fadf5dc"
+                    },
+                    "articletitle": {
+                        "type": "string",
+                        "example": "الزراعة في المنزل"
+                    },
+                    "content": {
+                        "type": "string",
+                        "example": "تُعدّ الزراعة في المنزل إحدى الممارسات التي تعود على الفرد بالعديد من الفوائد..."
+                    },
+                    "articlePic": {
+                        "type": "string",
+                        "example": "../uploads/not-found-image.png"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-02-06T20:47:10.498Z"
+                    },
+                    "__v": {
+                        "type": "integer",
+                        "example": 0
+                    }
+                }
+            },
+            "Nursery": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the nursery",
+                        "example": "67a53b762d3889664beff056"
+                    },
+                    "nurseryname": {
+                        "type": "string",
+                        "description": "Name of the nursery",
+                        "example": "يورودريب ايجيبت"
+                    },
+                    "location": {
+                        "type": "string",
+                        "description": "Location of the nursery",
+                        "example": "164 شارع الهرم – الجيزة – مصر."
+                    },
+                    "__v": {
+                        "type": "integer",
+                        "description": "Version key used by MongoDB",
+                        "example": 0
+                    }
+                }
+            },
+            "Event": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "object",
+                        "properties": {
+                            "latitude": {
+                                "type": "number",
+                                "example": 30
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "example": 24
+                            }
+                        }
+                    },
+                    "eventImage": {
+                        "type": "string",
+                        "example": "../uploads/not-found-image.png"
+                    } ,
+                    "_id": {
+                        "type": "string",
+                        "example": "672fc5bbfdc6d15f778e25d7"
+                    },
+                    "eventName": {
+                        "type": "string",
+                        "example": "spring"
+                    },
+                    "eventDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-12-31T22:00:00.000Z"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "description"
+                    },
+                    "eventStatus": {
+                        "type": "string",
+                        "example": "completed"
+                    },
+                    "organizedWithPartnerID": {
+                        "type": "string",
+                        "example": "6712c34869c17428b80a63c6"
+                    },
+                    "__v": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "interestedIn": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": ["674f5632e57414133c9499f9"]
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "example": "674f5632e57414133c9499f9"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "Hagar"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "hagarelessawy0@gamil.com"
+                    },
+                    "profilePic": {
+                        "type": "string",
+                        "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1733439630/kjhjxq357ujwlaefpg53.jpg"
+                    },
+                    "points": {
+                        "type": "number",
+                        "example": 20
+                    },
+                    "pendingCoupons": {
+                        "type": "number",
+                        "example": 0
+                    },
+                    "role": {
+                        "type": "string",
+                        "example": "admin"
+                    },
+                    "location": {
+                        "type": "object",
+                        "properties": {
+                            "type": "string",
+                            "enum": ["Point"],
+                            "coordinates": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number",
+                                    "length": 2
+                                }
+                            }
+                        }
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-12-03T19:04:18.280Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-29T11:28:48.753Z"
+                    },
+                    "__v": {
+                        "type": "number",
+                        "example": 0
+                    }
+                }
+            },
+            "Report": {
+                "type": "object",
+                    "properties": {
+                        "location": {
+                            "type": "object",
+                            "properties": {
+                                "type": "string",
+                                "enum": ["Point"],
+                                "coordinates": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "number",
+                                        "length": 2
+                                    }
+                                }
+                            }
+                        },
+                        "_id": {
+                            "type": "string",
+                            "example": "67978c5004bb6348dd0f63da"
+                        },
+                        "reportType": {
+                            "type": "string",
+                            "enum": ["A tree needs care", "A place needs tree", "Other"],
+                            "example": "A tree needs care"
+                        },
+                        "description": {
+                            "type": "string",
+                            "example": "test2"
+                        },
+                        "images": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1737987149/py1qurh4dfrpmk3ffdmt.png"
+                            }
+                        },
+                        "createdBy": {
+                            "type": "string",
+                            "description": "user ID",
+                            "example": "674f5632e57414133c9499f9"
+                        },
+                        "treeID": {
+                            "type": "string",
+                            "example": "6797bb1235f66e923435a858"
+                        },
+                        "upVotes": {
+                            "type": "number",
+                            "example": 1
+                        },
+                        "upVoters": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "users ID",
+                                "example": "674f5632e57414133c9499f9"
+                            }
+                        },
+                        "status": {
+                            "type": "string",
+                            "enum": ["Pending", "In Progress", "Resolved", "Awaiting Verification"],
+                            "example": "Pending"
+                        },
+                        "responses": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "example": "6798c650f0ddb44f0d7ef905"
+                            }
+                        },
+                        "comments": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "example": "6797904c10d099e3275e0ba6"
+                            }
+                        },
+                        "modificationHistory": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "oldData": {
+                                        "type": "object",
+                                        "properties": {
+                                            "reportType": {
+                                                "type": "string",
+                                                "example": "A tree needs care"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "testttt2"
+                                            },
+                                            "location": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "latitude": {
+                                                        "type": "number",
+                                                        "example": 27
+                                                    },
+                                                    "longitude": {
+                                                        "type": "number",
+                                                        "example": 24
+                                                    }
+                                                }
+                                            },
+                                            "images": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string",
+                                                    "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1737987149/py1qurh4dfrpmk3ffdmt.png"
+                                                }
+                                            },
+                                            "treeID": {
+                                                "type": "string",
+                                                "example": "67978b5804bb6348dd0f63cf"
+                                            },
+                                            "createdAt": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-01-27T14:12:30.737Z"
+                                            }
+                                        }
+                                    },
+                                    "updatedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-01-27T17:08:06.033Z"
+                                    },
+                                    "_id": {
+                                        "type": "string",
+                                        "example": "6797bd763ae87c7a8fcbf44f"
+                                    }
+                                }
+                            }
+                        },
+                        "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-01-27T13:38:24.412Z"
+                        },
+                        "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-01-28T11:58:08.371Z"
+                        },
+                        "__v": {
+                            "type": "number",
+                            "example": 8
+                        }
+                    }
+            },
+            "Tree": {
+                "type": "object",
+                "properties": {
+                    "treeLocation": {
+                        "type": "object",
+                        "properties": {
+                            "type": "string",
+                            "enum": ["Point"],
+                            "coordinates": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number",
+                                    "length": 2
+                                }
+                            }
+                        }
+                    },
+                    "_id": {
+                        "type": "string",
+                        "example": "67978b5804bb6348dd0f63cf"
+                    },
+                    "healthStatus": {
+                        "type": "string",
+                        "enum": ["Healthy", "Diseased"],
+                        "example": "Diseased"
+                    },
+                    "problem": {
+                        "type": "string",
+                        "example": "testt"
+                    },
+                    "image": {
+                        "type": "string",
+                        "example": "../uploads/not-found-image.png"
+                    },
+                    "plantedRecently": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "byUser": {
+                        "type": "string",
+                        "example": "674f5632e57414133c9499f9"
+                    },
+                    "reportsAboutIt": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": ["67978bb904bb6348dd0f63d4"]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-27T13:34:16.460Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-27T17:15:22.357Z"
+                    },
+                    "__v": {
+                        "type": "integer",
+                        "example": 6
+                    }
+                }
+            },
+            "Task": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the task",
+                        "example": "67a55b87a5cec1ecb8cdfd2c"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Title of the task",
+                        "example": "Prune dead branches"
+                    },
+                    "tree": {
+                        "type": "object",
+                        "description": "Tree associated with the task",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "example": "67978b5804bb6348dd0f63cf"
+                            },
+                            "treeName": {
+                                "type": "string",
+                                "example": "tree 1"
+                            }
+                        }
+                    },
+                    "user": {
+                        "type": "string",
+                        "description": "User ID associated with the task",
+                        "example": "674f5632e57414133c9499f9"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Date and time when the task is due",
+                        "example": "2025-02-07T01:01:59.429Z"
+                    },
+                    "isDone": {
+                        "type": "boolean",
+                        "description": "Indicates whether the task is completed",
+                        "example": false
+                    },
+                    "__v": {
+                        "type": "integer",
+                        "description": "Version key used by MongoDB",
+                        "example": 0
+                    }
+                }
             }
         }
     }

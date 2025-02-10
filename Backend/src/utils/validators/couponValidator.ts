@@ -10,10 +10,15 @@ export const getCouponValidator = [
 
 
 export const createCouponValidator = [
-    check('codes').isArray({ min: 1 }).withMessage('Codes array must contain at least one code'),
+    check('codes')
+        .isArray({ min: 1 }).withMessage('Codes array must contain at least one code')
+        .custom((codes) => {
+            const uniqueCodes = [...new Set(codes)];
+            return uniqueCodes.length === codes.length;
+        })
+        .withMessage('Tree IDs must be unique'),
 
     check('codes.*')
-        .notEmpty().withMessage('Each code is required')
         .isLength({ min: 6, max: 6 }).withMessage('Each code must be exactly 6 characters')
         .custom(async (code) => {
             const existingCoupon = await Coupon.findOne({ code });
@@ -40,7 +45,6 @@ export const createCouponValidator = [
 ];
 
 export const updateCouponValidator = [
-
 
     check('code')
         .optional()
