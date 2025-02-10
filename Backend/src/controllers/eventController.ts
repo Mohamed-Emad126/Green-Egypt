@@ -20,7 +20,7 @@ export default class EventController {
 
     getEvents = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const page: number = req.query.page ? +req.query.page : 1;
-        const limit: number = req.query.limit ? +req.query.limit : 5;
+        const limit: number = req.query.limit ? +req.query.limit : 6;
         const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
         const events = await this.eventService.getEvents(page, limit , filters);
         res.json({ length: events.length, page: page, events: events });

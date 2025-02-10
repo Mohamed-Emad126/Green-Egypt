@@ -2,14 +2,21 @@ import mongoose, { Schema, Model } from "mongoose";
 import { ITree } from "../../interfaces/iTree";
 
 const trashTreeSchema: Schema = new Schema({
-    species: {
+    treeName: {
         type: String,
         trim: true,
-        required: [true, 'Species is required']
     },
     treeLocation: {
-        type: String,
-        required: [true, 'Location is required']
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true,
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+            length: 2
+        }
     },
     healthStatus: {
         type: String,
@@ -28,13 +35,16 @@ const trashTreeSchema: Schema = new Schema({
     plantedRecently: {
         type: Boolean,
         required: true,
-        default: false
     },
     byUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", 
         required: true
-    }
+    },
+    reportsAboutIt: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Report"
+    }],
 
 });
 

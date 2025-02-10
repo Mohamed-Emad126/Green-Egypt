@@ -4,12 +4,12 @@ export interface IReport extends Document {
     reportType: 'A tree needs care' | 'A place needs tree' | 'Other';
     description: string;
     location: {
-        latitude: number;
-        longitude: number;
+        type: string;
+        coordinates: [number, number]
     };
     images: string[];
     createdBy: mongoose.Schema.Types.ObjectId;
-    treeID: mongoose.Schema.Types.ObjectId;
+    treeID?: mongoose.Schema.Types.ObjectId;
     upVotes: number;
     upVoters: mongoose.Schema.Types.ObjectId[];
     status : 'Pending' | 'In Progress' | 'Resolved' | 'Rejected';
@@ -27,8 +27,8 @@ export interface IReportInput {
     reportType?: 'A tree needs care' | 'A place needs tree' | 'Other';
     description?: string;
     location?: {
-        latitude?: number;
-        longitude?: number;
+        type: string;
+        coordinates: [number, number]
     };
     images?: string[];    
     treeID?: mongoose.Types.ObjectId;
