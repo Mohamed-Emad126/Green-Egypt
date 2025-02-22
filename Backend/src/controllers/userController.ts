@@ -49,7 +49,7 @@ export default class UserController {
 
     /**
      * @desc      Update user
-     * @route     patch /api/users/:id
+     * @route     PATCH /api/users/:id
      * @access    Private
     */
     updateUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -68,7 +68,7 @@ export default class UserController {
 
     /**
      * @desc      Change user password
-     * @route     put /api/users/:id/change-password
+     * @route     PUT /api/users/:id/change-password
      * @access    Private
     */
     changeUserPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -93,7 +93,7 @@ export default class UserController {
 
     /**
      * @desc      Upload user picture
-     * @route     post /api/users/:id/image
+     * @route     PATCH /api/users/:id/image
      * @access    Private
     */
     uploadUserPicture = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {

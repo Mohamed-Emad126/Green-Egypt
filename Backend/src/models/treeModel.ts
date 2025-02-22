@@ -6,18 +6,24 @@ const TreeSchema: Schema = new Schema({
         type: String,
         required: [true, 'Tree name is required'],
         trim: true,
-        maxLength: [10, 'Tree name cannot be more than 10 characters'],
+        maxLength: [15, 'Tree name cannot be more than 15 characters'],
     },
     treeLocation: {
         type: {
             type: String,
             enum: ['Point'],
+            default: 'Point',
             required: true,
         },
         coordinates: {
             type: [Number],
             required: true,
-            length: 2
+            validate: {
+                validator: function (value: number[]) {
+                    return value.length === 2;
+                },
+                message: 'Coordinates must have exactly two elements',
+            },
         }
     },
     healthStatus: {
@@ -54,7 +60,7 @@ const TreeSchema: Schema = new Schema({
     
 }, { timestamps: true });
 
-TreeSchema.index({ location: '2dsphere' });
+TreeSchema.index({ treeLocation: '2dsphere' });
 
 const TreeModel: Model<ITree> = mongoose.model<ITree>('Tree', TreeSchema);
 export default TreeModel;

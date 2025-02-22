@@ -12,30 +12,29 @@ export const createReportValidator = [
         .isIn(['A tree needs care', 'A place needs tree', 'Other']).withMessage('Invalid report type'),
 
     check('location')
-        .if(check('reportType').isIn(['A place needs tree']))
         .notEmpty().withMessage('Location is required')
-        .isObject().withMessage('Location must be an object'),
-
-    check('location.type')
-        .if(check('location').exists())
-        .notEmpty().withMessage('Location type is required')
-        .isIn(['Point']).withMessage('Location must be a Point'),
-        
-    check('location.coordinates')
-        .if(check('location').exists())
-        .notEmpty().withMessage('Location coordinates is required')
-        .isArray().withMessage('Location must be an array')
-        .isLength({min : 2, max : 2}).withMessage('Location must have exactly two elements'),
-        
-    check('location.coordinates.0')
-        .if(check('location.coordinates').exists())
-        .notEmpty().withMessage('Longitude is required')
-        .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
-
-    check('location.coordinates.1')
-        .if(check('location.coordinates').exists())
-        .notEmpty().withMessage('Latitude is required')
-        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+        .custom((value) => {
+            try {
+                if (typeof value === "string") {
+                    value = JSON.parse(value);
+                }
+                if (!value.type || value.type !== 'Point') {
+                    throw new Error("Location must have type 'Point'");
+                }
+                if (!Array.isArray(value.coordinates) || value.coordinates.length !== 2) {
+                    throw new Error("Coordinates must be an array with exactly two elements [longitude, latitude]");
+                }
+                if (value.coordinates[0] < 24 || value.coordinates[0] > 37) {
+                    throw new Error("Longitude must be between 24 and 37");
+                }
+                if (value.coordinates[1] < 22 || value.coordinates[1] > 32) {
+                    throw new Error("Latitude must be between 22 and 32");
+                }            
+                return true;
+            } catch (error) {
+                throw new Error("Invalid location format. Must be a valid JSON object.");
+            }
+        }),
 
     check('treeID')
         .if(check('reportType').isIn(['A tree needs care']))
@@ -45,6 +44,13 @@ export const createReportValidator = [
     check('description')
         .notEmpty().withMessage('Description is required')
         .isLength({max : 600}).withMessage('Description must be at most 500 characters long'),
+
+    check('images').custom((_, { req }) => {
+        if (!req.files || req.files.length === 0) {
+            throw new Error("at least one image is required");
+        }
+        return true;
+    }),
 
     validatorMiddleware
 ];

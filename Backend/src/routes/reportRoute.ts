@@ -31,7 +31,7 @@ const { getReportResponses, createResponse } = new ResponseController(responseSe
 
 reportRouter.route('/')
         .get(verifyToken, getReports)
-        .post(verifyToken, createReportValidator, createNewReport);
+        .post(verifyToken, uploadImages, createReportValidator, createNewReport);
 
 reportRouter.route('/:id')
         .get(verifyToken, getReportValidator, getReportById)

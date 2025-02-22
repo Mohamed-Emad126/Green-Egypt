@@ -23,7 +23,14 @@ export default class ReportService {
         return await Report.findById(reportID);
     }
 
-    async createNewReport(newReport : IReportInput) {
+    async createNewReport(newReport : IReportInput, imageFiles: Express.Multer.File[]) {
+        let uploadedImages = [];
+        const uploadPromises = imageFiles.map(async (imageFile) => {
+            const imageUploadResult = await uploadToCloud(imageFile.path);
+            fs.unlinkSync(imageFile.path);
+            return imageUploadResult.url;
+        });
+        uploadedImages = await Promise.all(uploadPromises);
 
         let report;
 
@@ -34,14 +41,13 @@ export default class ReportService {
             }
 
             newReport.location = tree.treeLocation;
-            report = await Report.create(newReport);
+            report = await Report.create({...newReport, images: uploadedImages});
 
             tree.reportsAboutIt.push(report.id);
             await tree.save();
 
         } else {
-            newReport.treeID = undefined;
-            report = await Report.create(newReport);
+            report = await Report.create({...newReport, images: uploadedImages});
         }
 
         return true;
