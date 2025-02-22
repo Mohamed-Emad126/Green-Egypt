@@ -48,7 +48,9 @@ export default class ReportController {
      * @access    Public
     */
     createNewReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const createdReport = await this.reportService.createNewReport({ ...req.body, createdBy: req.body.user.id });
+        let { location } = req.body;
+        location = JSON.parse(location);
+        const createdReport = await this.reportService.createNewReport({ ...req.body, createdBy: req.body.user.id , location }, req.files as Express.Multer.File[]);
         if (createdReport) {
             res.status(201).json({ message: 'Report created successfully' });
         } else {
@@ -58,7 +60,7 @@ export default class ReportController {
 
     /**
      * @desc      Update report
-     * @route     patch /api/reports/:id
+     * @route     PATCH /api/reports/:id
      * @access    Public
     */
     updateReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {

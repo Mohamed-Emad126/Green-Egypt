@@ -19,7 +19,7 @@ const { getPartners,
 
 partnerRoute.route('/')
         .get(verifyToken, getPartners)
-        .post(verifyAdminMiddleware, createNewPartnerValidator, createNewPartner);
+        .post(verifyAdminMiddleware, uploadImage, createNewPartnerValidator, createNewPartner);
 
 partnerRoute.route('/:id')
         .get(verifyToken, getPartnerValidator, getPartnerById)
@@ -27,7 +27,6 @@ partnerRoute.route('/:id')
         .delete(verifyAdminMiddleware, deletePartnerValidator, deletePartner);
 
 partnerRoute.route('/:id/image')
-        .post(verifyAdminMiddleware, uploadImage, uploadPartnerLogoValidator, uploadPartnerLogo);
+        .patch(verifyAdminMiddleware, uploadImage, uploadPartnerLogoValidator, uploadPartnerLogo);
 
 export default partnerRoute;
-

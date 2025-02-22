@@ -15,7 +15,11 @@ export default class PartnerService {
         return await Partner.findById(partnerID);
     }
 
-    async createNewPartner(newPartner : IPartnerInput) {
+    async createNewPartner(newPartner : Partial<IPartnerInput>, imageFile: Express.Multer.File) {
+        const imageUploadResult = await uploadToCloud(imageFile.path);
+        newPartner.logo = imageUploadResult.url;
+        fs.unlinkSync(imageFile.path);
+
         return await Partner.create(newPartner);
     }
 

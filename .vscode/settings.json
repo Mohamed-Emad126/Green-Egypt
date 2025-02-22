@@ -2,5 +2,6 @@
     "cSpell.words": [
         "articletitle",
         "testttt"
-    ]
+    ],
+    "cmake.ignoreCMakeListsMissing": true
 }

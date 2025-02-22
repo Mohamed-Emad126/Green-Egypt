@@ -50,13 +50,13 @@ export default class PartnerController {
     createNewPartner = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { partnerName, startDate, duration, durationUnit, website = "No website", description } : IPartnerInput = req.body;
         const addByAdmin = req.body.user.id;
-        await this.partnerService.createNewPartner({ partnerName, startDate, duration, durationUnit, website, description, addByAdmin });
+        await this.partnerService.createNewPartner({ partnerName, startDate, duration, durationUnit, website, description, addByAdmin}, req.file as Express.Multer.File);
         res.status(201).json({ message: "Partner created successfully"});
     });
 
     /**
      * @desc      Update partner
-     * @route     patch /api/partners/:id
+     * @route     PATCH /api/partners/:id
      * @access    Private(Admin)
     */
     updatePartner = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {

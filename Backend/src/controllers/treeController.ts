@@ -2,8 +2,7 @@ import TreeService from "../services/treeService";
 import { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
-import { ITreeInput } from "../interfaces/iTree";
-import mongoose from "mongoose";
+
 
 
 
@@ -50,8 +49,14 @@ export default class TreeController {
      * @access    Public
     */
     LocateTree = asyncHandler(async (req: Request, res: Response) => {
-        const { treeName, treeLocation, healthStatus, problem } = req.body;
-        const createdTree = await this.treeService.LocateTree({ treeName, treeLocation, healthStatus, problem } , req.params.id);
+        let { treeName, treeLocation, healthStatus, problem } = req.body;
+        treeLocation = JSON.parse(treeLocation);
+
+        const createdTree = await this.treeService.LocateTree(
+            {treeName, treeLocation, healthStatus, problem },
+            req.file as Express.Multer.File, 
+            req.params.id);
+
         if (createdTree) {
             res.status(201).json({ message: 'Tree located successfully' });
         } else {
@@ -61,7 +66,7 @@ export default class TreeController {
 
     /**
      * @desc      Update tree
-     * @route     patch /api/trees/:id
+     * @route     PATCH /api/trees/:id
      * @access    Public
     */
     updateTree = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -76,13 +81,14 @@ export default class TreeController {
 
     /**
      * @desc      Upload tree picture
-     * @route     post /api/trees/:id/image
+     * @route     PATCH /api/trees/:id/image
      * @access    Public
     */
     uploadTreePicture = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         if(!req.file) {
             return next(new ApiError("No file uploaded", 400));
         }
+
         const result = await this.treeService.uploadTreePicture(req.params.id, req.file);
         if (result) {
             res.json({ message: "Picture updated successfully"});

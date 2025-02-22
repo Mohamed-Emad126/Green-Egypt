@@ -24,7 +24,7 @@ treeRouter.route('/:id')
         .delete(verifyToken, deleteTreeValidator, deleteTree);
 
 treeRouter.route('/:id/image')
-        .post(verifyToken, uploadImage, uploadTreeImageValidator, uploadTreePicture)
+        .patch(verifyToken, uploadImage, uploadTreeImageValidator, uploadTreePicture)
 
 
 export default treeRouter;

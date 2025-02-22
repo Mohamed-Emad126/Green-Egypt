@@ -17,11 +17,15 @@ export default class TreesService {
         return tree ? tree : null;
     }
 
-    async LocateTree(newTree : Partial<ITreeInput> , userID : string) {
+    async LocateTree(newTree : Partial<ITreeInput>, imageFile: Express.Multer.File, userID : string) {
         if (newTree.healthStatus === 'Healthy') {
             newTree.problem = 'No problem';
         }
-        
+
+        const imageUploadResult = await uploadToCloud(imageFile.path);
+        newTree.image = imageUploadResult.url;
+        fs.unlinkSync(imageFile.path);
+
         return Tree.create({ ...newTree, byUser: userID });
     }
 
