@@ -22,11 +22,11 @@ export const createNewPartnerValidator = [
 
     check('startDate')
         .notEmpty().withMessage('Start date is required')
-        .isDate().withMessage('Start date must be a valid date'),
+        .isISO8601().withMessage('Start date must be a valid date in ISO8601 format'),
 
     check('duration')
         .notEmpty().withMessage('Duration is required')
-        .isNumeric().withMessage('Duration must be a number'),
+        .isInt({ min: 1 }).withMessage('Duration must be a positive number'),
 
     check('durationUnit')
         .notEmpty().withMessage('Duration unit is required')
@@ -34,11 +34,19 @@ export const createNewPartnerValidator = [
 
     check('website')
         .optional()
+        .trim()
         .isURL().withMessage('Invalid website URL'),
 
     check('description')
         .notEmpty().withMessage('Description is required')
         .isLength({max : 700}).withMessage('Description must be at most 700 characters long'),
+
+    check('image').custom((_, { req }) => {
+        if (!req.file) {
+            throw new Error("Image is required");
+        }
+        return true;
+    }),
     
     validatorMiddleware
 ]

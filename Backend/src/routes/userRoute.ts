@@ -58,7 +58,7 @@ userRouter.route('/:id/claim-coupon')
         .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);
 
 userRouter.route('/:id/image')
-        .post(verifyUserMiddleware, uploadImage, uploadUserImageValidator, uploadUserPicture)
+        .patch(verifyUserMiddleware, uploadImage, uploadUserImageValidator, uploadUserPicture)
         .delete(verifyUserMiddleware, deleteUserImageValidator, deleteUserPicture);
 
 userRouter.route('/:id/change-password')
@@ -69,7 +69,7 @@ userRouter.route('/:id/promote-admin')
 
 userRouter.route('/:id/tree')
         .get(verifyToken, getUserTreesValidator, getUserTrees)
-        .post(verifyToken, locateTreeValidator, LocateTree);
+        .post(verifyToken, uploadImage, locateTreeValidator, LocateTree);
 
 userRouter.route('/:id/task')
         .post(verifyUserMiddleware, createTaskValidator, createTask)
@@ -78,4 +78,3 @@ userRouter.route('/:id/task')
 
 
 export default userRouter;
-

@@ -5,6 +5,12 @@
         "version": "1.0.0",
         "description": "Documentation API of GoGreen Project"
     },
+    "servers": [
+        {
+            "url": "http://localhost:5000",
+            "description": "Local server"
+        }
+    ],
     "tags": [
         {
             "name": "Auth",
@@ -429,9 +435,11 @@
                 "parameters": [{
                     "name": "id",
                     "in": "path",
+                    "description": "User ID",
                     "required": true,
                     "schema": {
-                        "type": "string",
+                        "type": "string",    
+                        "format": "objectid",
                         "example": "674f5632e57414133c9499f9"
                     }
                 }],
@@ -446,7 +454,29 @@
                                     "items": {
                                         "$ref": "#/components/schemas/Tree"
                                     }
-                                }
+                                },
+                                "example": [
+                                    {
+                                        "treeLocation": {
+                                            "type": "Point",
+                                            "latitude": 25,
+                                            "longitude": 26
+                                        },
+                                        "_id": "67978b5804bb6348dd0f63cf",
+                                        "healthStatus": "Diseased",
+                                        "problem": "testt",
+                                        "image": "../uploads/not-found-image.png",
+                                        "plantedRecently": true,
+                                        "byUser": "674f5632e57414133c9499f9",
+                                        "reportsAboutIt": [
+                                            "67978bb904bb6348dd0f63d4"
+                                        ],
+                                        "createdAt": "2025-01-27T13:34:16.460Z",
+                                        "updatedAt": "2025-02-07T00:40:55.016Z",
+                                        "__v": 6,
+                                        "treeName": "tree 1"
+                                    }
+                                ]
                             }
                         }
                     },
@@ -485,18 +515,20 @@
                 }
             },
             "post": {
-                "tags": [ "Users" ],
+                "tags": [ "Trees" ],
                 "summary": "Locate tree",
-                "description": "Retrieve a list of all trees registered in the application in the form of pages. Each page displays 5 items. This is a temporary number. The number of items will be changed according to what we agree upon.",
+                "description": "Locating a tree and adding it to the database, whether it is newly planted or already existing",
                 "security": [{
                     "bearerAuth": []
                 }],
                 "parameters": [{
                     "name": "id",
                     "in": "path",
+                    "description": "User ID",
                     "required": true,
                     "schema": {
                         "type": "string",
+                        "format": "objectid",
                         "example": "674f5632e57414133c9499f9"
                     }
                 }],
@@ -507,21 +539,32 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "location": {
+                                    "treeName": {
+                                        "type": "string",
+                                        "maxLength": 15,
+                                        "example": "tree 1"
+                                    },
+                                    "treeLocation": {
                                         "type": "object",
                                         "properties": {
-                                            "latitude": {
-                                            "type": "number",
-                                            "example": 25,
-                                            "length": {"min": 22, "max": 35}
-                                            },
-                                            "longitude": {
-                                                "type": "number",
-                                                "example": 26,
-                                                "length": {"min": 24, "max": 37}
+                                            "type": "string",
+                                            "enum": ["Point"],
+                                            "coordinates": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "number",
+					                                "format": "float"
+                                                },
+                                                "minItems": 2,
+                                                "maxItems": 2,
+                                                "description": "Length must be 2 elements [longitude, latitude] - longitude must be between 24 and 37, latitude must be between 22 and 32"
                                             }
+                                        },
+                                        "required": ["type", "coordinates"],
+                                        "example": {
+                                                "type": "Point",
+                                                "coordinates": [30, 25]
                                         }
-                                        
                                     },
                                     "healthStatus": {
                                         "type": "string",
@@ -530,18 +573,24 @@
                                     },
                                     "problem": {
                                         "type": "string",
-                                        "info": "It's required if healthStatus is Diseased or Dying",
+                                        "description": "It's required if healthStatus is Diseased or Dying",
                                         "default": "No problem"
+                                    },
+                                    "image": {
+                                        "type": "string",
+					                    "format": "binary",
+                                        "description": "It is a file with extension jpg, png or jpeg",
+                                        "example": "6cd41bd6c67f6a7c89f1a5f73f86d193.jpg"
                                     }
                                 },
-                                "required": ["location", "healthStatus"]
+                                "required": ["treeLocation", "healthStatus", "treeName"]
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Page number, number of elements in the page, and a list of trees with all their properties",
+                        "description": "Successful operation",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1571,9 +1620,11 @@
                             "coordinates": {
                                 "type": "array",
                                 "items": {
-                                    "type": "number",
-                                    "length": 2
-                                }
+                                    "type": "number"
+                                },
+                                "minItems": 2,
+                                "maxItems": 2,
+                                "description": "Length must be 2 elements [longitude, latitude] - longitude must be between 24 and 37, latitude must be between 22 and 32"
                             }
                         }
                     },
@@ -1604,9 +1655,11 @@
                                 "coordinates": {
                                     "type": "array",
                                     "items": {
-                                        "type": "number",
-                                        "length": 2
-                                    }
+                                        "type": "number"
+                                    },
+                                    "minItems": 2,
+                                    "maxItems": 2,
+                                    "description": "Length must be 2 elements [longitude, latitude] - longitude must be between 24 and 37, latitude must be between 22 and 32"
                                 }
                             }
                         },
@@ -1748,6 +1801,10 @@
             "Tree": {
                 "type": "object",
                 "properties": {
+                    "treeName": {
+                        "type": "string",
+                        "validation": "Length must be at most 15 characters"
+                    },
                     "treeLocation": {
                         "type": "object",
                         "properties": {
@@ -1756,9 +1813,11 @@
                             "coordinates": {
                                 "type": "array",
                                 "items": {
-                                    "type": "number",
-                                    "length": 2
-                                }
+                                    "type": "number"
+                                },
+                                "minItems": 2,
+                                "maxItems": 2,
+                                "description": "Length must be 2 elements [longitude, latitude] - longitude must be between 24 and 37, latitude must be between 22 and 32"
                             }
                         }
                     },

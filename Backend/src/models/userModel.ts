@@ -56,7 +56,12 @@ const UserSchema: Schema = new Schema({
         coordinates: {
             type: [Number],
             required: true,
-            length: 2
+            validate: {
+                validator: function (value: number[]) {
+                    return value.length === 2;
+                },
+                message: 'Coordinates must have exactly two elements',
+            },
         }
     }
     

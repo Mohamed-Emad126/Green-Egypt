@@ -1,6 +1,7 @@
-import { Request } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import path from 'path';
+import ApiError from '../utils/apiError';
 
 const storage = multer.diskStorage({
     destination: (req: Request, file, cb) => {
@@ -20,15 +21,42 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilt
     }
 };
 
-export const uploadImage = multer({
-    storage: storage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 1024 * 1024 * 5 }
-}).single('image');
+export const uploadImage = (req: Request, res: Response, next: NextFunction) => {
+    const user = req.body.user;
+    multer({
+        storage: storage,
+        fileFilter: fileFilter,
+        limits: { fileSize: 1024 * 1024 * 5 }
+    }).single('image') (req, res, (err) => {
+        if (err) {
+            if (err instanceof multer.MulterError) {
+                next(new ApiError(err.message, 400));
+            } else {
+                next(new ApiError('Something went wrong while uploading the image.', 500));
+            }
+        } else {
+            req.body.user = user;
+            next();
+        }
+    });
+};
 
-export const uploadImages = multer({
-    storage: storage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 1024 * 1024 * 5 }
-}).array('images', 5);
-
+export const uploadImages = (req: Request, res: Response, next: NextFunction) => {
+    const user = req.body.user;
+    multer({
+        storage: storage,
+        fileFilter: fileFilter,
+        limits: { fileSize: 1024 * 1024 * 5 }
+    }).array('images') (req, res, (err) => {
+        if (err) {
+            if (err instanceof multer.MulterError) {
+                next(new ApiError(err.message, 400));
+            } else {
+                next(new ApiError('Something went wrong while uploading the image.', 500));
+            }
+        } else {
+            req.body.user = user;
+            next();
+        }
+    });
+}

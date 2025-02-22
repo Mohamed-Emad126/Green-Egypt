@@ -22,5 +22,6 @@ export interface IPartnerInput {
     durationUnit: 'days' | 'months' | 'years' | 'one-time';
     website?: string;
     description?: string;
+    logo: string;
     addByAdmin?: mongoose.Schema.Types.ObjectId;
 }
