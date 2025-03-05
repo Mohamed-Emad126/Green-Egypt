@@ -88,7 +88,7 @@ export default class UserController {
         } else {
             return next(new ApiError("User not found", 404));
         }
-
+        
     });
 
     /**
@@ -148,7 +148,7 @@ export default class UserController {
         if (!result) {
             return next(new ApiError("User not found", 404));
         } else {
-            res.json(result);
+            res.status(result.status).json({"message": result.message, "coupon": result.coupon});
         }
     });
 

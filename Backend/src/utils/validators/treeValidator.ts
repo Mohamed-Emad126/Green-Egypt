@@ -80,7 +80,12 @@ export const updateTreeValidator = [
         .if(check('treeLocation').exists())
         .notEmpty().withMessage('Location coordinates is required')
         .isArray().withMessage('Location must be an array')
-        .isLength({min : 2, max : 2}).withMessage('Location must have exactly two elements'),
+        .custom((coords) => {
+            if (!Array.isArray(coords) || coords.length !== 2) {
+                throw new Error('Coordinates must have exactly two elements');
+            }
+            return true;
+        }),
         
     check('treeLocation.coordinates.0')
         .if(check('treeLocation.coordinates').exists())

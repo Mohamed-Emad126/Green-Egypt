@@ -28,8 +28,8 @@ export default class SearchService {
             Nursery.find(
                 {
                     "$or":[
-                        {nurseryname: {$regex: key, $options: 'i'}}, 
-                        {location: {$regex: key, $options: 'i'}}
+                        {nurseryName: {$regex: key, $options: 'i'}}, 
+                        {address: {$regex: key, $options: 'i'}}
                     ]
                 }
             ),

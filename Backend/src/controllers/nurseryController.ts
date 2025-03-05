@@ -47,8 +47,8 @@ export default class NurseryController {
      * @access    Public
      */
     createNursery = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const {nurseryname,nurseryPic,location}: INurseryInput = req.body;
-        const nursery = await this.nurseryService.createNursery({nurseryname,nurseryPic,location});
+        const {nurseryName,nurseryPic,address}: INurseryInput = req.body;
+        const nursery = await this.nurseryService.createNursery({nurseryName,nurseryPic,address});
         if (nursery) {
             res.json({ message: 'nursery created successfully' });
         } else {
@@ -63,8 +63,8 @@ export default class NurseryController {
      */
 
     updateNursery = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const nusrseryAfterUpdate = await this.nurseryService.updateNursery(req.params.id, req.body);
-        if (nusrseryAfterUpdate) {
+        const nurseryAfterUpdate = await this.nurseryService.updateNursery(req.params.id, req.body);
+        if (nurseryAfterUpdate) {
             res.json({ message: 'nursery updated successfully' });
         } else {
             return next(new ApiError("nursery not found", 404));
