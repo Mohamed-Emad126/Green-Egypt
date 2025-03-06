@@ -63,6 +63,10 @@ const UserSchema: Schema = new Schema({
                 message: 'Coordinates must have exactly two elements',
             },
         }
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
     
 }, { timestamps: true });

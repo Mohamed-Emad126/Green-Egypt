@@ -21,8 +21,7 @@ export default class NurseryController {
     getNurseries = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const page: number = req.query.page ? +req.query.page : 1;
         const limit: number = req.query.limit ? +req.query.limit : 5;
-        const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
-        const nurseries = await this.nurseryService.getNurseries(page, limit , filters);
+        const nurseries = await this.nurseryService.getNurseries(page, limit);
         res.json({ length: nurseries.length, page: page, nurseries: nurseries });
 });
 
