@@ -11,8 +11,8 @@ export interface IUser extends Document {
     isActive: boolean;
     role: string;
     location?:{
-        type: string;
-        coordinates: [number, number]
+        type?: string;
+        coordinates?: [number, number]
     };
     createdAt?: Date
     updatedAt?: Date
@@ -25,8 +25,8 @@ export interface IAuthInput {
     password: string;
     profilePic?: string;
     location?:{
-        type: string;
-        coordinates: [number, number]
+        type?: string;
+        coordinates?: [number, number]
     }
 }
 
@@ -34,8 +34,8 @@ export interface IUpdateInput {
     username?: string;
     email?: string;
     location?:{
-        type: string;
-        coordinates: [number, number]
+        type?: string;
+        coordinates?: [number, number]
     }
 }
 

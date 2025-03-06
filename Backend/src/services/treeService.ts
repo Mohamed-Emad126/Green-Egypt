@@ -7,9 +7,8 @@ import fs from "fs";
 // TODO: Compare the input tree with previously located trees (locatedTree)
 
 export default class TreesService {
-    async getTrees(page : number, limit : number, filters : any) {
-        const offset : number = (page - 1) * limit;
-        return await Tree.find(filters).skip(offset).limit(limit);
+    async getTrees(filters : any) {
+        return await Tree.find(filters);
     }
 
     async getTreeById(treeID : string) {
