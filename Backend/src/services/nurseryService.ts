@@ -5,9 +5,9 @@ import { INurseryInput } from "../interfaces/iNursery";
 import fs from "fs";
 
 export default class NurseryService {
-    async getNurseries(page : number, limit : number, filters : any) {
+    async getNurseries(page : number, limit : number) {
         const offset : number = (page - 1) * limit;
-        return await Nursery.find(filters).skip(offset).limit(limit);
+        return await Nursery.find().skip(offset).limit(limit);
     }
 
     async getNurseryById(nurseryID : string) {
