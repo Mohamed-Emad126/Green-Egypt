@@ -3,6 +3,7 @@ import AuthService from "../services/authService";
 import { IAuthInput } from "../interfaces/iUser";
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/apiError";
+import  sendEmail from "../utils/email";
 
 
 export default class AuthController {
@@ -23,13 +24,42 @@ export default class AuthController {
     */
     createNewUser = asyncHandler(async (req: Request, res: Response) => {
         const { username, email, password }: IAuthInput = req.body;
-        const result = await this.authService.createNewUser({username,email,password});
-        res.status(201)
-            .header("x-auth-token", result.token)
-            .json({ 
-                message: "User created successfully",
-                user_id: result.user_id
+        const result = await this.authService.createNewUser({ username, email, password });
+
+        const verifyUrl = `${req.protocol}://${req.get('host')}/api/auth/verify-email/${result.verificationToken}`;
+        const message = `Please verify your email by clicking the following link within 24 hours: ${verifyUrl}`;
+
+        try {
+            await sendEmail({
+                email,
+                subject: 'Verify your email',
+                message,
             });
+        } catch (err: any) {
+            console.error(`Email could not be sent: ${err.message}`);
+        }
+
+        res.status(201)
+            .header('x-auth-token', result.token)
+            .json({
+                message: 'User created successfully. A verification email has been sent.',
+                user_id: result.user_id,
+            });
+    });
+
+    /**
+     * @desc      Verify email of user
+     * @route     post /api/auth/verify-email/:token
+     * @access    Public
+    */
+    verifyEmail = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { token } = req.params;
+            const result = await this.authService.verifyEmail(token);
+            res.json(result);
+        } catch (error) {
+            return next(new ApiError("Email verification failed", 400));
+        }
     });
 
     /**
