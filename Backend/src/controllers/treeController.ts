@@ -22,11 +22,9 @@ export default class TreeController {
      * @access    Public
     */
     getTrees = asyncHandler(async (req: Request, res: Response) => {
-        const page: number = req.query.page ? +req.query.page : 1;
-        const limit: number = req.query.limit ? +req.query.limit : 5;
         const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
-        const trees = await this.treeService.getTrees(page, limit , filters);
-        res.json({ length: trees.length, page: page, trees: trees });
+        const trees = await this.treeService.getTrees(filters);
+        res.json({ length: trees.length, trees: trees });
     });
 
     /**

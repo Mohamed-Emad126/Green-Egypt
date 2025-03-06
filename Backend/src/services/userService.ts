@@ -6,7 +6,6 @@ import bcrypt from "bcryptjs";
 import fs from "fs";
 import uploadToCloud from "../config/cloudinary";
 import Tree from "../models/treeModel";
-import Task from "../models/taskModel";
 
 
 
@@ -135,7 +134,8 @@ export default class UserService {
         if (!user) {
             return false;
         } else if (user.pendingCoupons === 0) {
-            return { 
+            return {
+                status: 400,
                 message: "No pending coupons to claim.",
                 coupon: null
             };
@@ -145,6 +145,7 @@ export default class UserService {
     
         if (availableCoupons.length === 0) {
             return { 
+                status: 400,
                 message: "No available coupons to claim right now." ,
                 coupon : null
             };
@@ -163,6 +164,7 @@ export default class UserService {
         await user.save();
     
         return {
+            status: 200,
             message: `${claimedCoupons.length} coupons claimed.`,
             coupon :claimedCoupons
         };

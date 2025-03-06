@@ -34,7 +34,7 @@
         },
         {
             "name": "Users",
-            "description": "Operations about Users & Admins and their tasks"
+            "description": "Operations about Users"
         },
         {
             "name": "Trees",
@@ -50,7 +50,7 @@
         },
         {
             "name": "Community",
-            "description": "Operations about Reports, Comments , Responses"
+            "description": "Operations about Reports, Comments, Responses"
         },
         {
             "name": "notifications",
@@ -424,6 +424,903 @@
                 }
             }
         },
+        "api/users/{id}": {
+            "get": {
+                "tags": ["Users"],
+                "summary": "Get specific user",
+                "description": "Get specific user profile by its id",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "User ID",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "674f5632e57414133c9499f9"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update user",
+                "description": "Allows a user to update their profile information except for points.",
+                "tags": ["Users"],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "User ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "674f5632e57414133c9499f9"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "description": "New username (3-15 characters)",
+                                        "example": "Hagora"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "description": "New email address",
+                                        "example": "hagargamal@example.com"
+                                    },
+                                    "location": {
+                                        "type": "object",
+                                        "description": "User's location",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "enum": ["Point"],
+                                                "example": "Point"
+                                            },
+                                            "coordinates": {
+                                                "type": "array",
+                                                "items": { "type": "number" },
+                                                "minItems": 2,
+                                                "maxItems": 2,
+                                                "example": [30.0444, 31.2357]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User updated successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error - user enters something that conflicts with the validation rules.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Points cannot be updated"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or password recently changed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User is not authorized to update this profile.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete user",
+                "description": "Marks the user as inactive, moves their data to the trash collection, and deletes the original record.",
+                "tags": ["Users"],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "User ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "674f5632e57414133c9499f9"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or password recently changed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User is not authorized to delete this account.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/users/{id}/activity": {
+            "put": {
+                "tags": ["Users"],
+                "summary": "Update user points",
+                "description": "Update user points based on action taken",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "User ID",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "674f5632e57414133c9499f9"
+                    }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "activity": {
+                                        "type": "string",
+                                        "enum": ["locate", "report", "care", "plant"],
+                                        "example": "locate"
+                                    }
+                                },
+                                "required": ["activity"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Points added successfully, current points: 453, keep going to earn a coupon!"
+                                        },
+                                        "coupon": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "null",
+                                                    "description": "The user has not collected a total of 500 points yet."
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "description": "coupon",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Coupon"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "If the user enters anything other than locate, report, care, plant",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid activity"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/{id}/claim-pending-coupons": {
+            "post": {
+                "summary": "Claim pending coupons for a user",
+                "description": "Allows a user to claim their pending coupons if available.",
+                "tags": ["Users"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "User ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "674f5632e57414133c9499f9"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "1 coupons claimed."
+                                        },
+                                        "coupon": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Coupon"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No pending coupons to claim or no available coupons.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No pending coupons to claim."
+                                        },
+                                        "coupon": {
+                                            "type": "null"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/{id}/image": {
+            "patch": {
+                "summary": "Upload user profile picture",
+                "description": "Allows the user to upload a new profile picture with extension png / jpg / jpeg.",
+                "tags": ["Users"],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "User ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "674f5632e57414133c9499f9"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Profile picture file"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image uploaded successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request (e.g., missing image file or unexpected file extension)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image is required."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete user profile picture",
+                "description": "Removes the user's profile picture and resets it to the default avatar.",
+                "tags": ["Users"],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "User ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "674f5632e57414133c9499f9"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Picture deleted successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/{id}/change-password": {
+            "put": {
+                "summary": "Change user password",
+                "description": "Allows a user to change their password by providing the current password and a new password.",
+                "tags": ["Users"],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "User ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "674f5632e57414133c9499f9"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "currentPassword": {
+                                        "type": "string",
+                                        "description": "User's current password",
+                                        "example": "12345678"
+                                    },
+                                    "newPassword": {
+                                        "type": "string",
+                                        "description": "New password (must be at least 8 characters)",
+                                        "example": "123456780"
+                                    },
+                                    "confirmNewPassword": {
+                                        "type": "string",
+                                        "description": "Confirmation of the new password",
+                                        "example": "123456780"
+                                    }
+                                },
+                                "required": ["currentPassword", "newPassword", "confirmNewPassword"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password changed successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "validation error - user enters something that conflicts with the validation rules.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Current password is incorrect."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "api/users/{id}/tree": {
             "get": {
                 "tags": ["Care"],
@@ -639,7 +1536,7 @@
                         }
                     },
                     "403":{
-                        "summary": "The user who requested is not the owner of the ID in the path or admin",
+                        "summary": "The user who requested is not the owner of the ID in the path",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -668,9 +1565,11 @@
                 "parameters": [{
                         "name": "id",
                         "in": "path",
+                        "description": "User ID",
                         "required": true,
                         "schema": {
                             "type": "string",
+                            "format": "objectid",
                             "example": "674f5632e57414133c9499f9"
                         }
                 }],
@@ -750,7 +1649,7 @@
                         }
                     },
                     "403":{
-                        "summary": "The user who requested is not the owner of the ID in the path or the tree or admin",
+                        "summary": "The user who requested is not the owner of the ID in the path or the tree",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -873,7 +1772,7 @@
                         }
                     },
                     "403":{
-                        "summary": "The user who requested is not the owner of the ID in the path or admin",
+                        "summary": "The user who requested is not the owner of the ID in the path",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -902,9 +1801,11 @@
                 "parameters": [{
                     "name": "id",
                     "in": "path",
+                    "description": "Task ID",
                     "required": true,
                     "schema": {
                         "type": "string",
+                        "format": "objectid",
                         "example": "679d586f1ea9acf426404abc"
                     }
                 }],
@@ -1038,9 +1939,11 @@
                 "parameters": [{
                     "name": "id",
                     "in": "path",
+                    "description": "Tree ID",
                     "required": true,
                     "schema": {
                         "type": "string",
+                        "format": "objectid",
                         "example": "679d586f1ea9acf426404abc"
                     }
                 }],
@@ -1107,6 +2010,7 @@
                 "parameters": [{
                     "name": "key",
                     "in": "path",
+                    "description": "Anything you want to search for",
                     "required": true,
                     "schema": {
                         "type": "string",
@@ -1175,7 +2079,7 @@
                         }
                     },
                     "404": {
-                        "summary": "No results found",
+                        "description": "No results found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1184,22 +2088,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "No results found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "summary": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthorized access - please log in"
                                         }
                                     }
                                 }
@@ -1270,6 +2158,22 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "summary": "No results found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No results found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1277,7 +2181,7 @@
         "/api/nursery/": {
             "get": {
                 "tags": ["Nurseries"],
-                "summary": "Get all nurseries",
+                "summary": "Get all nurseries (pagination)",
                 "description": "Display all nurseries registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter",
                 "parameters": [
                     {
@@ -1287,6 +2191,7 @@
                         "require" : "false",
                         "schema":{
                             "type": "number",
+                            "format": "integer",
                             "default": 1,
                             "validation": "From 1 to (total number of elements / number of elements on one page)"
                         }
@@ -1335,10 +2240,75 @@
                 }
             }
         },
+        "api/nursery/{id}": {
+            "get":{
+                "tags": ["Nurseries"],
+                "summary": "Get specific nursery",
+                "description": "Get specific nursery page by its id",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "Nursery ID",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67a53b762d3889664beff056"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Nursery"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "Nursery not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Nursery not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "api/guide/": {
             "get": {
                 "tags": ["Guides"],
-                "summary": "Get all guides",
+                "summary": "Get all guides (pagination)",
                 "description": "Display all guides registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter",
                 "parameters": [
                     {
@@ -1348,6 +2318,7 @@
                         "require" : "false",
                         "schema":{
                             "type": "number",
+                            "format": "integer",
                             "default": 1,
                             "validation": "From 1 to (total number of elements / number of elements on one page)"
                         }
@@ -1396,10 +2367,75 @@
                 }
             }
         },
+        "api/guide/{id}": {
+            "get":{
+                "tags": ["Guides"],
+                "summary": "Get specific article",
+                "description": "Get specific article page by its id",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "Guide ID",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67a51fcea73325d93fadf5dc"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Guide"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "Guide not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Guide not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "api/event/": {
             "get": {
                 "tags": ["Events"],
-                "summary": "Get all events",
+                "summary": "Get all events (pagination)",
                 "description": "Display all events registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter",
                 "parameters": [
                     {
@@ -1409,6 +2445,7 @@
                         "require" : "false",
                         "schema":{
                             "type": "number",
+                            "format": "integer",
                             "default": 1,
                             "validation": "From 1 to (total number of elements / number of elements on one page)"
                         }
@@ -1456,6 +2493,526 @@
                     }
                 }
             }   
+        },
+        "api/event/{id}": {
+            "get":{
+                "tags": ["Events"],
+                "summary": "Get specific event",
+                "description": "Get specific event page by its id",
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "description": "Event ID",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "672fc5bbfdc6d15f778e25d7"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Event"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "Event not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Event not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/trees": {
+            "get": {
+                "summary": "Get all trees",
+                "description": "Retrieves trees with optional filters",
+                "tags": ["Trees"],
+                "parameters": [
+                    {
+                        "name": "filters",
+                        "in": "query",
+                        "required": false,
+                        "description": "Filters for trees",
+                        "schema": {
+                            "type": "string",
+                            "example": "{\"healthStatus\":\"Healthy\"}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "description": "Number of trees",
+                                            "example": 5
+                                        },
+                                        "trees": {
+                                            "type": "array",
+                                            "description": "List of trees",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Tree"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/trees/{id}": {
+            "get": {
+                "summary": "Get tree by ID",
+                "description": "Retrieves a specific tree by its ID",
+                "tags": ["Trees"],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Tree ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67978b5804bb6348dd0f63cf"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tree"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or unauthorized access",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tree not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update tree information",
+                "description": "Update specific tree properties such as name, health status, or location.",
+                "tags": ["Trees"],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "Tree ID",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67978b5804bb6348dd0f63cf"
+                    }
+                }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "treeName": {
+                                        "type": "string",
+                                        "example": "tree 1"
+                                    },
+                                    "healthStatus": {
+                                        "type": "string",
+                                        "enum": ["Healthy", "Diseased", "Dying"],
+                                        "example": "Dying"
+                                    },
+                                    "problem": {
+                                        "type": "string",
+                                        "example": "Tree is lacking water"
+                                    },
+                                    "treeLocation": {
+                                        "type": "object",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "enum": ["Point"],
+                                                "example": "Point"
+                                            },
+                                            "coordinates": {
+                                                "type": "array",
+                                                "items": {
+                                                "type": "number"
+                                                },
+                                                "example": [31.2001, 29.9187]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree updated successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error - user enters something that conflicts with the validation rules.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid tree location format"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tree not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a tree",
+                "description": "Remove a tree from the database and store its details in the trash collection.",
+                "tags": ["Trees"],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the tree to delete",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67978b5804bb6348dd0f63cf"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "deletionReason": {
+                                        "type": "string",
+                                        "enum": ["Died", "Cut", "False Record"],
+                                        "example": "Died"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error - missing or invalid deletion reason",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deletion reason is required and must be either 'Died', 'Cut', or 'False Record'"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please login"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tree not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trees/{id}/image": {
+            "patch": {
+                "summary": "Upload tree image",
+                "description": "Allows uploading an image (png / jpg / jpeg) for a specific tree to update it",
+                "tags": ["Trees"],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Tree ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67978b5804bb6348dd0f63cf"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Picture updated successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request (e.g., missing image file or unexpected file extension)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image is required."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tree not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -1506,15 +3063,52 @@
                         "description": "Unique identifier for the nursery",
                         "example": "67a53b762d3889664beff056"
                     },
-                    "nurseryname": {
+                    "nurseryName": {
                         "type": "string",
                         "description": "Name of the nursery",
                         "example": "يورودريب ايجيبت"
                     },
-                    "location": {
+                    "address": {
                         "type": "string",
-                        "description": "Location of the nursery",
+                        "description": "Address of the nursery",
                         "example": "164 شارع الهرم – الجيزة – مصر."
+                    },
+                    "location": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["Point"],
+                                "example": "Point"
+                            },
+                            "coordinates": {
+                                "type": "array",
+                                "minItems": 2,
+                                "maxItems": 2,
+                                "example": [31.20886, 30.07694],
+                                "description": "Coordinates format: [longitude, latitude]. Longitude must be between 24 and 37, Latitude must be between 22 and 32.",
+                                "items": [
+                                    {
+                                        "type": "number",
+                                        "minimum": 24,
+                                        "maximum": 37
+                                    },
+                                    {
+                                        "type": "number",
+                                        "minimum": 22,
+                                        "maximum": 32
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "rate": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Rate of the nursery on Google Maps",
+                        "example": 4.5,
+                        "minimum": 0,
+                        "maximum": 5
                     },
                     "__v": {
                         "type": "integer",
@@ -1594,10 +3188,12 @@
                     },
                     "email": {
                         "type": "string",
-                        "example": "hagarelessawy0@gamil.com"
+                        "format": "email",
+                        "example": "hagarelessawy0@gmail.com"
                     },
                     "profilePic": {
                         "type": "string",
+                        "format": "uri",
                         "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1733439630/kjhjxq357ujwlaefpg53.jpg"
                     },
                     "points": {
@@ -1610,21 +3206,35 @@
                     },
                     "role": {
                         "type": "string",
+                        "enum": ["admin", "user"],
                         "example": "admin"
                     },
                     "location": {
                         "type": "object",
                         "properties": {
-                            "type": "string",
-                            "enum": ["Point"],
+                            "type": {
+                                "type": "string",
+                                "enum": ["Point"],
+                                "example": "Point"
+                            },
                             "coordinates": {
                                 "type": "array",
-                                "items": {
-                                    "type": "number"
-                                },
                                 "minItems": 2,
                                 "maxItems": 2,
-                                "description": "Length must be 2 elements [longitude, latitude] - longitude must be between 24 and 37, latitude must be between 22 and 32"
+                                "example": [31.2357, 30.0444],
+                                "description": "Coordinates format: [longitude, latitude]. Longitude must be between 24 and 37, Latitude must be between 22 and 32.",
+                                "items": [
+                                    {
+                                        "type": "number",
+                                        "minimum": 24,
+                                        "maximum": 37
+                                    },
+                                    {
+                                        "type": "number",
+                                        "minimum": 22,
+                                        "maximum": 32
+                                    }
+                                ]
                             }
                         }
                     },
@@ -1641,6 +3251,61 @@
                     "__v": {
                         "type": "number",
                         "example": 0
+                    }
+                }
+            },
+            "Coupon": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the coupon",
+                        "example": "6713fe22c60134182f35725c"
+                    },
+                    "code": {
+                        "type": "string",
+                        "description": "Unique 6-character coupon code",
+                        "example": "ABC123",
+                        "minLength": 6,
+                        "maxLength": 6
+                    },
+                    "value": {
+                        "type": "number",
+                        "description": "Discount or value of the coupon",
+                        "example": 50
+                    },
+                    "brand": {
+                        "type": "string",
+                        "description": "ID of the brand (Partner) associated with the coupon",
+                        "example": "6712c34869c17428b80a63c6"
+                    },
+                    "expiryDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Expiration date of the coupon",
+                        "example": "2025-12-31T23:59:59.999Z"
+                    },
+                    "redeemed": {
+                        "type": "boolean",
+                        "description": "Indicates whether the coupon has been redeemed",
+                        "example": false
+                    },
+                    "addByAdmin": {
+                        "type": "string",
+                        "description": "ID of the admin who added the coupon",
+                        "example": "674f5632e57414133c9499f9"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp when the coupon was created",
+                        "example": "2024-03-05T14:30:00.000Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp when the coupon was last updated",
+                        "example": "2024-03-06T10:15:00.000Z"
                     }
                 }
             },
@@ -1803,21 +3468,36 @@
                 "properties": {
                     "treeName": {
                         "type": "string",
-                        "validation": "Length must be at most 15 characters"
+                        "maxLength": 15,
+                        "example": "Acacia"
                     },
                     "treeLocation": {
                         "type": "object",
                         "properties": {
-                            "type": "string",
-                            "enum": ["Point"],
+                            "type": {
+                                "type": "string",
+                                "enum": ["Point"],
+                                "example": "Point"
+                            },
                             "coordinates": {
                                 "type": "array",
-                                "items": {
-                                    "type": "number"
-                                },
+                                "items": [
+                                    {
+                                        "type": "number",
+                                        "minimum": 24,
+                                        "maximum": 37,
+                                        "example": 30.0444
+                                    },
+                                    {
+                                        "type": "number",
+                                        "minimum": 22,
+                                        "maximum": 32,
+                                        "example": 31.2357
+                                    }
+                                ],
                                 "minItems": 2,
                                 "maxItems": 2,
-                                "description": "Length must be 2 elements [longitude, latitude] - longitude must be between 24 and 37, latitude must be between 22 and 32"
+                                "description": "Coordinates must contain [longitude, latitude] where longitude is between 24 and 37, and latitude is between 22 and 32."
                             }
                         }
                     },
