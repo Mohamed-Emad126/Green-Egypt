@@ -49,26 +49,17 @@ const UserSchema: Schema = new Schema({
     location: {
         type: {
             type: String,
-            enum: ['Point'],
-            default: 'Point',
-            required: true,
         },
         coordinates: {
             type: [Number],
-            required: true,
-            validate: {
-                validator: function (value: number[]) {
-                    return value.length === 2;
-                },
-                message: 'Coordinates must have exactly two elements',
-            },
         }
+
     },
     isVerified: {
         type: Boolean,
         default: false
     }
-    
+ 
 }, { timestamps: true });
 
 UserSchema.index({ location: '2dsphere' });
