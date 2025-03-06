@@ -14,20 +14,20 @@ export default class NurseryService {
         const nursery =await Nursery.findById(nurseryID);
         return nursery ? nursery : null;
     }
-    async createNursery(nurseryData : INurseryInput) {
+    async createNursery(nurseryData : Partial<INurseryInput>) {
         const nursery = new Nursery({
-            nurseryname: nurseryData.nurseryname,
-            location: nurseryData.location,
+            nurseryName: nurseryData.nurseryName,
+            address: nurseryData.address,
             nurseryPic: nurseryData.nurseryPic,
         });
         await nursery.save();
         return nursery;
     }
 
-    async updateNursery(nurseryID : string, nurseryData : INurseryInput) {
+    async updateNursery(nurseryID : string, nurseryData : Partial<INurseryInput>) {
         return await Nursery.findByIdAndUpdate(
             nurseryID, 
-            {nurseryname: nurseryData?.nurseryname, nurseryPic: nurseryData?.nurseryPic, location: nurseryData?.location},
+            {nurseryName: nurseryData?.nurseryName, nurseryPic: nurseryData?.nurseryPic, address: nurseryData?.address},
             {new : true, runValidators : true})
     }
 

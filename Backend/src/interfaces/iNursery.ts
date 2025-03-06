@@ -1,13 +1,18 @@
 import { Document } from "mongoose";
 
 export interface INursery extends Document {
-    nurseryname: string;
+    nurseryName: string;
     nurseryPic:string;
-    location: string;
+    address: string;
+    location: {
+        type: string;
+        coordinates: [number, number]
+    };
+    rate: number;
 }
 
 export interface INurseryInput {
-    nurseryname: string;
+    nurseryName: string;
     nurseryPic:string;
-    location: string;
+    address: string;
 }

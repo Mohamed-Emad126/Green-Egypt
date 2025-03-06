@@ -15,7 +15,7 @@ export default class AuthService {
         const user = new User({
             username: newUser.username, 
             email: newUser.email, 
-            password: await bcrypt.hash(newUser.password, 10)
+            password: await bcrypt.hash(newUser.password, 10),
         });
         await user.save();
 
@@ -44,7 +44,7 @@ export default class AuthService {
         if(!findUser) {
             return "User not found";
         }
-        const token = await findUser.generateToken();
+        const token = await findUser.generateToken(process.env.RESET_TOKEN_EXPIRE_TIME);
                 
         const message = `Please click on the following link to reset your password: ${resetUrl}/${token}`;
         try{

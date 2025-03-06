@@ -49,7 +49,6 @@ userRouter.route('/:id')
         .get(verifyToken, getUserValidator, getUserById)
         .patch(verifyUserMiddleware, updateUserValidator, updateUser)
         .delete(verifyUserMiddleware, deleteUserValidator, deleteUser)
-        .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);
 
 userRouter.route('/:id/activity')
         .put(verifyUserMiddleware, updateUserPointsValidator, updateUserPoints);
