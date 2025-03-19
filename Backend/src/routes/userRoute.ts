@@ -10,7 +10,8 @@ import {getUserValidator,
         updateUserPointsValidator, 
         claimPendingCouponsValidator,
         promoteUserValidator, 
-        getUserTreesValidator} from "../utils/validators/userValidator";
+        getUserTreesValidator, 
+        getUserPointsHistoryValidator} from "../utils/validators/userValidator";
 import { createTaskValidator, getUserTreesWithTasksValidator } from "../utils/validators/taskValidator";
 import { locateTreeValidator } from "../utils/validators/treeValidator";
 import { verifyUserMiddleware , verifyToken, verifyAdminMiddleware} from "../middlewares/authMiddleware";
@@ -34,7 +35,8 @@ const { getUsers,
         updateUserPoints,
         claimPendingCoupons,
         promoteUserToAdmin,
-        getUserTrees} = new UserController(userService);
+        getUserTrees,
+        getUserPointsHistory} = new UserController(userService);
 
 const taskService = new TaskService();
 const { createTask, getUserTreesWithTasks } = new TaskController(taskService);
@@ -52,6 +54,9 @@ userRouter.route('/:id')
 
 userRouter.route('/:id/activity')
         .put(verifyUserMiddleware, updateUserPointsValidator, updateUserPoints);
+
+userRouter.route('/:id/points-history')
+        .get(verifyUserMiddleware, getUserPointsHistoryValidator, getUserPointsHistory);
 
 userRouter.route('/:id/claim-coupon')
         .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);

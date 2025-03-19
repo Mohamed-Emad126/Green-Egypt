@@ -27,6 +27,14 @@ const trashUserSchema: Schema = new Schema({
         type: Number,
         min: [0, 'Points cannot be negative']
     },
+    pointsHistory: [
+        {
+            points: Number,
+            activity: String,
+            createdAt: Date,
+            img: String
+        }
+    ],
     pendingCoupons: {
         type: Number,
     },
