@@ -18,6 +18,8 @@ export default class UserController {
         this.updateUserPoints = this.updateUserPoints.bind(this);
         this.claimPendingCoupons = this.claimPendingCoupons.bind(this);
         this.promoteUserToAdmin = this.promoteUserToAdmin.bind(this);
+        this.getUserTrees = this.getUserTrees.bind(this);
+        this.getUserPointsHistory = this.getUserPointsHistory.bind(this);
     }
 
     /**
@@ -55,6 +57,10 @@ export default class UserController {
     updateUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         if(req.body.points) {
             return next(new ApiError("Points cannot be updated", 400));
+        }
+        
+        if(req.body.role) {
+            return next(new ApiError("Role cannot be updated", 400));
         }
         
         const userAfterUpdate = await this.userService.updateUser(req.params.id, req.body);
@@ -184,6 +190,24 @@ export default class UserController {
             res.json({ message: "User has no trees"});
         } else {
             res.json(trees);
+        }
+    });
+
+    /**
+     * @desc      get points history of a user
+     * @route     GET /api/users/:id/points-history
+     * @access    Private
+    */
+    getUserPointsHistory = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const pointsHistory = await this.userService.getUserPointsHistory(req.params.id);
+        if (pointsHistory === false) {
+            return next(new ApiError("User not found", 404));
+        }
+
+        if (pointsHistory.length === 0) {
+            res.json({ message: "You have no points yet, Plant a tree , report a problem, care for a tree or locate a tree to earn points"});
+        } else {
+            res.json(pointsHistory);
         }
     });
 }

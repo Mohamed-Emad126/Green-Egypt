@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
                 content,
                 createdBy,
                 reportID,
-                parentCommentID: parentCommentID || null,
+                parentCommentID: parentCommentID ? parentCommentID : null,
             });
 
             io.emit('commentBroadcast', newComment);

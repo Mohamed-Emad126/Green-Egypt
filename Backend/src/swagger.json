@@ -117,7 +117,7 @@
                                         },
                                         "user_id": {
                                             "type": "string",
-                                            "example": "674f5632e57414133c9499f9"
+                                            "example": "67da1529cd23e1273a0dbfa2"
                                         }
                                     }
                                 }
@@ -192,7 +192,7 @@
                                         },
                                         "user_id": {
                                             "type": "string",
-                                            "example": "674f5632e57414133c9499f9"
+                                            "example": "67da1529cd23e1273a0dbfa2"
                                         }
                                     }
                                 }
@@ -424,6 +424,111 @@
                 }
             }
         },
+        "api/user/": {
+            "get": {
+                "tags": ["Users"],
+                "summary": "Retrieve all users",
+                "description": "Display all active users registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter and can be filtered",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description" : "The number of the page",
+                        "schema":{
+                            "type": "number",
+                            "format": "integer",
+                            "default": 1,
+                            "validation": "From 1 to (total number of elements / number of elements on one page)"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description" : "The number of elements on one page",
+                        "schema":{
+                            "type": "number",
+                            "format": "integer",
+                            "default": 6
+                        }
+                    },
+                    {
+                        "name": "filters",
+                        "in": "query",
+                        "description": "A filed we filter users by",
+                        "schema": {
+                            "type": "string",
+                            "example": "{'username' : 'Hagar Gamal'}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "description": "Number of users in the current page",
+                                            "example": 6
+                                        },
+                                        "page": {
+                                            "type": "integer",
+                                            "description": "Current page number",
+                                            "example": 1
+                                        },
+                                        "events": {
+                                            "type": "array",
+                                            "description": "List of users",
+                                            "items": {
+                                                "$ref": "#/components/schemas/User"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized access",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin privileges are required to access this route"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "api/users/{id}": {
             "get": {
                 "tags": ["Users"],
@@ -440,7 +545,7 @@
                     "schema": {
                         "type": "string",
                         "format": "objectid",
-                        "example": "674f5632e57414133c9499f9"
+                        "example": "67da1529cd23e1273a0dbfa2"
                     }
                 }],
                 "responses": {
@@ -506,7 +611,7 @@
                         "schema": {
                             "type": "string",
                             "format": "objectid",
-                            "example": "674f5632e57414133c9499f9"
+                            "example": "67da1529cd23e1273a0dbfa2"
                         }
                     }
                 ],
@@ -651,7 +756,7 @@
                         "schema": {
                             "type": "string",
                             "format": "objectid",
-                            "example": "674f5632e57414133c9499f9"
+                            "example": "67da1529cd23e1273a0dbfa2"
                         }
                     }
                 ],
@@ -739,7 +844,7 @@
                     "schema": {
                         "type": "string",
                         "format": "objectid",
-                        "example": "674f5632e57414133c9499f9"
+                        "example": "67da1529cd23e1273a0dbfa2"
                     }
                 }],
                 "requestBody": {
@@ -876,7 +981,7 @@
                         "schema": {
                             "type": "string",
                             "format": "objectid",
-                            "example": "674f5632e57414133c9499f9"
+                            "example": "67da1529cd23e1273a0dbfa2"
                         }
                     }
                 ],
@@ -992,7 +1097,7 @@
                         "schema": {
                             "type": "string",
                             "format": "objectid",
-                            "example": "674f5632e57414133c9499f9"
+                            "example": "67da1529cd23e1273a0dbfa2"
                         }
                     }
                 ],
@@ -1114,7 +1219,7 @@
                         "schema": {
                             "type": "string",
                             "format": "objectid",
-                            "example": "674f5632e57414133c9499f9"
+                            "example": "67da1529cd23e1273a0dbfa2"
                         }
                     }
                 ],
@@ -1205,7 +1310,7 @@
                         "schema": {
                             "type": "string",
                             "format": "objectid",
-                            "example": "674f5632e57414133c9499f9"
+                            "example": "67da1529cd23e1273a0dbfa2"
                         }
                     }
                 ],
@@ -1337,7 +1442,7 @@
                     "schema": {
                         "type": "string",    
                         "format": "objectid",
-                        "example": "674f5632e57414133c9499f9"
+                        "example": "67da1529cd23e1273a0dbfa2"
                     }
                 }],
                 "responses": {
@@ -1364,7 +1469,7 @@
                                         "problem": "testt",
                                         "image": "../uploads/not-found-image.png",
                                         "plantedRecently": true,
-                                        "byUser": "674f5632e57414133c9499f9",
+                                        "byUser": "67da1529cd23e1273a0dbfa2",
                                         "reportsAboutIt": [
                                             "67978bb904bb6348dd0f63d4"
                                         ],
@@ -1426,7 +1531,7 @@
                     "schema": {
                         "type": "string",
                         "format": "objectid",
-                        "example": "674f5632e57414133c9499f9"
+                        "example": "67da1529cd23e1273a0dbfa2"
                     }
                 }],
                 "requestBody": {
@@ -1570,7 +1675,7 @@
                         "schema": {
                             "type": "string",
                             "format": "objectid",
-                            "example": "674f5632e57414133c9499f9"
+                            "example": "67da1529cd23e1273a0dbfa2"
                         }
                 }],
                 "requestBody": {
@@ -1679,7 +1784,7 @@
                     "required": true,
                     "schema": {
                         "type": "string",
-                        "example": "674f5632e57414133c9499f9"
+                        "example": "67da1529cd23e1273a0dbfa2"
                     }
                 }],
                 "requestBody": {
@@ -1781,6 +1886,188 @@
                                         "message": {
                                             "type": "string",
                                             "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/users/{id}/promote-admin": {
+            "put": {
+                "tags": ["Users"],
+                "summary": "Promote user to admin",
+                "description": "Promote user to admin or demote admin to user",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User promoted to admin successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized access",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin privileges are required to access this route"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/users/{id}/points-history": {
+            "get": {
+                "tags": ["Users"],
+                "summary": "Retrieve user points history",
+                "description": "Retrieve user points history",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "activity": {
+                                                "type": "string",
+                                                "example": "locate"
+                                            },
+                                            "points": {
+                                                "type": "number",
+                                                "example": 5
+                                            },
+                                            "date": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-01-27T13:34:16.460Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the ID in the path",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
                                         }
                                     }
                                 }
@@ -3171,7 +3458,7 @@
                         "items": {
                             "type": "string"
                         },
-                        "example": ["674f5632e57414133c9499f9"]
+                        "example": ["67da1529cd23e1273a0dbfa2"]
                     }
                 }
             },
@@ -3180,7 +3467,7 @@
                 "properties": {
                     "_id": {
                         "type": "string",
-                        "example": "674f5632e57414133c9499f9"
+                        "example": "67da1529cd23e1273a0dbfa2"
                     },
                     "username": {
                         "type": "string",
@@ -3198,7 +3485,27 @@
                     },
                     "points": {
                         "type": "number",
+                        "format": "intger",
                         "example": 20
+                    },
+                    "pointsHistory": {
+                        "activity": {
+                            "type": "string",
+                            "example": "locate"
+                        },
+                        "points": {
+                            "type": "number",
+                            "example": 5
+                        },
+                        "date": {
+                            "type": "string",
+                            "example": "2025-01-27T13:34:16.460Z"
+                        },
+                        "img": {
+                            "type": "string",
+                            "format": "uri",
+                            "example": "../uploads/locate.png"
+                        }
                     },
                     "pendingCoupons": {
                         "type": "number",
@@ -3207,7 +3514,7 @@
                     "role": {
                         "type": "string",
                         "enum": ["admin", "user"],
-                        "example": "admin"
+                        "example": "user"
                     },
                     "location": {
                         "type": "object",
@@ -3293,7 +3600,7 @@
                     "addByAdmin": {
                         "type": "string",
                         "description": "ID of the admin who added the coupon",
-                        "example": "674f5632e57414133c9499f9"
+                        "example": "67da1529cd23e1273a0dbfa2"
                     },
                     "createdAt": {
                         "type": "string",
@@ -3351,7 +3658,7 @@
                         "createdBy": {
                             "type": "string",
                             "description": "user ID",
-                            "example": "674f5632e57414133c9499f9"
+                            "example": "67da1529cd23e1273a0dbfa2"
                         },
                         "treeID": {
                             "type": "string",
@@ -3366,7 +3673,7 @@
                             "items": {
                                 "type": "string",
                                 "description": "users ID",
-                                "example": "674f5632e57414133c9499f9"
+                                "example": "67da1529cd23e1273a0dbfa2"
                             }
                         },
                         "status": {
@@ -3524,7 +3831,7 @@
                     },
                     "byUser": {
                         "type": "string",
-                        "example": "674f5632e57414133c9499f9"
+                        "example": "67da1529cd23e1273a0dbfa2"
                     },
                     "reportsAboutIt": {
                         "type": "array",
@@ -3579,7 +3886,7 @@
                     "user": {
                         "type": "string",
                         "description": "User ID associated with the task",
-                        "example": "674f5632e57414133c9499f9"
+                        "example": "67da1529cd23e1273a0dbfa2"
                     },
                     "date": {
                         "type": "string",

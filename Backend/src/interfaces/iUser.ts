@@ -1,4 +1,4 @@
-import { Date, Document } from "mongoose";
+import { Document } from "mongoose";
 
 export interface IUser extends Document {
     username: string;
@@ -6,6 +6,12 @@ export interface IUser extends Document {
     password: string;
     passwordChangedAt: Date;
     points: number;
+    pointsHistory: {
+        points: number;
+        activity: TUserActivity;
+        date: Date;
+        img: string;
+    }[];
     pendingCoupons: number;
     profilePic: string;
     isActive: boolean;

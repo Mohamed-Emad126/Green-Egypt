@@ -32,6 +32,17 @@ const UserSchema: Schema = new Schema({
         default: 0,
         min: [0, 'Points cannot be negative']
     },
+    pointsHistory: [
+        {
+            points: Number,
+            activity: {
+                type: String,
+                enum: ['locate', 'report', 'plant', 'care'],
+            },
+            date: Date,
+            img: String
+        }
+    ],
     pendingCoupons: {
         type: Number,
         default: 0,
