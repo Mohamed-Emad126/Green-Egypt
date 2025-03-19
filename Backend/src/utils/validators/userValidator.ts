@@ -44,6 +44,7 @@ export const updateUserValidator = [
         .notEmpty().withMessage('Latitude is required')
         .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
 
+
     validatorMiddleware
 ];
 
@@ -124,6 +125,11 @@ export const promoteUserValidator =[
 ];
 
 export const getUserTreesValidator =[
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
+    validatorMiddleware
+];
+
+export const getUserPointsHistoryValidator =[
     check('id').isMongoId().withMessage('Invalid user ID Format'),
     validatorMiddleware
 ];

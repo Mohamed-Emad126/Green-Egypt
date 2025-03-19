@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface ITree extends Document {
     treeName: string;
