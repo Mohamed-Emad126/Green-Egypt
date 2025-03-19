@@ -43,5 +43,5 @@ const TrashEventSchema: Schema = new Schema({
     }
 })
 
-const trashEventModel: Model<IEvent> = mongoose.model<IEvent>('Trash', TrashEventSchema);
+const trashEventModel: Model<IEvent> = mongoose.model<IEvent>('TrashEvent', TrashEventSchema);
 export default trashEventModel;

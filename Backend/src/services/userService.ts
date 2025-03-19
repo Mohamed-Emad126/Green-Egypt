@@ -80,22 +80,29 @@ export default class UserService {
         }
 
         let points = 0;
+        let img= '';
         switch (activity) {
             case 'locate':
                 points = 1;
+                img = '../uploads/locate.png';
                 break;
             case 'report':
                 points = 5;
+                img = '../uploads/report.png';
                 break;
             case 'care':
                 points = 20;
+                img = '../uploads/care.png';
                 break;
             case 'plant':
                 points = 50;
+                img = '../uploads/plant.png';
                 break;
         }
 
         user.points += points;
+        user.pointsHistory.push({ points, activity, date: new Date(), img });
+        await user.save();
 
         if (user.points >= 500) {
             const availableCoupon = await Coupon.findOne({ redeemed: false }).populate('brand');
@@ -171,20 +178,23 @@ export default class UserService {
     }
 
     async promoteUserToAdmin(userID: string) {
-        try {
-            const user = await User.findById(userID);
+        const user = await User.findById(userID);
 
-            if (!user) {
-                return 'User not found.';
-            }
+        if (!user) {
+            return 'User not found.';
+        }
 
+        let msg = '';
+        if (user.role === "user") {
             user.role = 'admin';
-            await user.save();
-            return 'User promoted to admin successfully';
-        } 
-        catch (error) {
-            return ('Error promoting user to admin');
-        }   
+            msg = 'User promoted to admin successfully';
+        } else {
+            user.role = 'user';
+            msg = 'User demoted to user successfully';
+        }
+        
+        await user.save();
+        return msg; 
     }
 
     async getUserTrees(userID: string) {
@@ -195,6 +205,15 @@ export default class UserService {
         const trees = await Tree.find({ byUser: user.id, plantedRecently: true });
 
         return trees;
+    }
+
+    async getUserPointsHistory(userID: string) {
+        const user = await User.findById(userID);
+        if (!user) {
+            return false;
+        }
+
+        return user.pointsHistory;
     }
 
 }
