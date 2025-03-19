@@ -8,19 +8,39 @@ import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 
 
-
 export default class AuthService {
 
-    async createNewUser(newUser : IAuthInput): Promise<{ token: string; user_id: string }> {
+    async createNewUser(newUser : IAuthInput): Promise<{ token: string; user_id: string, verificationToken: string }> {
         const user = new User({
             username: newUser.username, 
             email: newUser.email, 
             password: await bcrypt.hash(newUser.password, 10),
+            isVerified: false,
         });
         await user.save();
 
+        const verificationToken = await user.generateToken(process.env.VERIFICATION_TOKEN_EXPIRE_TIME);
+
         const token = await user.generateToken();
-        return {token, user_id : user.id};
+        return { token, user_id: user.id, verificationToken };
+
+    }
+
+    async verifyEmail(token: string): Promise<{ message: string }> {
+        const tokenRecord = await Token.findOne({ token });
+        if (!tokenRecord) {
+            throw new Error("Invalid or expired token");
+        }
+
+        const user = await User.findById(tokenRecord.user);
+        if (!user) throw new Error("User not found");
+
+        user.isVerified = true;
+        await user.save();
+
+        await Token.deleteOne({ token });
+
+        return { message: "Email verified successfully!" };
     }
 
     async login(userData : IAuthInput) {
@@ -54,7 +74,7 @@ export default class AuthService {
                 message: message
             });
             return "Email sent successfully";
-        }catch(err ) {
+        }catch(err) {
             Token.findOneAndDelete({ token });
             return `Email could not be sent - ${err}`;
         }

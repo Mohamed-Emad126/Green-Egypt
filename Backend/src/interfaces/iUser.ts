@@ -22,6 +22,7 @@ export interface IUser extends Document {
     };
     createdAt?: Date
     updatedAt?: Date
+    isVerified: boolean;
     generateToken(expiration?: string): Promise<string>;
 }
 
