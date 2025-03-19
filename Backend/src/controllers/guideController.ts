@@ -22,7 +22,7 @@ export default class GuideController {
         const page: number = req.query.page ? +req.query.page : 1;
         const limit: number = req.query.limit ? +req.query.limit : 6;
         const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
-        const articles = await this.guideService.getArticles(page, limit , filters);
+        const articles = await this.guideService.getArticles(page, limit);
         res.json({ length: articles.length, page: page, articles: articles });
 });
 

@@ -64,7 +64,13 @@ const UserSchema: Schema = new Schema({
         coordinates: {
             type: [Number],
         }
-    }    
+
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    }
+ 
 }, { timestamps: true });
 
 UserSchema.index({ location: '2dsphere' });

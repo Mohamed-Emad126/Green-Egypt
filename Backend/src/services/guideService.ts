@@ -5,9 +5,9 @@ import { IGuideInput } from "../interfaces/iGuide";
 import fs from "fs";
 
 export default class GuideService {
-    async getArticles(page : number, limit : number, filters : any) {
+    async getArticles(page : number, limit : number) {
         const offset : number = (page - 1) * limit;
-        return await Guide.find(filters).skip(offset).limit(limit);
+        return await Guide.find().skip(offset).limit(limit);
     }
 
     async getArticleById(articleID : string) {
