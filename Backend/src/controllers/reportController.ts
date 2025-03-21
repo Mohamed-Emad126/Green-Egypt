@@ -129,4 +129,18 @@ export default class ReportController {
         }
     });
 
+    /**
+     * @desc      Register volunteering
+     * @route     POST /api/reports/:id/volunteer
+     * @access    Public
+    */
+    registerVolunteering = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.reportService.registerVolunteering(req.params.id, req.body.user.id);
+        if (result.status === 200) {
+            res.json({ message: result.message });
+        } else {
+            return next(new ApiError(result.message, result.status));
+            
+        }
+    });
 }

@@ -127,3 +127,8 @@ export const toggleUpvoteValidator = [
     validatorMiddleware
 ];
 
+export const registerVolunteeringValidator = [
+    check('id').isMongoId().withMessage('Invalid report ID Format'),
+    validatorMiddleware
+];
+

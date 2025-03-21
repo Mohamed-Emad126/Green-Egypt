@@ -2,7 +2,7 @@ import TreeService from "../services/treeService";
 import { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
-
+import axios from 'axios';
 
 
 
@@ -57,6 +57,9 @@ export default class TreeController {
 
         if (createdTree) {
             res.status(201).json({ message: 'Tree located successfully' });
+            await axios.put(`http://localhost:5000/api/users/${req.params.id}/activity`, {
+                activity: 'locate'
+            });
         } else {
             res.status(400).json({ message: 'Tree already exists'});
         }

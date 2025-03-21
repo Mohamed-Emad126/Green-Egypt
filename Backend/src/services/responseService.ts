@@ -4,6 +4,8 @@ import trashResponse from "../models/trash/trashResponseModel";
 import mongoose from "mongoose";
 import uploadToCloud from "../config/cloudinary";
 import fs from "fs";
+import axios from "axios";
+
 
 
 export default class ResponseService {
@@ -34,6 +36,7 @@ export default class ResponseService {
         });
 
         report.responses.push(response.id);
+        report.status = "Awaiting Verification";
         await report.save();
     
         return response;
@@ -85,14 +88,28 @@ export default class ResponseService {
             if (existingVote.vote === vote) {
                 response.votes.splice(existingVoteIndex, 1);
                 msg = `The vote has been cancelled`; 
+
+                vote === true ? response.upVotes -= 1 : response.downVotes -= 1;
+
             } else {
                 response.votes[existingVoteIndex].vote = vote;
                 msg = `The vote has been updated to ${express}`;
+
+                if (vote === true) {
+                    response.upVotes += 1;
+                    response.downVotes -= 1;
+                } else {
+                    response.downVotes += 1;
+                    response.upVotes -= 1;
+                }
+
             }
         } else {
             const objectIdUserID = new mongoose.Types.ObjectId(userID)
             response.votes.push({ userID: objectIdUserID, vote: vote });
             msg = `Successfully voted ${express}`;
+
+            vote === true ? response.upVotes += 1 : response.downVotes += 1;
         }
     
         await response.save();

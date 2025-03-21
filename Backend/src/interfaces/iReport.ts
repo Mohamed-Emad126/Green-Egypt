@@ -12,11 +12,12 @@ export interface IReport extends Document {
     treeID?: mongoose.Schema.Types.ObjectId;
     upVotes: number;
     upVoters: mongoose.Schema.Types.ObjectId[];
-    status : 'Pending' | 'In Progress' | 'Resolved' | 'Rejected';
+    status : 'Pending' | 'In Progress' | 'Resolved' | 'Awaiting Verification';
     modificationHistory: {
         oldData: Partial<IReport>;
         updatedAt: Date;
     }[];
+    volunteer?: mongoose.Types.ObjectId | null;
     responses: mongoose.Schema.Types.ObjectId[];
     comments: mongoose.Schema.Types.ObjectId[];
     createdAt?: Date

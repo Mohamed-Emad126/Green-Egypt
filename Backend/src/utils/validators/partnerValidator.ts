@@ -22,7 +22,8 @@ export const createNewPartnerValidator = [
 
     check('startDate')
         .notEmpty().withMessage('Start date is required')
-        .isISO8601().withMessage('Start date must be a valid date in ISO8601 format'),
+        .isISO8601().withMessage('Start date must be a valid date in ISO8601 format')
+        .isAfter(new Date().toISOString()).withMessage('Start date must be in the future'),
 
     check('duration')
         .notEmpty().withMessage('Duration is required')

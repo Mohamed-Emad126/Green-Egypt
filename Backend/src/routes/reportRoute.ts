@@ -3,7 +3,15 @@ import ReportService from "../services/reportService";
 import ReportController from "../controllers/reportController";
 import { uploadImages } from "../middlewares/uploadImageMiddleware";
 import { verifyToken, verifyReporterMiddleware } from "../middlewares/authMiddleware";
-import { getReportValidator, createReportValidator, updateReportValidator, uploadReportImagesValidator, deleteReportImageValidator, deleteReportValidator, toggleUpvoteValidator } from "../utils/validators/reportValidator";
+import { getReportValidator, 
+        createReportValidator, 
+        updateReportValidator, 
+        uploadReportImagesValidator, 
+        deleteReportImageValidator,
+        deleteReportValidator, 
+        toggleUpvoteValidator,
+        registerVolunteeringValidator
+        } from "../utils/validators/reportValidator";
 import CommentController from "../controllers/commentController";
 import CommentService from "../services/commentService";
 import { createCommentValidator, getCommentsByReportValidator } from "../utils/validators/commentValidator";
@@ -14,14 +22,17 @@ import { createResponseValidator, getReportResponsesValidator } from "../utils/v
 const reportRouter = Router();
 
 const reportService = new ReportService();
-const { getReports, 
+const { 
+        getReports, 
         getReportById, 
         createNewReport,
         updateReport,
         uploadReportImages,
         deleteReportImage,
         deleteReport,
-        toggleUpvote } = new ReportController(reportService);
+        toggleUpvote,
+        registerVolunteering
+        } = new ReportController(reportService);
 
 const commentService = new CommentService();
 const { getCommentsByReport, createComment } = new CommentController(commentService);
@@ -36,7 +47,8 @@ reportRouter.route('/')
 reportRouter.route('/:id')
         .get(verifyToken, getReportValidator, getReportById)
         .patch(verifyReporterMiddleware, updateReportValidator, updateReport)
-        .delete(verifyReporterMiddleware, deleteReportValidator, deleteReport);
+        .delete(verifyReporterMiddleware, deleteReportValidator, deleteReport)
+        .put(verifyToken,registerVolunteeringValidator, registerVolunteering);
 
 reportRouter.route('/:id/image')
         .patch(verifyReporterMiddleware, uploadImages, uploadReportImagesValidator, uploadReportImages)
