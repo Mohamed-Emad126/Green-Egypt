@@ -175,11 +175,18 @@ export default class ReportService {
             return { message: "Report not found", status: 404 };
         }
 
+        const user = await User.findById(userID);
+        const ObjectIdReportID = new mongoose.Types.ObjectId(reportID);
+
         if (report.status !== "Pending") {
             if (report.status === "In Progress" && report.volunteer?.toString() === userID) {
                 report.volunteer = null;
                 report.status = "Pending";
                 await report.save();
+
+                user!.savedReports = user!.savedReports.filter((v) => v.toString() !== reportID);
+                await user!.save();
+                
                 return { message: "Volunteering cancelled", status: 200 };
             } else {
                 return { message: "Report is not pending for volunteering", status: 400};
@@ -190,7 +197,30 @@ export default class ReportService {
         report.volunteer = objectIdUserID;
         report.status = "In Progress";
         await report.save();
+        user!.savedReports.push(ObjectIdReportID);
+        await user!.save();
         
         return { message: "Volunteering registered successfully", status: 200 };
     }
+
+    async saveReport(reportID: string, userID: mongoose.Schema.Types.ObjectId) {
+        const report = Report.findById(reportID);
+        if (!report) {
+            return false;
+        }
+
+        const user = await User.findById(userID);
+        const ObjectIdReportID = new mongoose.Types.ObjectId(reportID);
+        const reportIndex =  user!.savedReports.indexOf(ObjectIdReportID);
+        if (reportIndex === -1) {
+            user!.savedReports.push(ObjectIdReportID);
+            await user!.save();
+            return "Report saved successfully";
+        } else {
+            user!.savedReports.splice(reportIndex, 1);
+            await user!.save();
+            return "Report removed from saved reports";
+        }
+    }
+    
 }

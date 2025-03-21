@@ -132,3 +132,8 @@ export const registerVolunteeringValidator = [
     validatorMiddleware
 ];
 
+export const saveReportValidator = [
+    check('id').isMongoId().withMessage('Invalid report ID Format'),
+    validatorMiddleware
+];
+

@@ -71,7 +71,7 @@ const UserSchema: Schema = new Schema({
         default: false
     },
     savedReports: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: 'Report'
     }]
 }, { timestamps: true });
