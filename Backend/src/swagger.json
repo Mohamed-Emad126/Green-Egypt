@@ -1909,6 +1909,7 @@
                     "required": true,
                     "schema": {
                         "type": "string",
+                        "format": "objectid",
                         "example": "67da1529cd23e1273a0dbfa2"
                     }
                 }],
@@ -1994,6 +1995,7 @@
                     "required": true,
                     "schema": {
                         "type": "string",
+                        "format": "objectid",
                         "example": "67da1529cd23e1273a0dbfa2"
                     }
                 }],
@@ -2013,12 +2015,17 @@
                                             },
                                             "points": {
                                                 "type": "number",
-                                                "example": 5
+                                                "example": 1
                                             },
                                             "date": {
                                                 "type": "string",
                                                 "format": "date-time",
                                                 "example": "2025-01-27T13:34:16.460Z"
+                                            },
+                                            "img": {
+                                                "type": "string",
+                                                "format": "uri",
+                                                "example": "../uploads/locate.png"
                                             }
                                         }
                                     }

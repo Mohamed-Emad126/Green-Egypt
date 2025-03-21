@@ -61,6 +61,11 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
             default: Date.now 
         }
     }],
+    volunteer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
     responses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Response'

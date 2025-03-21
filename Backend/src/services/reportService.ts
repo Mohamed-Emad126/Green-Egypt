@@ -5,6 +5,7 @@ import uploadToCloud from "../config/cloudinary";
 import fs from "fs";
 import Tree from "../models/treeModel"
 import mongoose from "mongoose";
+import User from "../models/userModel";
 
 // TODO: Compare the input report with previously created reports (createdReport)
 // TODO: Sort reports by the nearest location (getReports)
@@ -165,5 +166,31 @@ export default class ReportService {
         await report.save();
 
         return true;
+    }
+
+    async registerVolunteering(reportID: string, userID: string) {
+        const report = await Report.findById(reportID);
+        const objectIdUserID = new mongoose.Types.ObjectId(userID)
+        if (!report) {
+            return { message: "Report not found", status: 404 };
+        }
+
+        if (report.status !== "Pending") {
+            if (report.status === "In Progress" && report.volunteer?.toString() === userID) {
+                report.volunteer = null;
+                report.status = "Pending";
+                await report.save();
+                return { message: "Volunteering cancelled", status: 200 };
+            } else {
+                return { message: "Report is not pending for volunteering", status: 400};
+            }
+            
+        }
+
+        report.volunteer = objectIdUserID;
+        report.status = "In Progress";
+        await report.save();
+        
+        return { message: "Volunteering registered successfully", status: 200 };
     }
 }
