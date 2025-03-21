@@ -10,8 +10,8 @@ import { getReportValidator,
         deleteReportImageValidator,
         deleteReportValidator, 
         toggleUpvoteValidator,
-        registerVolunteeringValidator
-        } from "../utils/validators/reportValidator";
+        registerVolunteeringValidator,
+        saveReportValidator } from "../utils/validators/reportValidator";
 import CommentController from "../controllers/commentController";
 import CommentService from "../services/commentService";
 import { createCommentValidator, getCommentsByReportValidator } from "../utils/validators/commentValidator";
@@ -31,7 +31,8 @@ const {
         deleteReportImage,
         deleteReport,
         toggleUpvote,
-        registerVolunteering
+        registerVolunteering,
+        saveReport
         } = new ReportController(reportService);
 
 const commentService = new CommentService();
@@ -64,5 +65,8 @@ reportRouter.route('/:id/comment')
 reportRouter.route('/:id/response')
         .get(verifyToken, getReportResponsesValidator, getReportResponses)
         .post(verifyToken, uploadImages, createResponseValidator, createResponse);
+
+reportRouter.route('/:id/save')
+        .put(verifyToken, saveReportValidator, saveReport);
 
 export default reportRouter;

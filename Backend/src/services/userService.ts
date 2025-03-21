@@ -65,8 +65,8 @@ export default class UserService {
             return false;
         }
 
-        if(user.profilePic !== '../uploads/userImages/default-user-avatar.png') {
-            user.profilePic = '../uploads/userImages/default-user-avatar.png';
+        if(user.profilePic !== '../uploads/default-user-avatar.png') {
+            user.profilePic = '../uploads/default-user-avatar.png';
             await user.save();
         }
 
@@ -214,6 +214,15 @@ export default class UserService {
         }
 
         return user.pointsHistory;
+    }
+
+    async getUserSavedReports(userID: string) {
+        const user = await User.findById(userID).populate("savedReports");
+        if (!user) {
+            return false;
+        }
+
+        return user.savedReports;
     }
 
 }

@@ -20,6 +20,7 @@ export default class UserController {
         this.promoteUserToAdmin = this.promoteUserToAdmin.bind(this);
         this.getUserTrees = this.getUserTrees.bind(this);
         this.getUserPointsHistory = this.getUserPointsHistory.bind(this);
+        this.getUserSavedReports = this.getUserSavedReports.bind(this);
     }
 
     /**
@@ -208,6 +209,24 @@ export default class UserController {
             res.json({ message: "You have no points yet, Plant a tree , report a problem, care for a tree or locate a tree to earn points"});
         } else {
             res.json(pointsHistory);
+        }
+    });
+
+    /**
+     * @desc      get saved reports of a user
+     * @route     GET /api/users/:id/saved-reports
+     * @access    Private
+    */
+    getUserSavedReports = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const savedReports = await this.userService.getUserSavedReports(req.params.id);
+        if (savedReports === false) {
+            return next(new ApiError("User not found", 404));
+        }
+
+        if (savedReports.length === 0) {
+            res.json({ message: "User has no saved reports"});
+        } else {
+            res.json(savedReports);
         }
     });
 }

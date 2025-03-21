@@ -13,6 +13,11 @@ export default class ReportController {
         this.createNewReport = this.createNewReport.bind(this);
         this.updateReport = this.updateReport.bind(this);
         this.deleteReport = this.deleteReport.bind(this);
+        this.toggleUpvote = this.toggleUpvote.bind(this);
+        this.deleteReportImage = this.deleteReportImage.bind(this);
+        this.uploadReportImages = this.uploadReportImages.bind(this);
+        this.registerVolunteering = this.registerVolunteering.bind(this);
+        this.saveReport = this.saveReport.bind(this);
     }
 
     /**
@@ -131,7 +136,7 @@ export default class ReportController {
 
     /**
      * @desc      Register volunteering
-     * @route     POST /api/reports/:id/volunteer
+     * @route     PUT /api/reports/:id/volunteer
      * @access    Public
     */
     registerVolunteering = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -141,6 +146,20 @@ export default class ReportController {
         } else {
             return next(new ApiError(result.message, result.status));
             
+        }
+    });
+
+    /**
+     * @desc      Save report
+     * @route     PUT /api/reports/:id/save
+     * @access    Public
+    */
+    saveReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.reportService.saveReport(req.params.id, req.body.user.id);
+        if (result) {
+            res.json({ message: result});
+        } else {
+            return next(new ApiError("Report not found", 404));
         }
     });
 }
