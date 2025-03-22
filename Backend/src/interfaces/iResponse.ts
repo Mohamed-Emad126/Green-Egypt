@@ -8,7 +8,13 @@ export interface IResponse extends Document {
         userID: mongoose.Types.ObjectId;
         vote: boolean;
     }[];
+    upVotes: number;
+    downVotes: number;
     isVerified: boolean;
+    note: {
+        message: string;
+        status: string;
+    } | null;
     updatedAt?: Date;
     createdAt?: Date;
 }

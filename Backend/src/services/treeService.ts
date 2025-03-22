@@ -26,6 +26,7 @@ export default class TreesService {
         fs.unlinkSync(imageFile.path);
 
         return Tree.create({ ...newTree, byUser: userID });
+
     }
 
     async updateTree(treeID : string, updateData : Partial<ITreeInput>) {

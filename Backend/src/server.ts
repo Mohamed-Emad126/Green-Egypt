@@ -3,6 +3,7 @@ import { Server } from 'socket.io';
 import connectDB from './config/db';
 import app from './app';
 import CommentService from "./services/commentService";
+import "./utils/cronJobs";
 
 //* Connect to database
 connectDB();
