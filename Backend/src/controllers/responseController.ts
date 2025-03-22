@@ -13,6 +13,7 @@ export default class ResponseController {
         this.createResponse = this.createResponse.bind(this);
         this.deleteResponse = this.deleteResponse.bind(this);
         this.voteResponse = this.voteResponse.bind(this);
+        this.analysisResponse = this.analysisResponse.bind(this);
     }
 
     /**
@@ -71,11 +72,11 @@ export default class ResponseController {
      * @access    Private
     */
     deleteResponse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const ResponseAfterDelete = await this.ResponseService.deleteResponse(req.params.id);
-        if (ResponseAfterDelete) {
-            res.json({ message: "Response deleted successfully"});
+        const result = await this.ResponseService.deleteResponse(req.params.id);
+        if (result.status === 200) {
+            res.json({ message: result.message });
         } else {
-            return next(new ApiError('Response not found', 404));
+            return next(new ApiError(result.message, result.status));
         }
     });
 
@@ -91,6 +92,39 @@ export default class ResponseController {
             res.json({ message: result});
         } else {
             return next(new ApiError('Response not found', 404));
+        }
+    });
+
+    /**
+     * @desc      Analysis response
+     * @route     PUT /api/response/:id/analysis
+     * @param     {string} id - Response id
+     * @access    Public
+    */
+    analysisResponse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const responseID = req.params.id;
+        const result = await this.ResponseService.analysisResponse(responseID);
+        if (result) {
+            res.json(result.return);
+        } else {
+            return next(new ApiError("Response is not verified", 400));
+        }
+    });
+
+
+    /**
+     * @desc      verify response
+     * @route     PUT /api/response/:id/verify
+     * @param     {string} id - Response id
+     * @access    Public
+    */
+    verifyResponse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const responseID = req.params.id;
+        const result = await this.ResponseService.verifyResponse(responseID);
+        if (result.status === 400) {
+            return next(new ApiError(result.message, 400));
+        } else {
+            res.json(result);
         }
     });
 }

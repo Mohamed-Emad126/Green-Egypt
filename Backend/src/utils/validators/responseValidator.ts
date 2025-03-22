@@ -42,4 +42,14 @@ export const voteResponseValidator = [
     check('vote')
         .notEmpty().withMessage('Vote Is Required')
         .isBoolean().withMessage('Invalid Vote, please Enter true for positive vote or false for negative vote')
-]
+];
+
+export const analysisResponseValidator = [
+    check('id').isMongoId().withMessage('Invalid Response ID Format'),
+    validatorMiddleware
+];
+
+export const verifyResponseValidator = [
+    check('id').isMongoId().withMessage('Invalid Response ID Format'),
+    validatorMiddleware
+];
