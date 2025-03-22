@@ -3,7 +3,9 @@ import Report from "../models/reportModel";
 import trashResponse from "../models/trash/trashResponseModel";
 import mongoose from "mongoose";
 import uploadToCloud from "../config/cloudinary";
-import fs from "fs";
+import fs, { stat } from "fs";
+import User from "../models/userModel";
+
 
 
 export default class ResponseService {
@@ -31,11 +33,17 @@ export default class ResponseService {
             reportID,
             respondentID: userID,
             images : uploadedImages,
+            note: null
         });
 
         report.responses.push(response.id);
+        report.status = "Awaiting Verification";
         await report.save();
-    
+        
+        const user = await User.findById(userID);
+        user!.savedReports.push(report.id);
+        await user!.save();
+
         return response;
     }
     
@@ -59,14 +67,23 @@ export default class ResponseService {
         const response = await Response.findById(ResponseID);
 
         if (!response){
-            return false;
+            return {status: 404, message: 'Response not found'};
+        } else if (response.isVerified) {
+            return {status: 400, message: 'Cannot delete a verified response'};
         }
         
         const toTrash = new trashResponse({...response.toObject()});
         await toTrash.save();
 
+        const report = await Report.findById(response.reportID);
+        report!.responses.filter((v: any) => v.toString() !== response.id);
+        if (report!.responses.length === 1) {
+            report!.status = 'Pending';
+        }
+        await report!.save();
+
         await response.deleteOne();
-        return true;
+        return {status: 200, message: 'Response deleted successfully'};
     }
 
     async voteResponse(responseID: string, userID: string, vote: boolean) {
@@ -85,14 +102,28 @@ export default class ResponseService {
             if (existingVote.vote === vote) {
                 response.votes.splice(existingVoteIndex, 1);
                 msg = `The vote has been cancelled`; 
+
+                vote === true ? response.upVotes -= 1 : response.downVotes -= 1;
+
             } else {
                 response.votes[existingVoteIndex].vote = vote;
                 msg = `The vote has been updated to ${express}`;
+
+                if (vote === true) {
+                    response.upVotes += 1;
+                    response.downVotes -= 1;
+                } else {
+                    response.downVotes += 1;
+                    response.upVotes -= 1;
+                }
+
             }
         } else {
             const objectIdUserID = new mongoose.Types.ObjectId(userID)
             response.votes.push({ userID: objectIdUserID, vote: vote });
             msg = `Successfully voted ${express}`;
+
+            vote === true ? response.upVotes += 1 : response.downVotes += 1;
         }
     
         await response.save();
@@ -100,4 +131,85 @@ export default class ResponseService {
         return msg;
     }
 
+    async analysisResponse(responseID: string) { 
+        const response = await Response.findById(responseID);
+        
+        if (!response!.isVerified) {
+            return false;
+        }
+
+        const report = await Report.findById(response!.reportID);
+
+        let action = "";
+        if (report!.reportType=== "A tree needs care") {
+            action = "care";
+        } else if (report!.reportType === "A place needs tree") {
+            action = "plant";
+        }
+
+        if (action === "plant") {
+            return { 
+                status: 200,
+                return: {
+                    action: "plant",
+                    user: response!.respondentID,
+                    message: "Make user locate it on the map to reward 50 points and he/she can unsave the report",
+                    requiredField: "treeName , treeLocation { type, coordinates }, treeImage",
+                    defaultValues: {
+                        healthStatus: "Healthy",
+                        problem: "No problem",
+                        plantedRecently: true,
+                        byUser: response!.respondentID
+                    }
+                }
+            };
+        }
+
+        return { 
+            status: 200, 
+            return: {
+                action: "care", 
+                message: "Make user update the tree health status on the map to reward 20 points and he/she can unsave the report",
+                requiredField: "healthStatus, problem",
+                responseID: response!.id,
+                user: response!.respondentID
+            }
+        };
+    }
+    
+    async verifyResponse(responseID: string) {
+        const response = await Response.findById(responseID);
+        const report = await Report.findById(response!.reportID);
+
+        if (response!.isVerified && response!.note !== null) {
+            return { status: 400, message: "Response already verified" };
+        } else if (response!.note!.status !== "rejected" || response!.note === null) {
+            return { status: 400, message: "Response not verified by the system yet, Please wait" };
+        }
+
+        const upVotes = response!.upVotes;
+        const downVotes = response!.downVotes;
+        if (upVotes > downVotes && upVotes >= 5) {
+            if(report!.status !== "Resolved") {
+                response!.isVerified = true;
+                response!.note = {
+                    message: "Request an analysis of your response to get your reward",
+                    status: "accepted"
+                };
+
+                report!.status = "Resolved";
+                report!.upVotes = Math.floor(report!.upVotes * 0.8);
+                await report!.save();
+            } else {
+                response!.note = {
+                    message: "Response has been accepted but the report is already resolved",
+                    status: "accepted but rejected"
+                };
+            }
+
+            await response!.save();
+        }
+
+        return response!.note!;
+    }
 }

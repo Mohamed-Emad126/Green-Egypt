@@ -133,3 +133,8 @@ export const getUserPointsHistoryValidator =[
     check('id').isMongoId().withMessage('Invalid user ID Format'),
     validatorMiddleware
 ];
+
+export const getUserSavedReportsValidator =[
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
+    validatorMiddleware
+];

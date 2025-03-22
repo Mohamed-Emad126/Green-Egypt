@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface IUser extends Document {
     username: string;
@@ -23,6 +23,7 @@ export interface IUser extends Document {
     createdAt?: Date
     updatedAt?: Date
     isVerified: boolean;
+    savedReports: mongoose.Types.ObjectId[];
     generateToken(expiration?: string): Promise<string>;
 }
 

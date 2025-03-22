@@ -69,8 +69,11 @@ const UserSchema: Schema = new Schema({
     isVerified: {
         type: Boolean,
         default: false
-    }
- 
+    },
+    savedReports: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'Report'
+    }]
 }, { timestamps: true });
 
 UserSchema.index({ location: '2dsphere' });

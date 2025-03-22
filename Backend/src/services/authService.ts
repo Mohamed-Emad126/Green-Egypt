@@ -1,5 +1,4 @@
 import { IAuthInput } from "../interfaces/iUser";
-import { IToken } from "../interfaces/iToken";
 import User from "../models/userModel";
 import Token from "../models/tokenModel";
 import bcrypt from "bcryptjs";
