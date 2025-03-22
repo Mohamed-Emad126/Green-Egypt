@@ -17,7 +17,10 @@ export interface IReport extends Document {
         oldData: Partial<IReport>;
         updatedAt: Date;
     }[];
-    volunteer?: mongoose.Types.ObjectId | null;
+    volunteering: {
+        volunteer: mongoose.Types.ObjectId | null;
+        at: Date | null;
+    };
     responses: mongoose.Schema.Types.ObjectId[];
     comments: mongoose.Schema.Types.ObjectId[];
     createdAt?: Date

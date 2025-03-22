@@ -44,6 +44,8 @@ export default class ReportService {
             newReport.location = tree.treeLocation;
             report = await Report.create({...newReport, images: uploadedImages});
 
+            tree.problem = newReport.description;
+            tree.healthStatus = "Diseased";
             tree.reportsAboutIt.push(report.id);
             await tree.save();
 
@@ -179,8 +181,8 @@ export default class ReportService {
         const ObjectIdReportID = new mongoose.Types.ObjectId(reportID);
 
         if (report.status !== "Pending") {
-            if (report.status === "In Progress" && report.volunteer?.toString() === userID) {
-                report.volunteer = null;
+            if (report.status === "In Progress" && report.volunteering.volunteer?.toString() === userID) {
+                report.volunteering = { volunteer: null, at: null };
                 report.status = "Pending";
                 await report.save();
 
@@ -194,7 +196,7 @@ export default class ReportService {
             
         }
 
-        report.volunteer = objectIdUserID;
+        report.volunteering = { volunteer: objectIdUserID, at: new Date()};
         report.status = "In Progress";
         await report.save();
         user!.savedReports.push(ObjectIdReportID);

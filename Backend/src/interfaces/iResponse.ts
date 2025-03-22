@@ -11,6 +11,10 @@ export interface IResponse extends Document {
     upVotes: number;
     downVotes: number;
     isVerified: boolean;
+    note: {
+        message: string;
+        status: string;
+    } | null;
     updatedAt?: Date;
     createdAt?: Date;
 }

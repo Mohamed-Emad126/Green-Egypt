@@ -35,6 +35,11 @@ const ResponseSchema: Schema<IResponse> = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    note: {
+        message: String,
+        status: String,
+    }
+
 }, { timestamps: true });
 
 const Response : Model<IResponse> = mongoose.model<IResponse>("Response", ResponseSchema);
