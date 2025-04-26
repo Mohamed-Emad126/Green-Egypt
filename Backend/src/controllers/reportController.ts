@@ -73,7 +73,7 @@ export default class ReportController {
         if (ReportAfterUpdate === true) {
             res.json({ message: "Report updated successfully"});
         } else {
-            return next(new ApiError(ReportAfterUpdate, 404));
+            return next(new ApiError(ReportAfterUpdate.message, ReportAfterUpdate.status));
         }
         
     });

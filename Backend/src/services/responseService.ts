@@ -3,8 +3,9 @@ import Report from "../models/reportModel";
 import trashResponse from "../models/trash/trashResponseModel";
 import mongoose from "mongoose";
 import uploadToCloud from "../config/cloudinary";
-import fs, { stat } from "fs";
+import fs from "fs";
 import User from "../models/userModel";
+import Tree from "../models/treeModel";
 
 
 
@@ -38,6 +39,7 @@ export default class ResponseService {
 
         report.responses.push(response.id);
         report.status = "Awaiting Verification";
+        report.volunteering = { volunteer: null, at: null };
         await report.save();
         
         const user = await User.findById(userID);
@@ -165,12 +167,19 @@ export default class ResponseService {
             };
         }
 
+        const tree = await Tree.findById(report!.treeID);
+
         return { 
             status: 200, 
             return: {
                 action: "care", 
                 message: "Make user update the tree health status on the map to reward 20 points and he/she can unsave the report",
-                requiredField: "healthStatus, problem",
+                requiredField: "healthStatus, problem, treeLocation { type, coordinates }, treeImage",
+                defaultValues: {
+                    problem: "No problem",
+                    treeLocation: tree!.treeLocation,
+                    treeImage: tree!.image
+                },
                 responseID: response!.id,
                 user: response!.respondentID
             }
@@ -202,7 +211,7 @@ export default class ResponseService {
                 await report!.save();
             } else {
                 response!.note = {
-                    message: "Response has been accepted but the report is already resolved",
+                    message: "Response has been accepted but the report is already resolved, you can unsaved the report",
                     status: "accepted but rejected"
                 };
             }

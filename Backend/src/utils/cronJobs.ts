@@ -49,7 +49,7 @@ cron.schedule("5 0 * * *", async () => {
             );
         }
 
-        console.log(`${expiredCoupons.length}Expired coupons cleanup task completed.`);
+        console.log(`${expiredCoupons.length} Expired coupons cleanup task completed.`);
     } catch (error) {
         console.error("Error in expired coupons cleanup task:", error);
     }

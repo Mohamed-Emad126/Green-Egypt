@@ -40,7 +40,8 @@ const UserSchema: Schema = new Schema({
                 enum: ['locate', 'report', 'plant', 'care'],
             },
             date: Date,
-            img: String
+            img: String,
+            _id: false
         }
     ],
     pendingCoupons: {
