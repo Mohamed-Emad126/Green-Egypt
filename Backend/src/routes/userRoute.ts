@@ -77,7 +77,7 @@ userRouter.route('/:id/promote-admin')
 
 userRouter.route('/:id/tree')
         .get(verifyToken, getUserTreesValidator, getUserTrees)
-        .post(verifyToken, uploadImage, locateTreeValidator, LocateTree);
+        .post(verifyUserMiddleware, uploadImage, locateTreeValidator, LocateTree);
 
 userRouter.route('/:id/task')
         .post(verifyUserMiddleware, createTaskValidator, createTask)

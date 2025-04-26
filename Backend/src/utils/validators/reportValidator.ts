@@ -61,8 +61,14 @@ export const updateReportValidator = [
         .isIn(['A tree needs care', 'A place needs tree', 'Other']).withMessage('Invalid report type'),
 
     check('location')
-        .optional()
-        .isObject().withMessage('Location must be an object'),
+        .custom((value, { req }) => {
+            if (req.body.reportType === 'A place needs tree') {
+                if (!value || typeof value !== 'object' || !value.type || !value.coordinates) {
+                    throw new Error('Location is required and must be a valid object for "A place needs tree"');
+                }
+            }
+            return true;
+        }),
 
     check('location.type')
         .if(check('location').exists())
@@ -86,8 +92,18 @@ export const updateReportValidator = [
         .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
 
     check('treeID')
-        .optional()
-        .isMongoId().withMessage('Invalid tree ID Format'),
+        .custom((value, { req }) => {
+            if (req.body.reportType === 'A tree needs care') {
+                if (!value) {
+                    throw new Error('treeID is required for "A tree needs care"');
+                }
+                const mongoose = require('mongoose');
+                if (!mongoose.Types.ObjectId.isValid(value)) {
+                    throw new Error('Invalid tree ID format');
+                }
+            }
+            return true;
+        }),
     
     check('description')
         .optional()

@@ -9,7 +9,7 @@ export interface IReport extends Document {
     };
     images: string[];
     createdBy: mongoose.Schema.Types.ObjectId;
-    treeID?: mongoose.Schema.Types.ObjectId;
+    treeID?: mongoose.Types.ObjectId;
     upVotes: number;
     upVoters: mongoose.Schema.Types.ObjectId[];
     status : 'Pending' | 'In Progress' | 'Resolved' | 'Awaiting Verification';
