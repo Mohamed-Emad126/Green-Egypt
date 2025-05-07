@@ -1,0 +1,28 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Gogreen",
+      "cwd": "Flutter\\Gogreen",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "Gogreen (profile mode)",
+      "cwd": "Flutter\\Gogreen",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Gogreen (release mode)",
+      "cwd": "Flutter\\Gogreen",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ]
+}

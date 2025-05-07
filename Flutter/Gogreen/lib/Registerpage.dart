@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gogreen/profile/Loginpage.dart';
 import 'package:provider/provider.dart';
 import 'package:gogreen/provider/auth_provider.dart';
 
@@ -31,9 +32,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       Image.asset(
                         'images/img_11.png',
-                        width: 60.w,
-                        height: 60.h,
-                        fit: BoxFit.cover,
+                        width: 50.w,
+                        height: 50.h,
+                        fit: BoxFit.contain,
                       ),
                       SizedBox(height: 10.h),
                       Text(
@@ -55,16 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                   ),
                 ),
-                Positioned(
-                  top: 40.h,
-                  left: 20.w,
-                  child: IconButton(
-                    icon: Icon(Icons.chevron_left_outlined, color: Colors.white, size: 40.w),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
+
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Padding(
@@ -245,13 +237,17 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/login');
+            // الانتقال مباشرة إلى صفحة LoginPage باستخدام Navigator.push
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            );
           },
           child: Text(
-            'Sign in ',
+            'Sign in',
             style: TextStyle(
               color: const Color(0xFF147351),
-              fontSize: 16.sp,
+              fontSize: 16, // استخدم الحجم المناسب للخط
               fontWeight: FontWeight.bold,
             ),
           ),

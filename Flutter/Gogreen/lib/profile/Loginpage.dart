@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gogreen/NavigationBar.dart';
 import 'package:gogreen/Signingoogle.dart';
 import 'package:gogreen/Forgetpasword.dart';
 import 'package:gogreen/Homepage.dart';
@@ -109,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const Homepage()),
+                            MaterialPageRoute(builder: (context) =>  BottomNavBarExample()),
                           );
                         },
                         child: Container(
