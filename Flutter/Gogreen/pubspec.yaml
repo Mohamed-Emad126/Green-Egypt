@@ -1,22 +1,51 @@
 name: gogreen
 description: "A new Flutter project."
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
   sdk: ^3.5.0
 
+flutter_native_splash:
+  color: "#147351"
+  image: images/img_41.png
+  android: true
+  ios: true
+  fullscreen: true
+
 dependencies:
-  dio: ^5.4.0 
+  dio: ^5.4.0
   flutter:
     sdk: flutter
+  iconify_flutter: ^0.0.7
+
+  flutter_vector_icons: ^2.0.0
+  carbon_icons: ^0.0.1+2
+  shared_preferences: ^2.0.7
+  image_picker: ^1.0.4
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.5
+  auto_size_text: ^3.0.0
   flutter_svg: ^2.0.4
   cupertino_icons: ^1.0.8
   flutter_screenutil: ^5.5.0
   provider: ^6.1.2
+  flutter_map: ^6.0.0
+  latlong2: ^0.9.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "images/img_48.png"
+  flutter_native_splash:
+  color: "#42a5f5"
+  image: images/img_42.png
+  android_gravity: fill
 
 dev_dependencies:
+  flutter_native_splash: ^2.3.6
+  flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
@@ -65,3 +94,16 @@ flutter:
     - images/img_39.png
     - images/img_40.png
     - images/img_41.png
+    - images/img_42.png
+    - images/img_43.png
+    - images/img_44.png
+    - images/img_45.png
+    - images/img_46.png
+    - images/img_48.png
+    - images/img_49.png
+    - images/img_50.png
+    - images/img_51.png
+    - images/img_52.png
+    - images/img_53.png
+    - images/img_54.png
+    - images/imgg.png

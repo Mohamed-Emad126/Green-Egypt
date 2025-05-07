@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gogreen/Registerpage.dart';
 import 'package:gogreen/Splashscreen.dart';
 import 'package:provider/provider.dart';
 import 'provider/onboarding_state.dart';
@@ -55,7 +56,7 @@ class OnboardingPages extends StatelessWidget {
                   if (onboardingState.currentPage == 3) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Splashscreen()),
+                      MaterialPageRoute(builder: (context) =>  RegisterPage()),
                     );
                   } else {
                     _controller.nextPage(
@@ -81,7 +82,7 @@ class OnboardingPages extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Splashscreen()),
+                    MaterialPageRoute(builder: (context) =>  RegisterPage()),
                   );
                 },
                 child: const Text(
