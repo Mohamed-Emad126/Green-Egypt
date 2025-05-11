@@ -8,30 +8,39 @@ import Response from "../models/responseModel";
 import Report from "../models/reportModel";
 
 
-
 cron.schedule("0 0 * * *", async () => {
     try {
         console.log("Starting expired partners cleanup task...");
-        const expiredPartners = await Partner.find({ endDate: { $lte: new Date() } });
 
-        if (expiredPartners.length > 0) {
-            await Promise.all(
-                expiredPartners.map(async (partner) => {
-                    partner.hasExpired = true;
-                    await trashPartner.create({ ...partner.toObject() });
-                    await partner.deleteOne();
-                })
-            );
+        const expiredPartners = await Partner.find({ endDate: { $lte: new Date() } });
+        let deletedCount = 0;
+
+        for (const partner of expiredPartners) {
+            const activeCoupons = await Coupon.find({ brand: partner._id});
+            if (activeCoupons.length > 0) {
+                console.log(`Skipped ${partner.partnerName} — still has unredeemed coupons`);
+                continue;
+            }
+
+            partner.hasExpired = true;
+            await trashPartner.create({ ...partner.toObject() });
+            await partner.deleteOne();
+            deletedCount++;
         }
 
-        console.log(`${expiredPartners.length} Expired partners cleanup task completed.`);
+        if (deletedCount === 0) {
+            console.log("No expired partners deleted");
+        } else {
+            console.log(`${deletedCount} expired partners deleted successfully`);
+        }
+
     } catch (error) {
         console.error("Error in expired partners cleanup task:", error);
     }
 });
 
 
-cron.schedule("5 0 * * *", async () => {
+cron.schedule("0 5 * * *", async () => {
     try {
         console.log("Starting expired coupons cleanup task...");
         const now = new Date();
