@@ -16,7 +16,7 @@ export default class UserController {
         this.uploadUserPicture = this.uploadUserPicture.bind(this);
         this.deleteUserPicture = this.deleteUserPicture.bind(this);
         this.updateUserPoints = this.updateUserPoints.bind(this);
-        this.claimPendingCoupons = this.claimPendingCoupons.bind(this);
+        //this.claimPendingCoupons = this.claimPendingCoupons.bind(this);
         this.promoteUserToAdmin = this.promoteUserToAdmin.bind(this);
         this.getUserTrees = this.getUserTrees.bind(this);
         this.getUserPointsHistory = this.getUserPointsHistory.bind(this);
@@ -150,14 +150,14 @@ export default class UserController {
      * @route     POST /api/users/:id/claim-pending-coupons
      * @access    Private
      */
-    claimPendingCoupons = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const result = await this.userService.claimPendingCoupons(req.params.id);
-        if (!result) {
-            return next(new ApiError("User not found", 404));
-        } else {
-            res.status(result.status).json({"message": result.message, "coupon": result.coupon});
-        }
-    });
+    // claimPendingCoupons = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    //     const result = await this.userService.claimPendingCoupons(req.params.id);
+    //     if (!result) {
+    //         return next(new ApiError("User not found", 404));
+    //     } else {
+    //         res.status(result.status).json({"message": result.message, "coupon": result.coupon});
+    //     }
+    // });
 
     /**
      * @desc      Promote user to admin

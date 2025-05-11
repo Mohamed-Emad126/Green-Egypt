@@ -2,8 +2,8 @@ import mongoose, { Schema, Model } from "mongoose";
 import { ICoupon } from "../../interfaces/iCoupon";
 
 const TrashCouponSchema: Schema = new mongoose.Schema({
-    code: {
-        type: String,
+    codes: {
+        type: [String],
         required: true,
     },
     value: {
@@ -15,17 +15,34 @@ const TrashCouponSchema: Schema = new mongoose.Schema({
         ref: 'Partner',
         required: true,
     },
+    cost: {
+        type: Number,
+        required: true,
+        min: [50, 'Cost cannot be negative or less than 50'],
+    },
+    usedCodes: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        code: String,
+        redeemedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     expiryDate: {
         type: Date,
         required: true,
     },
-    redeemed:{
-        type: Boolean,
-    },
+    // redeemed:{
+    //     type: Boolean,
+    //     default: false
+    // },
     addByAdmin: {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'User',
-        require : true
+        required : true
     }
 });
 
