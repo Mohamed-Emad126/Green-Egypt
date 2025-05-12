@@ -8,7 +8,7 @@ import {getUserValidator,
         uploadUserImageValidator, 
         deleteUserImageValidator, 
         updateUserPointsValidator, 
-        claimPendingCouponsValidator,
+        //claimPendingCouponsValidator,
         promoteUserValidator, 
         getUserTreesValidator, 
         getUserPointsHistoryValidator,
@@ -36,7 +36,7 @@ const { getUsers,
         uploadUserPicture,
         deleteUserPicture, 
         updateUserPoints,
-        claimPendingCoupons,
+        //claimPendingCoupons,
         promoteUserToAdmin,
         getUserTrees,
         getUserPointsHistory,
@@ -63,8 +63,8 @@ userRouter.route('/:id/activity')
 userRouter.route('/:id/points-history')
         .get(verifyUserMiddleware, getUserPointsHistoryValidator, getUserPointsHistory);
 
-userRouter.route('/:id/claim-coupon')
-        .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);
+// userRouter.route('/:id/claim-coupon')
+//         .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);
 
 userRouter.route('/:id/image')
         .patch(verifyUserMiddleware, uploadImage, uploadUserImageValidator, uploadUserPicture)
@@ -78,7 +78,7 @@ userRouter.route('/:id/promote-admin')
 
 userRouter.route('/:id/tree')
         .get(verifyToken, getUserTreesValidator, getUserTrees)
-        .post(verifyToken, uploadImage, locateTreeValidator, LocateTree);
+        .post(verifyUserMiddleware, uploadImage, locateTreeValidator, LocateTree);
 
 userRouter.route('/:id/task')
         .post(verifyUserMiddleware, createTaskValidator, createTask)

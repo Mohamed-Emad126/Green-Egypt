@@ -31,7 +31,7 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         required: true
     },
     treeID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: 'Tree',
     },
     upVotes: { 
@@ -59,7 +59,8 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         updatedAt: { 
             type: Date, 
             default: Date.now 
-        }
+        },
+    _id: false
     }],
     volunteering: {
         volunteer: {

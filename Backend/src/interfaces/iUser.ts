@@ -12,7 +12,7 @@ export interface IUser extends Document {
         date: Date;
         img: string;
     }[];
-    pendingCoupons: number;
+    // pendingCoupons: number;
     profilePic: string;
     isActive: boolean;
     role: string;
