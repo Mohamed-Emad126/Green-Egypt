@@ -114,10 +114,10 @@ export const updateUserPointsValidator = [
     validatorMiddleware
 ];
 
-export const claimPendingCouponsValidator = [
-    check('id').isMongoId().withMessage('Invalid user ID Format'),
-    validatorMiddleware
-];
+// export const claimPendingCouponsValidator = [
+//     check('id').isMongoId().withMessage('Invalid user ID Format'),
+//     validatorMiddleware
+// ];
 
 export const promoteUserValidator =[
     check('id').isMongoId().withMessage('Invalid user ID Format'),

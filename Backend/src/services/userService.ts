@@ -104,78 +104,78 @@ export default class UserService {
         user.pointsHistory.push({ points, activity, date: new Date(), img });
         await user.save();
 
-        if (user.points >= 500) {
-            const availableCoupon = await Coupon.findOne({ redeemed: false }).populate('brand');
+        // if (user.points >= 500) {
+        //     const availableCoupon = await Coupon.findOne({ redeemed: false }).populate('brand');
     
-            if (availableCoupon) {
-                availableCoupon.redeemed = true;
-                await availableCoupon.save();
+        //     if (availableCoupon) {
+        //         availableCoupon.redeemed = true;
+        //         await availableCoupon.save();
     
-                user.points -= 500;
-                await user.save();
+        //         user.points -= 500;
+        //         await user.save();
     
-                return {
-                    message: `Congratulations ${user.username}! You have been rewarded with a coupon: ${availableCoupon.code}`,
-                    coupon: availableCoupon
-                };
-            } else {
-                user.pendingCoupons += 1;
-                user.points -= 500;
-                await user.save();
-                return {
-                    message: `Congratulations ${user.username}! You have earned a coupon but it's pending until new coupons are available, You will be notified when a coupon is available. You have ${user.pendingCoupons} pending coupon(s)`,
-                    coupon: null
-                };
-            }
-        }
+        //         return {
+        //             message: `Congratulations ${user.username}! You have been rewarded with a coupon: ${availableCoupon.code}`,
+        //             coupon: availableCoupon
+        //         };
+        //     } else {
+        //         user.pendingCoupons += 1;
+        //         user.points -= 500;
+        //         await user.save();
+        //         return {
+        //             message: `Congratulations ${user.username}! You have earned a coupon but it's pending until new coupons are available, You will be notified when a coupon is available. You have ${user.pendingCoupons} pending coupon(s)`,
+        //             coupon: null
+        //         };
+        //     }
+        // }
     
         await user.save();
         return {
-            message: `Points added successfully, current points: ${user.points}, keep going to earn a coupon!`, 
+            message: `Points added successfully, current points: ${user.points}, keep going to earn coupons!`, 
             coupon: null
         };
     }
 
-    async claimPendingCoupons(userID: string) {
-        const user = await User.findById(userID);
-        if (!user) {
-            return false;
-        } else if (user.pendingCoupons === 0) {
-            return {
-                status: 400,
-                message: "No pending coupons to claim.",
-                coupon: null
-            };
-        }
+    // async claimPendingCoupons(userID: string) {
+    //     const user = await User.findById(userID);
+    //     if (!user) {
+    //         return false;
+    //     } else if (user.pendingCoupons === 0) {
+    //         return {
+    //             status: 400,
+    //             message: "No pending coupons to claim.",
+    //             coupon: null
+    //         };
+    //     }
     
-        const availableCoupons = await Coupon.find({ redeemed: false }).limit(user.pendingCoupons).populate('brand');
+    //     const availableCoupons = await Coupon.find({ redeemed: false }).limit(user.pendingCoupons).populate('brand');
     
-        if (availableCoupons.length === 0) {
-            return { 
-                status: 400,
-                message: "No available coupons to claim right now." ,
-                coupon : null
-            };
-        }
+    //     if (availableCoupons.length === 0) {
+    //         return { 
+    //             status: 400,
+    //             message: "No available coupons to claim right now." ,
+    //             coupon : null
+    //         };
+    //     }
 
-        const claimedCoupons = [];
-        for (let i = 0; i < availableCoupons.length; i++) {
-            const coupon = availableCoupons[i];
-            coupon.redeemed = true;
-            await coupon.save();
+    //     const claimedCoupons = [];
+    //     for (let i = 0; i < availableCoupons.length; i++) {
+    //         const coupon = availableCoupons[i];
+    //         coupon.redeemed = true;
+    //         await coupon.save();
     
-            claimedCoupons.push(coupon);
-        }
+    //         claimedCoupons.push(coupon);
+    //     }
     
-        user.pendingCoupons -= claimedCoupons.length;
-        await user.save();
+    //     user.pendingCoupons -= claimedCoupons.length;
+    //     await user.save();
     
-        return {
-            status: 200,
-            message: `${claimedCoupons.length} coupons claimed.`,
-            coupon :claimedCoupons
-        };
-    }
+    //     return {
+    //         status: 200,
+    //         message: `${claimedCoupons.length} coupons claimed.`,
+    //         coupon :claimedCoupons
+    //     };
+    // }
 
     async promoteUserToAdmin(userID: string) {
         const user = await User.findById(userID);

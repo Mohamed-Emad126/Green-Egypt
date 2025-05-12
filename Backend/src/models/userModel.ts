@@ -40,14 +40,15 @@ const UserSchema: Schema = new Schema({
                 enum: ['locate', 'report', 'plant', 'care'],
             },
             date: Date,
-            img: String
+            img: String,
+            _id: false
         }
     ],
-    pendingCoupons: {
-        type: Number,
-        default: 0,
-        min: [0, 'Points cannot be negative']
-    },
+    // pendingCoupons: {
+    //     type: Number,
+    //     default: 0,
+    //     min: [0, 'Points cannot be negative']
+    // },
     isActive: {
         type: Boolean,
         default: true
@@ -64,7 +65,6 @@ const UserSchema: Schema = new Schema({
         coordinates: {
             type: [Number],
         }
-
     },
     isVerified: {
         type: Boolean,

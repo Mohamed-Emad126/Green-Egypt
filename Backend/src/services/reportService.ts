@@ -35,7 +35,7 @@ export default class ReportService {
 
         let report;
 
-        if(newReport.treeID && newReport.reportType === "A tree needs care") {
+        if(newReport.treeID && newReport.reportType === "A tree needs care" ) {
             const tree = await Tree.findById(newReport.treeID);
             if(!tree) {
                 return false;
@@ -50,6 +50,9 @@ export default class ReportService {
             await tree.save();
 
         } else {
+            if (newReport.treeID) {
+                newReport.treeID = undefined;
+            }
             report = await Report.create({...newReport, images: uploadedImages});
         }
 
@@ -70,7 +73,19 @@ export default class ReportService {
 
             fs.unlinkSync(imageFile.path);
         }
-    
+
+        report.modificationHistory.push({
+            oldData: {
+                reportType: report.reportType,
+                description: report.description,
+                location: report.location,
+                images: report.images,
+                treeID: report.treeID,
+                createdAt: report.updatedAt
+            },
+            updatedAt: new Date(),
+        });
+
         report.images = [...(report.images || []), ...uploadedImages];
         await report.save();
     
@@ -81,24 +96,50 @@ export default class ReportService {
     async updateReport(reportID : string, updateData : IReportInput) {
         const report = await Report.findById(reportID);
         if (!report) {
-            return "Report not found";
+            return {status: 404, message: "Report not found"};
         }
 
-        if(updateData.treeID) {
-            const newTree = await Tree.findById(updateData.treeID);
+        let newTree
+        if (updateData.treeID && (updateData.reportType === "A tree needs care" || ((!updateData.reportType) && report.reportType === "A tree needs care"))) {
+            newTree = await Tree.findById(updateData.treeID);
             if(!newTree) {
-                return "Tree not found";
+                return {status: 404, message: "Tree not found"};
             }
+
             newTree.reportsAboutIt.push(report.id);
             await newTree.save();
 
             const oldTree = await Tree.findById(report.treeID);
             if (oldTree) {
-                let reportIndex = oldTree.reportsAboutIt.findIndex((v) => v === oldTree.id);
+                let reportIndex = oldTree.reportsAboutIt.findIndex((v) => v.toString() === report.id.toString());
                 oldTree.reportsAboutIt.splice(reportIndex, 1);
-                oldTree.save();
+                await oldTree.save();
             }
-            
+
+            updateData.location = report.location;
+
+        } else if (updateData.location && (updateData.reportType === "A place needs tree" || ((!updateData.reportType) && report.reportType === "A place needs tree"))) {
+            updateData.treeID = undefined;
+
+            if(report.treeID) {
+                const oldTree = await Tree.findById(report.treeID);
+                if (oldTree) {
+                    let reportIndex = oldTree.reportsAboutIt.findIndex((v) => v.toString() === report.id.toString());
+                    oldTree.reportsAboutIt.splice(reportIndex, 1);
+                    await oldTree.save();
+                }
+            }
+        } else {
+            updateData.treeID = report.treeID;
+            updateData.location = report.location;
+        }
+
+        if (updateData.images) {
+            updateData.images = report.images
+        }
+
+        if (!(updateData.description || updateData.reportType || updateData.location != report.location || updateData.treeID != report.treeID)) {
+            return {status: 400, message: "No changes made to the report"};
         }
 
         report.modificationHistory.push({
@@ -163,6 +204,18 @@ export default class ReportService {
         if (imageIndex === -1) {
             return "Image not found in report";
         }
+
+        report.modificationHistory.push({
+            oldData: {
+                reportType: report.reportType,
+                description: report.description,
+                location: report.location,
+                images: report.images,
+                treeID: report.treeID,
+                createdAt: report.updatedAt
+            },
+            updatedAt: new Date(),
+        });
 
         report.images.splice(imageIndex, 1);
         await report.save();
