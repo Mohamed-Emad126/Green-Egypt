@@ -34,9 +34,17 @@ const TrashNurserySchema: Schema = new Schema({
         required: [true, 'rate is required'],
         min: [1, 'rate must be at least 1'],
         max: [5, 'rate must not exceed 5']
+    },
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
     }
 
-})
+}, { timestamps: true })
 
 const TrashNurseryModel: Model<INursery> = mongoose.model<INursery>('TrashNursery', TrashNurserySchema);
 export default TrashNurseryModel;

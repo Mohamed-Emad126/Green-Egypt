@@ -29,11 +29,11 @@ const CommentSchema: Schema = new Schema({
     }],
     replies:[{
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'comment'
+        ref: 'Comment'
     }],
     parentCommentID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'comment',
+        ref: 'Comment',
         default: null
     }
 

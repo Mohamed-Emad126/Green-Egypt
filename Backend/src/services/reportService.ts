@@ -6,8 +6,12 @@ import fs from "fs";
 import Tree from "../models/treeModel"
 import mongoose from "mongoose";
 import User from "../models/userModel";
+import CommentService from "./commentService";
+import Comment from "../models/commentModel";
+import Response from "../models/responseModel";
+import trashResponse from "../models/trash/trashResponseModel";
 
-// TODO: Compare the input report with previously created reports (createdReport)
+
 // TODO: Sort reports by the nearest location (getReports)
 
 export default class ReportService {
@@ -159,20 +163,41 @@ export default class ReportService {
         return true;
     }
 
-    async deleteReport(reportID : string) {
+    async deleteReportAndContent(reportID : string, deletedBy : {role : string, id : string}) {
         const report = await Report.findById(reportID);
         if (!report){
             return false;
         }
+
+        if(report.comments.length > 0) {
+            const commentService = new CommentService();
+            const reportComments = await Comment.find({ reportID });
+            await Promise.all(reportComments.map(async (comment) => {
+                await commentService.deleteCommentAndReplies(comment.id, deletedBy);
+            }));
+            
+        }
+
+        if (report.responses.length > 0) {
+            const reportResponses = await Response.find({ reportID });
+            const toTrash = reportResponses.map((response) => {
+                return new trashResponse({
+                    ...response.toObject(),
+                    deletedBy: { role: deletedBy.role, hisID: new mongoose.Types.ObjectId(deletedBy.id) }
+                });
+            });
+            await trashResponse.insertMany(toTrash);
+            await Response.deleteMany({ reportID });
+        }
         
-        const toTrash = new trashReport({...report.toObject()});
+        const toTrash = new trashReport({...report.toObject(), deletedBy : {role : deletedBy.role, hisID : new mongoose.Types.ObjectId(deletedBy.id)}});
         await toTrash.save();
 
         await report.deleteOne();
         return true;
     }
 
-    async toggleUpvote(reportID: string, userID: mongoose.Schema.Types.ObjectId) {
+    async toggleUpvote(reportID: string, userID: mongoose.Types.ObjectId) {
         const report = await Report.findById(reportID);
         if (!report) {
             return null;
@@ -258,7 +283,7 @@ export default class ReportService {
         return { message: "Volunteering registered successfully", status: 200 };
     }
 
-    async saveReport(reportID: string, userID: mongoose.Schema.Types.ObjectId) {
+    async saveReport(reportID: string, userID: mongoose.Types.ObjectId) {
         const report = Report.findById(reportID);
         if (!report) {
             return false;

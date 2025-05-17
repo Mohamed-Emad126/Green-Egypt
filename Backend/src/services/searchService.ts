@@ -12,7 +12,7 @@ export default class SearchService {
             Guide.find(
                 {
                     "$or":[
-                        {articletitle: {$regex: key, $options: 'i'}}, 
+                        {articleTitle: {$regex: key, $options: 'i'}}, 
                         {content: {$regex: key, $options: 'i'}}
                     ]
                 }

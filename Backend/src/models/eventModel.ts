@@ -11,15 +11,15 @@ const EventSchema: Schema = new mongoose.Schema({
         required: true
     },
     location: {
-        latitude: {
-            type: Number,
+        type: {
+            type: String,
+            enum: ['Point'],
             required: true,
-            default: 0
         },
-        longitude:{
-            type: Number,
+        coordinates: {
+            type: [Number],
             required: true,
-            default: 0
+            length: 2
         }
     },
     description: {
@@ -27,8 +27,8 @@ const EventSchema: Schema = new mongoose.Schema({
         required: true
     },
     eventImage: {
-            type: String,
-            default: '../uploads/not-found-image.png'
+        type: String,
+        default: '../uploads/not-found-image.png'
     },
     eventStatus: {
         type: String,
@@ -44,7 +44,7 @@ const EventSchema: Schema = new mongoose.Schema({
         type: [String],
         default: [] 
     }
-});
+}, { timestamps: true });
 
 const EventModel: Model<IEvent> = mongoose.model<IEvent>('Event', EventSchema);
 

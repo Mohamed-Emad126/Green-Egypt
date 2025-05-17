@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface INursery extends Document {
     nurseryName: string;
@@ -9,6 +9,8 @@ export interface INursery extends Document {
         coordinates: [number, number]
     };
     rate: number;
+    deletedAt?: Date;
+    deletedBy?:  mongoose.Types.ObjectId;
 }
 
 export interface INurseryInput {

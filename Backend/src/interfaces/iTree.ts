@@ -10,11 +10,16 @@ export interface ITree extends Document {
     problem?: string;
     image: string;
     deletionReason?: 'Died'| 'Cut Down'| 'False Record';
+    deletedAt?: Date;
+    deletedBy?: {
+        role: string;
+        hisID: mongoose.Types.ObjectId;
+    };
     plantedRecently: boolean,
     byUser: mongoose.Schema.Types.ObjectId,
     createdAt?: Date,
     updatedAt?: Date,
-    reportsAboutIt: mongoose.Schema.Types.ObjectId[]
+    reportsAboutIt: mongoose.Schema.Types.ObjectId[];
 }
 
 export interface ITreeInput {

@@ -9,7 +9,7 @@ export const getArticleValidator = [
 ];
 
 export const createArticleValidator = [
-    check('articletitle').notEmpty().withMessage('Article Title is required'),
+    check('articleTitle').notEmpty().withMessage('Article Title is required'),
 
     check('content').notEmpty().withMessage('content is required'),
 
