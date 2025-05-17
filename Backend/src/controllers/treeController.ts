@@ -5,7 +5,6 @@ import ApiError from "../utils/apiError";
 import axios from 'axios';
 
 
-
 export default class TreeController {
 
     constructor(private treeService: TreeService) {
@@ -104,7 +103,8 @@ export default class TreeController {
      * @access    Public
     */
     deleteTree = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const deletedTree = await this.treeService.deleteTree(req.params.id, req.body.deletionReason);
+        const { id, role} : {id: string, role: string} = req.body.user;
+        const deletedTree = await this.treeService.deleteTree(req.params.id, {role, id}, req.body.deletionReason);
         if (deletedTree) {
             res.json({ message: "Tree deleted successfully"});
         } else {

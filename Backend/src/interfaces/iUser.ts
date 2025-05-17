@@ -20,8 +20,13 @@ export interface IUser extends Document {
         type?: string;
         coordinates?: [number, number]
     };
-    createdAt?: Date
-    updatedAt?: Date
+    createdAt?: Date;
+    updatedAt?: Date;
+    deletedAt?: Date;
+    deletedBy?: {
+        role: string;
+        hisID: mongoose.Types.ObjectId;
+    };
     isVerified: boolean;
     savedReports: mongoose.Types.ObjectId[];
     generateToken(expiration?: string): Promise<string>;

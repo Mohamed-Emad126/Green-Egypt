@@ -22,7 +22,7 @@ const TrashCouponSchema: Schema = new mongoose.Schema({
     },
     usedCodes: [{
         user: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: mongoose.Types.ObjectId,
             ref: 'User'
         },
         code: String,
@@ -43,8 +43,16 @@ const TrashCouponSchema: Schema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : 'User',
         required : true
+    },
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
     }
-});
+}, { timestamps: true });
 
 const TrashCouponModel: Model<ICoupon> = mongoose.model<ICoupon>('TrashCoupon', TrashCouponSchema);
 export default TrashCouponModel;

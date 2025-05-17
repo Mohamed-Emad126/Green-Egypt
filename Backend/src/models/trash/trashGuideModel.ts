@@ -2,20 +2,25 @@ import mongoose, { Schema, Model } from "mongoose";
 import { IGuide } from "../../interfaces/iGuide";
 
 const TrashGuideSchema: Schema = new Schema({
-    articletitle: {
+    articleTitle: {
         type: String,
     },
     content: {
         type: String,
     },
     articlePic:  {
-            type: String, 
+        type: String, 
     },
-    createdAt:{
+    deletedAt: {
         type: Date,
-    } 
-})
+        default: Date.now
+    },
+    deletedBy: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
+    }
+}, { timestamps: true });
 
 const TrashGuideModel: Model<IGuide> = 
-    mongoose.models.trashGuideModel || mongoose.model<IGuide>('TrashGuideModel', TrashGuideSchema);
+    mongoose.models.trashGuideModel || mongoose.model<IGuide>('TrashGuide', TrashGuideSchema);
 export default TrashGuideModel;

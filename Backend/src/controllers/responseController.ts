@@ -72,7 +72,8 @@ export default class ResponseController {
      * @access    Private
     */
     deleteResponse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const result = await this.ResponseService.deleteResponse(req.params.id);
+        const { id, role } : {id: string, role: string} = req.body.user;
+        const result = await this.ResponseService.deleteResponse(req.params.id, {role, id});
         if (result.status === 200) {
             res.json({ message: result.message });
         } else {

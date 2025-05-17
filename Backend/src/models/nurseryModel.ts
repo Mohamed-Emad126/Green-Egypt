@@ -34,7 +34,7 @@ const NurserySchema: Schema = new Schema({
         min: [1, 'rate must be at least 1'],
         max: [5, 'rate must not exceed 5']
     }
-});
+}, { timestamps: true });
 const NurseryModel: Model<INursery> = mongoose.model<INursery>('Nursery', NurserySchema);
 export default NurseryModel;
 

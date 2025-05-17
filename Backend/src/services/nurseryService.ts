@@ -3,6 +3,7 @@ import trashNursery from "../models/trash/trashNurseryModel";
 import uploadToCloud from "../config/cloudinary";
 import { INurseryInput } from "../interfaces/iNursery";
 import fs from "fs";
+import mongoose from "mongoose";
 
 export default class NurseryService {
     async getNurseries(page : number, limit : number) {
@@ -31,13 +32,13 @@ export default class NurseryService {
             {new : true, runValidators : true})
     }
 
-    async deleteNursery(nurseryID : string) {
-        const nursery = await Nursery.findByIdAndUpdate(nurseryID, {new : true, runValidators : true});
+    async deleteNursery(nurseryID : string, deletedBy : string) {
+        const nursery = await Nursery.findById(nurseryID);
         if (!nursery){
             return false;
         }
         
-        const toTrash = new trashNursery({...nursery.toObject()});
+        const toTrash = new trashNursery({...nursery.toObject(), deletedBy : new mongoose.Types.ObjectId(deletedBy)});
         await toTrash.save();
 
         await nursery.deleteOne();

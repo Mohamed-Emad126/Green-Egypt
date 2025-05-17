@@ -3,8 +3,8 @@ import Tree from "../models/treeModel";
 import trashTree from "../models/trash/trashTreeModel";
 import uploadToCloud from "../config/cloudinary";
 import fs from "fs";
+import mongoose from "mongoose";
 
-// TODO: Compare the input tree with previously located trees (locatedTree)
 
 export default class TreesService {
     async getTrees(filters : any) {
@@ -44,13 +44,17 @@ export default class TreesService {
         return true;
     }
 
-    async deleteTree(treeID : string , reason : TDeleteReason) {
+    async deleteTree(treeID : string , deletedBy : {role : string, id : string}, reason : TDeleteReason) {
         const tree = await Tree.findById(treeID);
         if (!tree){
             return false;
         }
         
-        const toTrash = new trashTree({...tree.toObject(), deletionReason : reason});
+        const toTrash = new trashTree({
+            ...tree.toObject(), 
+            deletionReason : reason, 
+            deletedBy : {role : deletedBy.role, hisID : new mongoose.Types.ObjectId(deletedBy.id)}
+        });
         await toTrash.save();
 
         await tree.deleteOne();
