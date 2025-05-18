@@ -66,7 +66,7 @@ export default class CouponService {
         };
     }
 
-    async createNewCoupons(newCoupons : Partial<ICoupon>) {
+    async createNewCoupons(newCoupons : ICouponInput) {
         const brand = await Partner.findById(newCoupons.brand);
         if (!brand) {
             return false;
@@ -103,13 +103,13 @@ export default class CouponService {
         return { status : 200, message : "Coupon updated successfully", coupon: coupon };
     }
 
-    async deleteCoupon(couponID : string) {
+    async deleteCoupon(couponID : string, deletedBy : string) {
         const coupon = await Coupon.findById(couponID);
         if (!coupon){
             return false;
         }
         
-        const toTrash = new trashCoupon({...coupon.toObject()});
+        const toTrash = new trashCoupon({...coupon.toObject(), deletedBy : new mongoose.Types.ObjectId(deletedBy)});
         await toTrash.save();
 
         await coupon.deleteOne();

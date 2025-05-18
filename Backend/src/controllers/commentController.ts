@@ -12,7 +12,7 @@ export default class CommentController {
         this.getCommentById = this.getCommentById.bind(this);
         this.createComment = this.createComment.bind(this);
         this.updateComment = this.updateComment.bind(this);
-        this.deleteComment = this.deleteComment.bind(this);
+        this.deleteCommentAndReplies = this.deleteCommentAndReplies.bind(this);
         this.getCommentReplies = this.getCommentReplies.bind(this);
     }
 
@@ -84,8 +84,9 @@ export default class CommentController {
      * @param     {string} id - Comment id
      * @access    Private
     */
-    deleteComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const commentAfterDelete = await this.CommentService.deleteComment(req.params.id);
+    deleteCommentAndReplies = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const { id, role } : {id: string, role: string} = req.body.user;
+        const commentAfterDelete = await this.CommentService.deleteCommentAndReplies(req.params.id, {role, id});
         if (commentAfterDelete) {
             res.json({ message: "Comment deleted successfully"});
         } else {

@@ -3,6 +3,7 @@ import trashGuide from "../models/trash/trashGuideModel";
 import uploadToCloud from "../config/cloudinary";
 import { IGuideInput } from "../interfaces/iGuide";
 import fs from "fs";
+import mongoose from "mongoose";
 
 export default class GuideService {
     async getArticles(page : number, limit : number) {
@@ -16,7 +17,7 @@ export default class GuideService {
     }
     async createArticle(articleData : IGuideInput) {
         const article = new Guide({
-            articletitle: articleData.articletitle,
+            articleTitle: articleData.articleTitle,
             content: articleData.content,
             articlePic: articleData.articlePic,
             createdAt:Date.now()
@@ -28,17 +29,17 @@ export default class GuideService {
     async updateArticle(articleID : string, articleData : IGuideInput) {
         return await Guide.findByIdAndUpdate(
             articleID, 
-            {articletitle: articleData?.articletitle, content: articleData?.content, articlePic: articleData?.articlePic,createdAt:Date.now()},
+            {articleTitle: articleData?.articleTitle, content: articleData?.content, articlePic: articleData?.articlePic,createdAt:Date.now()},
             {new : true, runValidators : true})
     }
 
-    async deleteArticle(articleID : string) {
-        const article = await Guide.findByIdAndUpdate(articleID, {new : true, runValidators : true});
+    async deleteArticle(articleID : string, deletedBy : string) {
+        const article = await Guide.findById(articleID);
         if (!article){
             return false;
         }
         
-        const toTrash = new trashGuide({...article.toObject()});
+        const toTrash = new trashGuide({...article.toObject(), deletedBy : new mongoose.Types.ObjectId(deletedBy)});
         await toTrash.save();
 
         await article.deleteOne();

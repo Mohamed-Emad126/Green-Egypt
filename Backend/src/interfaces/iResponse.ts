@@ -17,4 +17,9 @@ export interface IResponse extends Document {
     } | null;
     updatedAt?: Date;
     createdAt?: Date;
+    deletedAt?: Date;
+    deletedBy?: {
+        role: string;
+        hisID: mongoose.Types.ObjectId;
+    };
 }

@@ -27,11 +27,6 @@ const trashTreeSchema: Schema = new Schema({
         type: String,
     },
     image: String,
-    deletionReason: {
-        type: String,
-        enum: ['Died', 'Cut down', 'False Record'],
-        required: true
-    },
     plantedRecently: {
         type: Boolean,
         required: true,
@@ -45,8 +40,26 @@ const trashTreeSchema: Schema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Report"
     }],
-
-});
+    deletionReason: {
+        type: String,
+        enum: ['Died', 'Cut down', 'False Record'],
+        required: true
+    },
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        role: {
+            type: String,
+            enum: ['user', 'admin'],
+        },
+        hisID:{
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
+    }
+}, { timestamps: true });
 
 const trashTreeModel: Model<ITree> = mongoose.model<ITree>('TrashTree', trashTreeSchema);
 export default trashTreeModel;

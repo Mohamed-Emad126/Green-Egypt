@@ -12,9 +12,11 @@ export interface ICoupon extends Document {
         redeemedAt: Date;
     }[];
     //redeemed: boolean;
-    addByAdmin: mongoose.Schema.Types.ObjectId;
-    createdAt?: Date
-    updatedAt?: Date
+    addByAdmin: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+    deletedAt?: Date;
+    deletedBy?:  mongoose.Types.ObjectId;
 }
 
 export interface ICouponInput {
@@ -23,5 +25,5 @@ export interface ICouponInput {
     cost?: number;
     brand?: mongoose.Types.ObjectId;
     expiryDate?: Date;
-    addByAdmin?: mongoose.Schema.Types.ObjectId;
+    addByAdmin?: mongoose.Types.ObjectId;
 }

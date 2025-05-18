@@ -12,7 +12,7 @@ export default class ReportController {
         this.getReportById = this.getReportById.bind(this);
         this.createNewReport = this.createNewReport.bind(this);
         this.updateReport = this.updateReport.bind(this);
-        this.deleteReport = this.deleteReport.bind(this);
+        this.deleteReportAndContent = this.deleteReportAndContent.bind(this);
         this.toggleUpvote = this.toggleUpvote.bind(this);
         this.deleteReportImage = this.deleteReportImage.bind(this);
         this.uploadReportImages = this.uploadReportImages.bind(this);
@@ -111,8 +111,9 @@ export default class ReportController {
      * @route     DELETE /api/reports/:id
      * @access    Private
     */
-    deleteReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const deletedReport = await this.reportService.deleteReport(req.params.id);
+    deleteReportAndContent = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const { id, role } : {id: string, role: string} = req.body.user;
+        const deletedReport = await this.reportService.deleteReportAndContent(req.params.id, {role, id});
         if (deletedReport) {
             res.json({ message: "Report deleted successfully"});
         } else {

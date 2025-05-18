@@ -3,8 +3,6 @@ import { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
 
-
-
 export default class UserController {
 
     constructor(private userService: UserService) {
@@ -89,7 +87,9 @@ export default class UserController {
      * @access    Private
     */
     deleteUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const deletedUser = await this.userService.deleteUser(req.params.id);
+        const role = req.body.user.role;
+        const id = req.body.user.id;
+        const deletedUser = await this.userService.deleteUser(req.params.id, {role, id});
         if (deletedUser) {
             res.json({ message: "User deleted successfully"});
         } else {

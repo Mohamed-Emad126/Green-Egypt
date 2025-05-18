@@ -1,14 +1,17 @@
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface IGuide extends Document {
-    articletitle: string;
+    articleTitle: string;
     content: string;
     articlePic:string;
     createdAt: Date;
+    updatedAt: Date;
+    deletedAt?: Date;
+    deletedBy?:  mongoose.Types.ObjectId;
 }
 
 export interface IGuideInput {
-    articletitle: string;
+    articleTitle: string;
     content: string;
     articlePic?: string;
     createdAt: Date;

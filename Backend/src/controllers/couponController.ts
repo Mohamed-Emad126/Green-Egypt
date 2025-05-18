@@ -84,7 +84,7 @@ export default class CouponController {
     */
     createNewCoupons = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { codes, value, brand, cost, expiryDate } : ICouponInput  = req.body;
-        const addByAdmin = req.body.user.id
+        const addByAdmin = req.body.user.id;
         
         const result = await this.CouponService.createNewCoupons({ codes, value, brand, cost, expiryDate, addByAdmin });
 
@@ -113,10 +113,11 @@ export default class CouponController {
     /**
      * @desc      Delete Coupon
      * @route     DELETE /api/Coupons/:id
+     * @param     {string} id - Coupon id
      * @access    Private(Admin)
     */
     deleteCoupon = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const deletedCoupon = await this.CouponService.deleteCoupon(req.params.id);
+        const deletedCoupon = await this.CouponService.deleteCoupon(req.params.id, req.body.user.id);
         if (deletedCoupon) {
             res.json({ message: "Coupon deleted successfully"});
         } else {
