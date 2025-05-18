@@ -3,6 +3,7 @@ import trashEvent from "../models/trash/trashEventModel";
 import uploadToCloud from "../config/cloudinary";
 import { IEventInput } from "../interfaces/iEvent";
 import fs from "fs";
+import mongoose from "mongoose";
 
 export default class EventService {
     async getEvents(page : number, limit : number, filters : any) {
@@ -35,13 +36,13 @@ export default class EventService {
 
     }
 
-    async deleteEvent(eventID : string) {
+    async deleteEvent(eventID : string, deletedBy : string) {
         const event = await Event.findByIdAndUpdate(eventID, {eventStatus : 'cancelled'},{new : true, runValidators : true});
         if (!event){
             return false;
         }
         
-        const toTrash = new trashEvent({...event.toObject()});
+        const toTrash = new trashEvent({...event.toObject(), deletedBy : new mongoose.Types.ObjectId(deletedBy)});
         await toTrash.save();
 
         await event.deleteOne();

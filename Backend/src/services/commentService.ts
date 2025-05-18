@@ -2,6 +2,7 @@ import { IComment } from "../interfaces/iComment";
 import Comment from "../models/commentModel";
 import trashComment from "../models/trash/trashCommentModel";
 import Report from "../models/reportModel";
+import mongoose from "mongoose";
 
 export default class CommentService {
 
@@ -68,13 +69,29 @@ export default class CommentService {
         return true;
     }
 
-    async deleteComment(commentID : string) {
+    async deleteCommentAndReplies(commentID : string, deletedBy : {role : string, id : string}) {
         const comment= await Comment.findById(commentID);
         if (!comment){
             return false;
         }
+        console.log(deletedBy);
+
+        const deletedByID = new mongoose.Types.ObjectId(deletedBy.id);
+        console.log(deletedByID);
+
+        const replies = await Comment.find({ parentCommentID: commentID });
+        if (replies.length > 0) {
+            const toTrash = replies.map((reply) => {
+                return new trashComment({
+                    ...reply.toObject(),
+                    deletedBy: { role: deletedBy.role, hisID: deletedByID }
+                });
+            });
+            await trashComment.insertMany(toTrash);
+            await Comment.deleteMany({ parentCommentID: commentID });
+        }
         
-        const toTrash = new trashComment({...comment.toObject()});
+        const toTrash = new trashComment({...comment.toObject(), deletedBy : {role : deletedBy.role, hisID : deletedByID}});
         await toTrash.save();
 
         await comment.deleteOne();

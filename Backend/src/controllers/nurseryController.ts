@@ -77,7 +77,7 @@ export default class NurseryController {
      */
 
     deleteNursery = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const nursery = await this.nurseryService.deleteNursery(req.params.id);
+        const nursery = await this.nurseryService.deleteNursery(req.params.id, req.body.user.id);
         if (nursery) {
             res.json({ message: 'Nursery deleted successfully' });
         } else {
@@ -88,7 +88,7 @@ export default class NurseryController {
     /**
      * @desc      Upload nursery picture
      * @route     POST /api/nursery/:id/picture
-     * @access    Puiblic
+     * @access    Public
      */
     uploadNurseryPicture = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const result = await this.nurseryService.uploadNurseryPicture(req.params.id, req.file);

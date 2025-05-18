@@ -1,11 +1,18 @@
 import { IUpdateInput, TUserActivity } from "../interfaces/iUser";
 import User from "../models/userModel";
-import Coupon from "../models/couponModel";
+import mongoose from "mongoose";
 import trashUser from "../models/trash/trashUserModel";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import uploadToCloud from "../config/cloudinary";
 import Tree from "../models/treeModel";
+import Report from "../models/reportModel";
+import Comment from "../models/commentModel";
+import Response from "../models/responseModel";
+import CommentService from "./commentService";
+import ReportService from "./reportService";
+import trashResponse from "../models/trash/trashResponseModel";
+
 
 
 
@@ -31,17 +38,65 @@ export default class UserService {
         return await User.findByIdAndUpdate(userID, {password : await bcrypt.hash(newPassword, 10), passwordChangedAt : Date.now()}, {new : true, runValidators : true});
     }
 
-    async deleteUser(userID : string) {
+    async deleteUser(userID : string, deletedBy : {role : string, id: string}) {
         const user = await User.findByIdAndUpdate(userID, {isActive : false}, {new : true, runValidators : true});
         if (!user){
             return false;
         }
+
+        await this.deleteUserRelatedData(userID, deletedBy);
         
-        const toTrash = new trashUser({...user.toObject()});
+        const toTrash = new trashUser({...user.toObject(), deletedBy : {role : deletedBy.role, hisID : new mongoose.Types.ObjectId(deletedBy.id)}});
         await toTrash.save();
 
         await user.deleteOne();
         return true;
+    }
+
+
+    private async deleteUserRelatedData(userID: string, deletedBy: {role: string, id: string}) {
+
+        const userReports = await Report.find({ createdBy: userID });
+        const userReportIds = userReports.map(r => r._id);
+
+        const reportService = new ReportService();
+        await Promise.all(userReports.map(async (report) => {
+            await reportService.deleteReportAndContent(report.id, deletedBy);
+        }));
+            
+        
+        const userComments = await Comment.find({ 
+            createdBy: userID,
+            reportID: { $nin: userReportIds }
+        });
+        
+        const commentService = new CommentService();
+        await Promise.all(userComments.map(async (comment) => {
+            await commentService.deleteCommentAndReplies(comment.id, deletedBy);
+        }));
+
+        const userResponses = await Response.find({
+            respondentID: userID,
+            isVerified: false,
+            reportID: { $nin: userReportIds }
+        });
+
+        if (userResponses.length > 0) {
+
+            const toTrash = await Promise.all(userResponses.map(async (response) => {
+                return new trashResponse({
+                    ...response.toObject(),
+                    deletedBy: { role: deletedBy.role, hisID: new mongoose.Types.ObjectId(deletedBy.id) }
+                });
+            }));
+            await trashResponse.insertMany(toTrash);
+
+            await Response.deleteMany({
+                respondentID: userID,
+                isVerified: false,
+                reportID: { $nin: userReportIds }
+            });
+        }
     }
 
     async uploadUserPicture(userID: string, imageFile: any) {

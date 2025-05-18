@@ -9,7 +9,14 @@ export default class EventController {
 
     constructor(private eventService: EventService) {
         this.getEvents = this.getEvents.bind(this);
-        
+        this.getEventById = this.getEventById.bind(this);
+        this.createEvent = this.createEvent.bind(this);
+        this.updateEvent = this.updateEvent.bind(this);
+        this.deleteEvent = this.deleteEvent.bind(this);
+        this.uploadEventPicture = this.uploadEventPicture.bind(this);
+        this.addInterested = this.addInterested.bind(this);
+        this.removeInterested = this.removeInterested.bind(this);
+        this.countInterested = this.countInterested.bind(this);
     }
 
     /**
@@ -79,7 +86,7 @@ export default class EventController {
      */
 
     deleteEvent = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const event = await this.eventService.deleteEvent(req.params.id);
+        const event = await this.eventService.deleteEvent(req.params.id, req.body.user.id);
         if (event) {
             res.json({ message: 'Event deleted successfully' });
         } else {
@@ -90,7 +97,7 @@ export default class EventController {
     /**
      * @desc      Upload event picture
      * @route     POST /api/events/:id/picture
-     * @access    Puiblic
+     * @access    Public
      */
     uploadEventPicture = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const result = await this.eventService.uploadEventPicture(req.params.id, req.file);

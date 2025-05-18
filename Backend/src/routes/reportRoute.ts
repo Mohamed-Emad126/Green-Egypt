@@ -29,7 +29,7 @@ const {
         updateReport,
         uploadReportImages,
         deleteReportImage,
-        deleteReport,
+        deleteReportAndContent,
         toggleUpvote,
         registerVolunteering,
         saveReport
@@ -48,7 +48,7 @@ reportRouter.route('/')
 reportRouter.route('/:id')
         .get(verifyToken, getReportValidator, getReportById)
         .patch(verifyReporterMiddleware, updateReportValidator, updateReport)
-        .delete(verifyReporterMiddleware, deleteReportValidator, deleteReport)
+        .delete(verifyReporterMiddleware, deleteReportValidator, deleteReportAndContent)
         .put(verifyToken,registerVolunteeringValidator, registerVolunteering);
 
 reportRouter.route('/:id/image')

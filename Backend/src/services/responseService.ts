@@ -65,7 +65,7 @@ export default class ResponseService {
         return await Response.findById(ResponseID).populate("respondentID").populate("reportID");
     }
 
-    async deleteResponse(ResponseID : string) {
+    async deleteResponse(ResponseID : string, deletedBy : {role : string, id : string}) {
         const response = await Response.findById(ResponseID);
 
         if (!response){
@@ -74,7 +74,7 @@ export default class ResponseService {
             return {status: 400, message: 'Cannot delete a verified response'};
         }
         
-        const toTrash = new trashResponse({...response.toObject()});
+        const toTrash = new trashResponse({...response.toObject(), deletedBy : {role : deletedBy.role, hisID : new mongoose.Types.ObjectId(deletedBy.id)}});
         await toTrash.save();
 
         const report = await Report.findById(response.reportID);

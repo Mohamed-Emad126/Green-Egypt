@@ -7,12 +7,12 @@ import { getCommentByIdValidator, updateCommentValidator, deleteCommentValidator
 const commentRouter = Router();
 
 const commentService = new CommentService();
-const { getCommentById , updateComment, deleteComment, getCommentReplies} = new CommentController(commentService);
+const { getCommentById , updateComment, deleteCommentAndReplies, getCommentReplies} = new CommentController(commentService);
 
 commentRouter.route('/:id')
     .get(verifyToken, getCommentByIdValidator, getCommentById)
     .patch( verifyCommenterMiddleware, updateCommentValidator, updateComment)
-    .delete(verifyCommenterMiddleware, deleteCommentValidator, deleteComment);
+    .delete(verifyCommenterMiddleware, deleteCommentValidator, deleteCommentAndReplies);
 
 commentRouter.route('/:id/replies')
     .get(verifyToken, getCommentRepliesValidator, getCommentReplies);

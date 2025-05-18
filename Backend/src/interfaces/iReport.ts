@@ -11,7 +11,7 @@ export interface IReport extends Document {
     createdBy: mongoose.Schema.Types.ObjectId;
     treeID?: mongoose.Types.ObjectId;
     upVotes: number;
-    upVoters: mongoose.Schema.Types.ObjectId[];
+    upVoters: mongoose.Types.ObjectId[];
     status : 'Pending' | 'In Progress' | 'Resolved' | 'Awaiting Verification';
     modificationHistory: {
         oldData: Partial<IReport>;
@@ -24,7 +24,12 @@ export interface IReport extends Document {
     responses: mongoose.Schema.Types.ObjectId[];
     comments: mongoose.Schema.Types.ObjectId[];
     createdAt?: Date
-    updatedAt?: Date
+    updatedAt?: Date,
+    deletedAt?: Date;
+    deletedBy?: {
+        role: string;
+        hisID: mongoose.Types.ObjectId;
+    };
 }
 
 export interface IReportInput {
