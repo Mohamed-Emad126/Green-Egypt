@@ -38,11 +38,13 @@ export default class CommentController {
      * @access    Public
     */
     getCommentsByReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const comments = await this.CommentService.getCommentsByReport(req.params.id);
+        const page: number = req.query.page ? +req.query.page : 1;
+        const limit: number = req.query.limit ? +req.query.limit : 6;
+        const comments = await this.CommentService.getCommentsByReport(page, limit, req.params.id);
         if(comments === false) {
             return next(new ApiError("Report not found", 404));
         } else {
-            res.json({ comments });
+            res.json({ length: comments.length, page: page, comments: comments });
         } 
         
     });

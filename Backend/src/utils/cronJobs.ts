@@ -6,6 +6,7 @@ import trashCoupon from "../models/trash/trashCouponModel";
 import Token from "../models/tokenModel";
 import Response from "../models/responseModel";
 import Report from "../models/reportModel";
+import Tree from "../models/treeModel";
 
 
 cron.schedule("0 0 * * *", async () => {
@@ -40,7 +41,7 @@ cron.schedule("0 0 * * *", async () => {
 });
 
 
-cron.schedule("0 5 * * *", async () => {
+cron.schedule("5 0 * * *", async () => {
     try {
         console.log("Starting expired coupons cleanup task...");
         const now = new Date();
@@ -83,12 +84,9 @@ cron.schedule("15 0 * * *", async () => {
         const now = new Date();
         const threeDaysAgo = new Date(now);
         threeDaysAgo.setDate(now.getDate() - 3);
-        threeDaysAgo.setHours(0, 0, 0, 0);
-        const endOfThreeDaysAgo = new Date(threeDaysAgo);
-        endOfThreeDaysAgo.setHours(23, 59, 59, 999);
         
         const reportsWithExpiredVolunteering = await Report.find({
-            "volunteering.at": { $gte: threeDaysAgo, $lte: endOfThreeDaysAgo }
+            "volunteering.at": { $lte: threeDaysAgo }
         });
 
         if (reportsWithExpiredVolunteering.length > 0) {
@@ -101,7 +99,7 @@ cron.schedule("15 0 * * *", async () => {
             );
         }
         
-        console.log("Expired volunteering cleanup task completed.");
+        console.log(`${reportsWithExpiredVolunteering.length} Expired volunteering cleanup task completed`);
     } catch (error) {
         console.error("Error in expired volunteering cleanup task:", error);
     }
@@ -137,8 +135,18 @@ cron.schedule("20 0 * * *", async () => {
                             };
 
                             report!.status = "Resolved";
-                            report!.upVotes = Math.floor(report!.upVotes * 0.8);
                             await report!.save();
+
+                            if(report!.reportType === "A tree needs care") {
+                                await Tree.findByIdAndUpdate(
+                                    report!.treeID,
+                                    {
+                                        $pull: { 'reportsAboutIt.unresolved': report!._id },
+                                        $push: { 'reportsAboutIt.resolved': report!._id }
+                                    },
+                                    { new: true }
+                                );
+                            }
                         } else {
                             response.note = {
                                 message: "Response has been accepted but the report is already resolved",

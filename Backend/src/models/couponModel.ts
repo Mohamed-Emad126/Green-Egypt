@@ -29,7 +29,8 @@ const CouponSchema: Schema = new mongoose.Schema({
         redeemedAt: {
             type: Date,
             default: Date.now
-        }
+        },
+        _id: false
     }],
     expiryDate: {
         type: Date,

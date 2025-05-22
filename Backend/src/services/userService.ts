@@ -186,8 +186,7 @@ export default class UserService {
     
         await user.save();
         return {
-            message: `Points added successfully, current points: ${user.points}, keep going to earn coupons!`, 
-            coupon: null
+            message: `Points added successfully, current points: ${user.points}, keep going to earn coupons!`
         };
     }
 

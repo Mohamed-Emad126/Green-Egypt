@@ -7,6 +7,7 @@ export interface IEvent extends Document {
         type: string;
         coordinates: [number, number];
     };
+    city: string;
     description: string;
     eventImage: string;
     eventStatus: string;
@@ -20,8 +21,14 @@ export interface IEventInput {
     eventName: string;
     eventDate: Date;
     location: string;
+    city: string;
     description: string;
     eventImage?: string;
     eventStatus: string;
     organizedWithPartnerID: mongoose.Types.ObjectId;
+}
+
+export interface IEventFilter {
+    location?: string;
+    timeFilter?: "thisWeek" | "nextWeek" | "thisMonth";
 }

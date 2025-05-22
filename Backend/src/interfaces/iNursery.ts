@@ -14,7 +14,12 @@ export interface INursery extends Document {
 }
 
 export interface INurseryInput {
-    nurseryName: string;
-    nurseryPic:string;
-    address: string;
+    nurseryName?: string;
+    nurseryPic?:string;
+    address?: string;
+    location?: {
+        type: string;
+        coordinates: [number, number]
+    };
+    rate?: number;
 }

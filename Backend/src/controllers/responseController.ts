@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, response } from "express";
 import asyncHandler from "express-async-handler";
 import ResponseService from "../services/responseService";
 import ApiError from "../utils/apiError";
-
+import axios from "axios";
 
 
 export default class ResponseController {
@@ -14,6 +14,9 @@ export default class ResponseController {
         this.deleteResponse = this.deleteResponse.bind(this);
         this.voteResponse = this.voteResponse.bind(this);
         this.analysisResponse = this.analysisResponse.bind(this);
+        this.verifyResponse = this.verifyResponse.bind(this);
+        this.addResponseImages = this.addResponseImages.bind(this);
+        this.deleteResponseImage = this.deleteResponseImage.bind(this);
     }
 
     /**
@@ -23,7 +26,7 @@ export default class ResponseController {
      * @access    Public
     */
     createResponse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const Response = await this.ResponseService.createResponse(req.params.id, req.body.userID, req.files as Express.Multer.File[]);
+        const Response = await this.ResponseService.createResponse(req.params.id, req.body.user.id, req.files as Express.Multer.File[]);
 
         if (Response === 404) {
             return next(new ApiError("Report not found", 404));
@@ -41,11 +44,13 @@ export default class ResponseController {
      * @access    Public
     */
     getReportResponses = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const responses = await this.ResponseService.getReportResponses(req.params.id);
+        const page: number = req.query.page ? +req.query.page : 1;
+        const limit: number = req.query.limit ? +req.query.limit : 6;
+        const responses = await this.ResponseService.getReportResponses(page, limit, req.params.id);
         if(responses === false) {
             return next(new ApiError("Report not found", 404));
         } else {
-            res.json({ responses });
+            res.json({length: responses.length, page: page, responses: responses});
         }
         
     });
@@ -88,13 +93,43 @@ export default class ResponseController {
      * @access    Public
     */
     voteResponse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const result = await this.ResponseService.voteResponse(req.params.id, req.body.userID, req.body.vote);
-        if (result) {
-            res.json({ message: result});
+        const result = await this.ResponseService.voteResponse(req.params.id, req.body.user.id, req.body.vote);
+        if (result.status === 200) {
+            res.json({ message: result.message});
         } else {
-            return next(new ApiError('Response not found', 404));
+            return next(new ApiError(result.message, result.status));
         }
     });
+
+    /**
+     * @desc      add new image/s to response
+     * @route     put /api/Response/:id/images
+     * @param     {string} id - Response id
+     * @access    Public
+    */
+    addResponseImages = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.ResponseService.addResponseImages(req.params.id, req.files as Express.Multer.File[]);
+        if (result.status === 200) {
+            res.json({ message: result.message });
+        } else {
+            return next(new ApiError(result.message, result.status));
+        }
+    });
+
+    /**
+     * @desc      remove image from response
+     * @route     put /api/Response/:id/images
+     * @param     {string} id - Response id
+     * @access    Public
+    */
+    deleteResponseImage = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const result = await this.ResponseService.deleteResponseImage(req.params.id, req.body.imageURL);
+        if (result.status === 200) {
+            res.json({ message: result.message });
+        } else {
+            return next(new ApiError(result.message, result.status));
+        }
+    })
 
     /**
      * @desc      Analysis response
@@ -105,8 +140,15 @@ export default class ResponseController {
     analysisResponse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const responseID = req.params.id;
         const result = await this.ResponseService.analysisResponse(responseID);
-        if (result) {
+        if (result !== false) {
             res.json(result.return);
+            if (result.return.action === 'care') {
+                await axios.put(`http://localhost:5000/api/users/${result.return.user}/activity`, {
+                    activity: 'care'
+                    },{
+                    headers: { 'Authorization': req.headers.authorization }
+                });
+            }
         } else {
             return next(new ApiError("Response is not verified", 400));
         }

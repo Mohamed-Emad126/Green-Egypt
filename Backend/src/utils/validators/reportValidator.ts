@@ -3,6 +3,37 @@ import { validatorMiddleware } from "../../middlewares/validatorMiddleware";
 
 export const getReportValidator = [
     check('id').isMongoId().withMessage('Invalid report ID Format'),
+
+    check('location')
+        .optional()
+        .isObject().withMessage('Location must be an object'),
+
+    check('location.type')
+        .if(check('location').exists())
+        .notEmpty().withMessage('Location type is required')
+        .equals('Point').withMessage('Location must be a Point'),
+        
+    check('location.coordinates')
+        .if(check('location').exists())
+        .notEmpty().withMessage('Location coordinates is required')
+        .isArray().withMessage('Location must be an array')
+        .custom((coords) => {
+            if (!Array.isArray(coords) || coords.length !== 2) {
+                throw new Error('Coordinates must have exactly two elements');
+            }
+            return true;
+        }),
+        
+    check('location.coordinates.0')
+        .if(check('location.coordinates').exists())
+        .notEmpty().withMessage('Longitude is required')
+        .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
+
+    check('location.coordinates.1')
+        .if(check('location.coordinates').exists())
+        .notEmpty().withMessage('Latitude is required')
+        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+    
     validatorMiddleware
 ]
 

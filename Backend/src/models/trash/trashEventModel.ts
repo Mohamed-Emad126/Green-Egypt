@@ -19,8 +19,11 @@ const TrashEventSchema: Schema = new Schema({
         coordinates: {
             type: [Number],
             required: true,
-            length: 2
         }
+    },
+    city: {
+        type: String,
+        required: true
     },
     description: {
         type: String,
@@ -28,7 +31,6 @@ const TrashEventSchema: Schema = new Schema({
     },
     eventImage: {
         type: String,
-        required: true
     },
     eventStatus: {
         type: String,
@@ -40,9 +42,10 @@ const TrashEventSchema: Schema = new Schema({
         ref: 'Partner',
         required: true
     },
-    interestedIn: {
-        type: [String],
-    },
+    interestedIn: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+    }],
     deletedAt: {
         type: Date,
         default: Date.now
