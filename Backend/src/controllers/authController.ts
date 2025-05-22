@@ -14,6 +14,7 @@ export default class AuthController {
         this.forgotPassword = this.forgotPassword.bind(this);
         this.resetPassword = this.resetPassword.bind(this);
         this.verifyGoogleIdToken = this.verifyGoogleIdToken.bind(this);
+        this.verifyEmail = this.verifyEmail.bind(this);
     }
 
 

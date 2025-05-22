@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
 import { IReportInput } from "../interfaces/iReport";
+import axios from 'axios';
 
 
 export default class ReportController {
@@ -29,7 +30,8 @@ export default class ReportController {
         const page: number = req.query.page ? +req.query.page : 1;
         const limit: number = req.query.limit ? +req.query.limit : 5;
         const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
-        const reports = await this.reportService.getReports(page, limit , filters);
+        const location = req.body.location
+        const reports = await this.reportService.getReports(page, limit , filters, location);
         res.json({ length: reports.length, page: page, reports: reports });
     });
 
@@ -56,10 +58,15 @@ export default class ReportController {
         let { location } = req.body;
         location = JSON.parse(location);
         const createdReport = await this.reportService.createNewReport({ ...req.body, createdBy: req.body.user.id , location }, req.files as Express.Multer.File[]);
-        if (createdReport) {
+        if (createdReport === true) {
             res.status(201).json({ message: 'Report created successfully' });
+            await axios.put(`http://localhost:5000/api/users/${req.body.user.id}/activity`, {
+                activity: 'report'
+                },{
+                headers: { 'Authorization': req.headers.authorization }
+            });
         } else {
-            return next(new ApiError("Tree not found", 404));
+            return next(new ApiError(createdReport.message, createdReport.status));
         }
     });
 

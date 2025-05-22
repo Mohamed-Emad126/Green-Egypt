@@ -30,13 +30,16 @@ export default class CommentService {
         return newComment;
     }
 
-    async getCommentsByReport(reportID: string) {
+    async getCommentsByReport(page: number, limit: number, reportID: string) {
         const report = await Report.findById(reportID);
         if(!report) {
             return false;
         }
 
+        const offset : number = (page - 1) * limit;
         return await Comment.find({ reportID, parentCommentID: null })
+            .skip(offset)
+            .limit(limit)
             .sort({ createdAt: -1 })
             .populate("createdBy")
             .populate({

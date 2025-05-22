@@ -24,20 +24,18 @@ const TreeSchema: Schema = new Schema({
                 },
                 message: 'Coordinates must have exactly two elements',
             },
+            index: '2dsphere',
         }
     },
     healthStatus: {
         type: String,
-        enum: ['Healthy', 'Diseased', 'Dying'],
+        enum: ['Healthy', 'Needs Care'],
+        default: 'Healthy',
         required: true,
     },
     problem: {
-        type: String,
-        required: function () {
-            return this.healthStatus === 'Diseased' || this.healthStatus === 'Dying';
-        },
-        trim: true,
-        default: 'No problem'
+        type: mongoose.Types.ObjectId,
+        ref: 'Report',
     },
     image: {
         type: String,
@@ -53,10 +51,25 @@ const TreeSchema: Schema = new Schema({
         ref: "User", 
         required: true
     },
-    reportsAboutIt: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Report"
-    }],
+    reportsAboutIt: {
+        type: {
+            resolved: [{
+                type: mongoose.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }],
+            unresolved: [{
+                type: mongoose.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }],
+            _id : false
+        },
+        default: {
+            resolved: [],
+            unresolved: []
+        }
+    }
     
 }, { timestamps: true });
 

@@ -1,9 +1,9 @@
 import { Router } from "express";
 import NurseryService from "../services/nurseryService";
 import NurseryController from "../controllers/nurseryController";
-import {getNurseryValidator,createNurseryValidator ,deleteNurseryValidator ,updateNurseryValidator ,uploadNurseryPictureValidator} from "../utils/validators/nurseryValidator";
+import {getNurseryValidator, createNurseryValidator, deleteNurseryValidator, updateNurseryValidator, uploadNurseryPictureValidator} from "../utils/validators/nurseryValidator";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
-import { verifyToken } from "../middlewares/authMiddleware";
+import { verifyToken, verifyAdminMiddleware } from "../middlewares/authMiddleware";
 
 const nurseryRouter = Router();
 
@@ -17,15 +17,15 @@ const { getNurseries,
 
 nurseryRouter.route('/')
         .get(getNurseries)
-        .post(verifyToken,createNurseryValidator, createNursery);
+        .post(verifyAdminMiddleware, createNurseryValidator, createNursery);
 
 nurseryRouter.route('/:id')
         .get(verifyToken, getNurseryValidator, getNurseryById)
-        .patch(verifyToken, updateNurseryValidator, updateNursery)
-        .delete(verifyToken, deleteNurseryValidator, deleteNursery);
+        .patch(verifyAdminMiddleware, updateNurseryValidator, updateNursery)
+        .delete(verifyAdminMiddleware, deleteNurseryValidator, deleteNursery);
 
 nurseryRouter.route('/image/:id')
-        .post(verifyToken, uploadImage, uploadNurseryPictureValidator, uploadNurseryPicture) 
+        .post(verifyAdminMiddleware, uploadImage, uploadNurseryPictureValidator, uploadNurseryPicture) 
 
 
 export default nurseryRouter;

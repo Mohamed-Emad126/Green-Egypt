@@ -13,6 +13,7 @@ export default class PartnerController {
         this.createNewPartner = this.createNewPartner.bind(this);
         this.updatePartner = this.updatePartner.bind(this);
         this.deletePartner = this.deletePartner.bind(this);
+        this.uploadPartnerLogo = this.uploadPartnerLogo.bind(this);
     }
 
     /**

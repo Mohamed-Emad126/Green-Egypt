@@ -22,8 +22,6 @@ export const createResponseValidator = [
         return true;
     }),
 
-    check('userID').isMongoId().withMessage('Invalid User ID Format'),
-
     validatorMiddleware
 ];
 
@@ -35,13 +33,30 @@ export const deleteResponseValidator = [
 export const voteResponseValidator = [
     check('id').isMongoId().withMessage('Invalid Response ID Format'),
 
-    check('userID')
-        .notEmpty().withMessage('User ID Is Require')
-        .isMongoId().withMessage('Invalid User ID Formate'),
-
     check('vote')
         .notEmpty().withMessage('Vote Is Required')
         .isBoolean().withMessage('Invalid Vote, please Enter true for positive vote or false for negative vote')
+];
+
+export const addResponseImagesValidator = [
+    check('id').isMongoId().withMessage('Invalid Response ID Format'),
+
+    check('images').custom((_, { req }) => {
+        if (!req.files || req.files.length === 0) {
+            throw new Error("at least one image is required");
+        }
+        return true;
+    }),
+
+    validatorMiddleware
+];
+
+export const deleteResponseImageValidator = [
+    check('id').isMongoId().withMessage('Invalid Response ID Format'),
+
+    check('imageURL').isString().withMessage('Image URL is required'),
+
+    validatorMiddleware
 ];
 
 export const analysisResponseValidator = [
