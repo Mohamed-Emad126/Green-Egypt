@@ -38,7 +38,7 @@ export const getEventValidator = [
 
     check('timeFilter')
         .optional()
-        .isIn(['upcoming', 'ongoing', 'completed', 'cancelled']).withMessage('Invalid time filter'),
+        .isIn(['thisWeek', 'nextWeek','thisMonth']).withMessage('Invalid time filter'),
 
     validatorMiddleware
 ];

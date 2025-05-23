@@ -3,7 +3,7 @@ import User from "../models/userModel";
 import mongoose from "mongoose";
 import trashUser from "../models/trash/trashUserModel";
 import bcrypt from "bcryptjs";
-import fs from "fs";
+import fs, { stat } from "fs";
 import uploadToCloud from "../config/cloudinary";
 import Tree from "../models/treeModel";
 import Report from "../models/reportModel";
@@ -26,12 +26,44 @@ export default class UserService {
         return await User.findById(userID).select("-password");
     }
 
-    async updateUser(userID : string, updateData : IUpdateInput) {
-        return await User.findByIdAndUpdate(
-            userID,
-            {$set: updateData},
-            {new : true, runValidators : true}
-        );
+    async updateUser(userID: string, updateData: IUpdateInput) {
+        const user = await User.findById(userID);
+        if (!user) {
+            return { status: 404, message: "User not found" };
+        }
+
+        const allowedUpdates = ['username', 'email', 'address', 'location'];
+
+        const updates: Partial<IUpdateInput> = {
+            ...Object.fromEntries(
+                Object.entries(updateData).filter(([key]) => allowedUpdates.includes(key))
+            )
+        };
+
+        if (updates.email) {
+            if (updates.email === user.email) {
+                return { status: 400, message: 'New email must be different from current email'};
+            }
+
+            const verificationToken = await user.generateToken(process.env.VERIFICATION_TOKEN_EXPIRE_TIME);
+
+            const updatedUser = await User.findByIdAndUpdate(
+                userID,
+                { 
+                    $set: { 
+                        ...updates,
+                        isVerified: false
+                    }
+                },
+                { new: true, runValidators: true }
+            );
+
+            return { status: 200, message: "User updated successfully, and a verification token sent to your email", verificationToken, email : updates.email };
+        }
+
+        await User.findByIdAndUpdate(userID, { $set: updates }, { new: true, runValidators: true });
+
+        return { status: 200, message: "User updated successfully" };
     }
 
     async changeUserPassword(userID : string, newPassword : string) {
@@ -271,7 +303,14 @@ export default class UserService {
     }
 
     async getUserSavedReports(userID: string) {
-        const user = await User.findById(userID).populate("savedReports");
+        const user = await User.findById(userID).populate({
+            path: 'savedReports',
+            populate: {
+                path: 'createdBy',
+                select: 'userName profilePic'
+            }
+        });
+
         if (!user) {
             return false;
         }

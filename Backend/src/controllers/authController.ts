@@ -54,13 +54,14 @@ export default class AuthController {
      * @access    Public
     */
     verifyEmail = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { token } = req.params;
-            const result = await this.authService.verifyEmail(token);
-            res.json(result);
-        } catch (error) {
-            return next(new ApiError("Email verification failed", 400));
+        const { token } = req.params;
+        const result = await this.authService.verifyEmail(token);
+
+        if (result.status !== 200) {
+            return next(new ApiError(result.message, result.status));
         }
+        
+        res.json(result.message);
     });
 
     /**

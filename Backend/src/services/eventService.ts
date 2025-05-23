@@ -83,6 +83,7 @@ export default class EventService {
                     eventDate: 1,
                     location: 1,
                     city: 1,
+                    eventImage: 1,
                     interestedCount: 1,
                 }
             }
