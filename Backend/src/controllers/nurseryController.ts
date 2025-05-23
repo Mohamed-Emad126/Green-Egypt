@@ -28,7 +28,7 @@ export default class NurseryController {
         const location = req.body.location
         const nurseries = await this.nurseryService.getNurseries(page, limit, location);
         res.json({ length: nurseries.length, page: page, nurseries: nurseries });
-});
+    });
 
     /**
      * @desc      Get nursery by id
