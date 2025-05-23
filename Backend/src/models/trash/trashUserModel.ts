@@ -53,6 +53,9 @@ const trashUserSchema: Schema = new Schema({
             type: [Number],
         }
     },
+    address: {
+        type: String,
+    },
     isVerified: {
         type: Boolean,
     },

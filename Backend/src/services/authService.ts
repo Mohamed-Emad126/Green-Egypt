@@ -25,21 +25,23 @@ export default class AuthService {
 
     }
 
-    async verifyEmail(token: string): Promise<{ message: string }> {
+    async verifyEmail(token: string): Promise<{ status: number; message: string }> {
         const tokenRecord = await Token.findOne({ token });
         if (!tokenRecord) {
-            throw new Error("Invalid or expired token");
+            return { status: 400, message: "Invalid token" };
         }
 
         const user = await User.findById(tokenRecord.user);
-        if (!user) throw new Error("User not found");
+        if (!user) {
+            return { status: 400, message: "User not found" };
+        };
 
         user.isVerified = true;
         await user.save();
 
         await Token.deleteOne({ token });
 
-        return { message: "Email verified successfully!" };
+        return { status: 200, message: "Email verified successfully" };
     }
 
     async login(userData : IAuthInput) {

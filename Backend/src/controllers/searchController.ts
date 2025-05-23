@@ -16,10 +16,9 @@ export default class TaskController {
         if (result === 404) {
             res.status(404).json({ massage: "No result found" });
         } else {
-            const articleResult = result[0].length !== 0 ? result[0] : "No articles found";
             const eventResult = result[1].length !== 0 ? result[1] : "No events found";
             const nurseriesResult = result[2].length !== 0 ? result[2] : "No nurseries found";
-            res.json({ Articles: articleResult, Events: eventResult, Nurseries: nurseriesResult });
+            res.json({ Events: eventResult, Nurseries: nurseriesResult });
         }
     })
 

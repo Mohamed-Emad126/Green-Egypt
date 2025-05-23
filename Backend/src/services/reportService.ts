@@ -12,20 +12,120 @@ import Response from "../models/responseModel";
 import trashResponse from "../models/trash/trashResponseModel";
 
 
-// TODO: Sort reports by the nearest location (getReports)
 
 export default class ReportService {
-    async getReports(page : number, limit : number, filters : any) {
-        const offset : number = (page - 1) * limit;
-        return await Report
-            .find(filters)
-            .skip(offset)
-            .limit(limit)
-            .sort({ upVotes : -1 , createdAt : -1});
+    async getReports(page: number, limit: number, filters: any, location?: { type: string; coordinates: [number, number] }) {
+        const offset: number = (page - 1) * limit;
+        
+        const aggregationPipeline: any[] = [];
+
+        if (location) {
+            aggregationPipeline.push({
+                $geoNear: {
+                    near: {
+                        type: "Point",
+                        coordinates: location.coordinates
+                    },
+                    distanceField: "distance",
+                    maxDistance: 50000,
+                    spherical: true,
+                    query: filters
+                }
+            });
+        } else {
+            aggregationPipeline.push({ $match: filters });
+        }
+
+        aggregationPipeline.push(
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "createdBy",
+                    foreignField: "_id",
+                    pipeline: [{
+                        $project: {
+                            _id: 1,
+                            username: 1,
+                            profilePic: 1
+                        }
+                    }],
+                    as: "createdBy"
+                }
+            },
+            {
+                $lookup: {
+                    from: "comments",
+                    localField: "_id",
+                    foreignField: "report",
+                    pipeline: [{ $count: "count" }],
+                    as: "commentsCount"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$createdBy",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$commentsCount",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $addFields: {
+                    commentsCount: { $ifNull: ["$commentsCount.count", 0] },
+                    statusOrder: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ["$status", "Pending"] }, then: 1 },
+                                { case: { $eq: ["$status", "In Progress"] }, then: 2 },
+                                { case: { $eq: ["$status", "Awaiting Verification"] }, then: 3 },
+                                { case: { $eq: ["$status", "Resolved"] }, then: 4 }
+                            ],
+                            default: 5
+                        }
+                    }
+                }
+            },
+            {
+                $sort: {
+                    statusOrder: 1,
+                    ...(location && { distance: 1 }),
+                    upVotes: -1,
+                    createdAt: -1
+                }
+            },
+            {
+                $skip: offset
+            },
+            {
+                $limit: limit
+            },
+            {
+                $project: {
+                    reportType: 1,
+                    description: 1,
+                    status: 1,
+                    location: 1,
+                    images: 1,
+                    createdAt: 1,
+                    upVotes: 1,
+                    volunteering: 1,
+                    "createdBy._id": 1,
+                    "createdBy.username": 1,
+                    "createdBy.profilePic": 1,
+                    commentsCount: 1,
+                }
+            }
+        );
+
+        return await Report.aggregate(aggregationPipeline);
     }
 
     async getReportById(reportID : string) {
-        return await Report.findById(reportID);
+        return await Report.findById(reportID).populate("createdBy", "username profilePic _id");
     }
 
     async createNewReport(newReport : IReportInput, imageFiles: Express.Multer.File[]) {
@@ -42,26 +142,49 @@ export default class ReportService {
         if(newReport.treeID && newReport.reportType === "A tree needs care" ) {
             const tree = await Tree.findById(newReport.treeID);
             if(!tree) {
-                return false;
+                return {status: 404, message: "Tree not found"};
+            }
+
+            if (tree.problem) {
+                return {status: 400, message: "Tree already has a unresolved report"};
             }
 
             newReport.location = tree.treeLocation;
             report = await Report.create({...newReport, images: uploadedImages});
 
-            tree.problem = newReport.description;
-            tree.healthStatus = "Diseased";
-            tree.reportsAboutIt.push(report.id);
+            tree.problem = report.id;
+            tree.healthStatus = "Needs Care";
+            tree.reportsAboutIt.unresolved.push(report.id);
             await tree.save();
 
         } else {
             if (newReport.treeID) {
                 newReport.treeID = undefined;
             }
+
+            const existing = await Report.find({
+                location: {
+                    $near: {
+                        $geometry: {
+                            type: "Point",
+                            coordinates: newReport.location!.coordinates
+                        },
+                        $maxDistance: 3
+                    }
+                },
+                status: { $ne: "Resolved" }
+            });
+
+            if (existing.length > 0) {
+                return {status: 400, message: "An unresolved report already exists in this location"};
+            }
+
             report = await Report.create({...newReport, images: uploadedImages});
         }
 
         return true;
     }
+
 
     async uploadReportImages(reportID: string, imageFiles: Express.Multer.File[]) {
         const report = await Report.findById(reportID);
@@ -101,6 +224,8 @@ export default class ReportService {
         const report = await Report.findById(reportID);
         if (!report) {
             return {status: 404, message: "Report not found"};
+        } else if (report.status === "Resolved") {
+            return {status: 400, message: "Cannot update a report is already resolved"};
         }
 
         let newTree
@@ -110,13 +235,13 @@ export default class ReportService {
                 return {status: 404, message: "Tree not found"};
             }
 
-            newTree.reportsAboutIt.push(report.id);
+            newTree.reportsAboutIt.unresolved.push(report.id);
             await newTree.save();
 
             const oldTree = await Tree.findById(report.treeID);
             if (oldTree) {
-                let reportIndex = oldTree.reportsAboutIt.findIndex((v) => v.toString() === report.id.toString());
-                oldTree.reportsAboutIt.splice(reportIndex, 1);
+                let reportIndex = oldTree.reportsAboutIt.unresolved.findIndex((v) => v.toString() === report.id.toString());
+                oldTree.reportsAboutIt.unresolved.splice(reportIndex, 1);
                 await oldTree.save();
             }
 
@@ -128,8 +253,8 @@ export default class ReportService {
             if(report.treeID) {
                 const oldTree = await Tree.findById(report.treeID);
                 if (oldTree) {
-                    let reportIndex = oldTree.reportsAboutIt.findIndex((v) => v.toString() === report.id.toString());
-                    oldTree.reportsAboutIt.splice(reportIndex, 1);
+                    let reportIndex = oldTree.reportsAboutIt.unresolved.findIndex((v) => v.toString() === report.id.toString());
+                    oldTree.reportsAboutIt.unresolved.splice(reportIndex, 1);
                     await oldTree.save();
                 }
             }
@@ -188,6 +313,31 @@ export default class ReportService {
             });
             await trashResponse.insertMany(toTrash);
             await Response.deleteMany({ reportID });
+        }
+
+        if (report.treeID) {
+            const tree = await Tree.findById(report.treeID);
+            if (tree) {
+
+                let reportIndex
+                if (report.status === "Resolved") {
+                    reportIndex = tree.reportsAboutIt.resolved.findIndex((v) => v.toString() === report.id.toString());
+                    if (reportIndex !== -1) {
+                        tree.reportsAboutIt.resolved.splice(reportIndex, 1);
+                    }
+                } else {
+                    reportIndex = tree.reportsAboutIt.unresolved.findIndex((v) => v.toString() === report.id.toString());
+                    if (reportIndex !== -1) {
+                        tree.reportsAboutIt.unresolved.splice(reportIndex, 1);
+                    }
+                    if (tree.reportsAboutIt.unresolved.length === 0) {
+                        tree.problem = undefined;
+                        tree.healthStatus = "Healthy";
+                    }
+                }
+                await tree.save();
+
+            }
         }
         
         const toTrash = new trashReport({...report.toObject(), deletedBy : {role : deletedBy.role, hisID : new mongoose.Types.ObjectId(deletedBy.id)}});
@@ -277,8 +427,12 @@ export default class ReportService {
         report.volunteering = { volunteer: objectIdUserID, at: new Date()};
         report.status = "In Progress";
         await report.save();
-        user!.savedReports.push(ObjectIdReportID);
-        await user!.save();
+
+        const existing = user!.savedReports.some(reportId => reportId.toString() === ObjectIdReportID.toString())
+        if (!existing) {
+            user!.savedReports.push(ObjectIdReportID);
+            await user!.save();
+        }
         
         return { message: "Volunteering registered successfully", status: 200 };
     }

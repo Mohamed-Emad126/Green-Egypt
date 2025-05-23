@@ -66,6 +66,11 @@ const UserSchema: Schema = new Schema({
             type: [Number],
         }
     },
+    address: {
+        type: String,
+        default: 'Not provided',
+        trim: true
+    },
     isVerified: {
         type: Boolean,
         default: false

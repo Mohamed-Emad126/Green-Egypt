@@ -43,20 +43,26 @@ export default class ResponseService {
         await report.save();
         
         const user = await User.findById(userID);
-        user!.savedReports.push(report.id);
-        await user!.save();
+        const existing = user!.savedReports.some(reportId => reportId.toString() === reportID.toString())
+        if (!existing) {
+            user!.savedReports.push(report.id);
+            await user!.save();
+        }
 
         return response;
     }
     
 
-    async getReportResponses(reportID: string) {
+    async getReportResponses(page : number, limit : number,reportID: string) {
         const report = await Report.findById(reportID);
         if(!report) {
             return false;
         }
+        const offset : number = (page - 1) * limit;
 
         return await Response.find({reportID: reportID})
+            .skip(offset)
+            .limit(limit)
             .sort({ createdAt: -1, votes: -1 })
             .populate("respondentID")
     }
@@ -91,7 +97,15 @@ export default class ResponseService {
     async voteResponse(responseID: string, userID: string, vote: boolean) {
         const response = await Response.findById(responseID);
         if (!response) {
-            return false;
+            return { status: 404, message: "Response not found" };
+        }
+
+        if (response.isVerified) {
+            return { status: 400, message: "Cannot vote on a verified response" };
+        }
+
+        if (response.respondentID.toString() === userID) {
+            return { status: 400, message: "Cannot vote on your own response" };
         }
         
         const express = vote === true ? 'positive' : 'negative';
@@ -130,7 +144,51 @@ export default class ResponseService {
     
         await response.save();
     
-        return msg;
+        return { status: 200, message: msg };
+    }
+
+    async deleteResponseImage(responseID: string, imageURL: string) {
+        const response = await Response.findById(responseID);
+        if (!response) {
+            return { status: 404, message: "Response not found" };
+        }
+
+        if (response.isVerified) {
+            return { status: 400, message: "Cannot modify a verified response" };
+        }
+
+        const imageIndex = response.images.findIndex((image) => image === imageURL);
+        if (imageIndex === -1) {
+            return { status: 400, message: "Image not found in response" };
+        }
+
+        response.images.splice(imageIndex, 1);
+        await response.save();
+        return { status: 200, message: "Image deleted successfully" };
+    }
+
+    async addResponseImages(responseID: string, imageFiles: Express.Multer.File[]) {
+        const response = await Response.findById(responseID);
+        if (!response) {
+            return { status: 404, message: "Response not found" };
+        }
+
+        if (response.isVerified) {
+            return { status: 400, message: "Cannot modify a verified response" };
+        }
+        
+        const uploadedImages = [];
+        for (const imageFile of imageFiles) {
+            const imageUploadResult = await uploadToCloud(imageFile.path);
+    
+            uploadedImages.push(imageUploadResult.url);
+
+            fs.unlinkSync(imageFile.path);
+        }
+
+        response.images.push(...uploadedImages);
+        await response.save();
+        return { status: 200, message: "New images uploaded successfully" }; 
     }
 
     async analysisResponse(responseID: string) { 
@@ -158,8 +216,6 @@ export default class ResponseService {
                     message: "Make user locate it on the map to reward 50 points and he/she can unsave the report",
                     requiredField: "treeName , treeLocation { type, coordinates }, treeImage",
                     defaultValues: {
-                        healthStatus: "Healthy",
-                        problem: "No problem",
                         plantedRecently: true,
                         byUser: response!.respondentID
                     }
@@ -168,19 +224,16 @@ export default class ResponseService {
         }
 
         const tree = await Tree.findById(report!.treeID);
+        
+        tree!.healthStatus = "Healthy";
+        tree!.problem = undefined;
+        await tree!.save();
 
         return { 
             status: 200, 
             return: {
                 action: "care", 
-                message: "Make user update the tree health status on the map to reward 20 points and he/she can unsave the report",
-                requiredField: "healthStatus, problem, treeLocation { type, coordinates }, treeImage",
-                defaultValues: {
-                    problem: "No problem",
-                    treeLocation: tree!.treeLocation,
-                    treeImage: tree!.image
-                },
-                responseID: response!.id,
+                message: "Tree health status become healthy and the user reward 20 points, Make user chick whether the tree location or image needs modification or not and he/she can unsave the report",
                 user: response!.respondentID
             }
         };
@@ -207,8 +260,18 @@ export default class ResponseService {
                 };
 
                 report!.status = "Resolved";
-                report!.upVotes = Math.floor(report!.upVotes * 0.8);
                 await report!.save();
+
+                if(report!.reportType === "A tree needs care") {
+                    await Tree.findByIdAndUpdate(
+                        report!.treeID,
+                        {
+                            $pull: { 'reportsAboutIt.unresolved': report!._id },
+                            $push: { 'reportsAboutIt.resolved': report!._id }
+                        },
+                        { new: true }
+                    );
+                }
             } else {
                 response!.note = {
                     message: "Response has been accepted but the report is already resolved, you can unsaved the report",
