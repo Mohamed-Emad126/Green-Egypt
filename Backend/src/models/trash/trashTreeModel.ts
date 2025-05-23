@@ -15,16 +15,16 @@ const trashTreeSchema: Schema = new Schema({
         coordinates: {
             type: [Number],
             required: true,
-            length: 2
         }
     },
     healthStatus: {
         type: String,
-        enum: ['Healthy', 'Diseased', 'Dying'],
+        enum: ['Healthy', 'Needs Care'],
         required: true
     },
     problem: {
-        type: String,
+        type: mongoose.Types.ObjectId,
+        ref: 'Report',
     },
     image: String,
     plantedRecently: {
@@ -36,10 +36,20 @@ const trashTreeSchema: Schema = new Schema({
         ref: "User", 
         required: true
     },
-    reportsAboutIt: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Report"
-    }],
+    reportsAboutIt: {
+        type: {
+            resolved: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }],
+            unresolved: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }]
+        }
+    },
     deletionReason: {
         type: String,
         enum: ['Died', 'Cut down', 'False Record'],

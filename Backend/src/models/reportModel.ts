@@ -15,9 +15,18 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
     location: {
         type: {
             type: String,
+            enum: ['Point'],
+            default: 'Point',
         },
         coordinates: {
             type: [Number],
+            required: true,
+            validate: {
+                validator: function (value: number[]) {
+                    return value.length === 2;
+                },
+                message: 'Coordinates must have exactly two elements [longitude, latitude]'
+            }
         }
     },
     images: [
@@ -60,7 +69,7 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
             type: Date, 
             default: Date.now 
         },
-    _id: false
+        _id: false
     }],
     volunteering: {
         volunteer: {

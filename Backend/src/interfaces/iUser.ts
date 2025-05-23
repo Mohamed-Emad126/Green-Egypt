@@ -20,6 +20,7 @@ export interface IUser extends Document {
         type?: string;
         coordinates?: [number, number]
     };
+    address?: string;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date;
@@ -49,7 +50,8 @@ export interface IUpdateInput {
     location?:{
         type?: string;
         coordinates?: [number, number]
-    }
+    },
+    address?: string;
 }
 
 export type TUserActivity = 'locate' | 'report' | 'plant' | 'care';

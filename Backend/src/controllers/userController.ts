@@ -2,6 +2,7 @@ import UserService from "../services/userService";
 import { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
+import sendEmail from "../utils/email";
 
 export default class UserController {
 
@@ -54,19 +55,27 @@ export default class UserController {
      * @access    Private
     */
     updateUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        if(req.body.points) {
-            return next(new ApiError("Points cannot be updated", 400));
-        }
-        
-        if(req.body.role) {
-            return next(new ApiError("Role cannot be updated", 400));
-        }
-        
         const userAfterUpdate = await this.userService.updateUser(req.params.id, req.body);
-        if (userAfterUpdate) {
-            res.json({ message: "User updated successfully"});
+
+        if (userAfterUpdate.verificationToken) {
+            const verifyUrl = `${req.protocol}://${req.get('host')}/api/auth/verify-email/${userAfterUpdate.verificationToken}`;
+                    const message = `Please verify your email by clicking the following link within 24 hours: ${verifyUrl}`;
+            
+                    try {
+                        await sendEmail({
+                            email: userAfterUpdate.email,
+                            subject: 'Verify your email',
+                            message,
+                        });
+                    } catch (err: any) {
+                        console.error(`Email could not be sent: ${err.message}`);
+                    }
+        }
+
+        if (userAfterUpdate.status === 200) {
+            res.json({ message: userAfterUpdate.message });
         } else {
-            return next(new ApiError("User not found", 404));
+            return next(new ApiError(userAfterUpdate.message, userAfterUpdate.status));
         }
         
     });

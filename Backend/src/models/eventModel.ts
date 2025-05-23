@@ -19,8 +19,17 @@ const EventSchema: Schema = new mongoose.Schema({
         coordinates: {
             type: [Number],
             required: true,
-            length: 2
+            validate: {
+                validator: function (value: number[]) {
+                    return value.length === 2;
+                },
+                message: 'Coordinates must have exactly two elements',
+            },
         }
+    },
+    city: {
+        type: String,
+        required: true
     },
     description: {
         type: String,
@@ -33,18 +42,21 @@ const EventSchema: Schema = new mongoose.Schema({
     eventStatus: {
         type: String,
         enum: ['upcoming' , 'ongoing' , 'completed' , 'cancelled'],
-        required: true
+        required: true,
+        default: 'upcoming'
     },
     organizedWithPartnerID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Partner',
         required: true
     },
-    interestedIn: {
-        type: [String],
-        default: [] 
-    }
+    interestedIn: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+    }]
 }, { timestamps: true });
+
+EventSchema.index({ location: '2dsphere' });
 
 const EventModel: Model<IEvent> = mongoose.model<IEvent>('Event', EventSchema);
 

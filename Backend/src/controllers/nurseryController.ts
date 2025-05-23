@@ -9,7 +9,11 @@ export default class NurseryController {
 
     constructor(private nurseryService: NurseryService) {
         this.getNurseries = this.getNurseries.bind(this);
-        
+        this.getNurseryById = this.getNurseryById.bind(this);
+        this.createNursery = this.createNursery.bind(this);
+        this.updateNursery = this.updateNursery.bind(this);
+        this.deleteNursery = this.deleteNursery.bind(this);
+        this.uploadNurseryPicture = this.uploadNurseryPicture.bind(this);
     }
 
     /**
@@ -20,10 +24,11 @@ export default class NurseryController {
 
     getNurseries = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const page: number = req.query.page ? +req.query.page : 1;
-        const limit: number = req.query.limit ? +req.query.limit : 5;
-        const nurseries = await this.nurseryService.getNurseries(page, limit);
+        const limit: number = req.query.limit ? +req.query.limit : 6;
+        const location = req.body.location
+        const nurseries = await this.nurseryService.getNurseries(page, limit, location);
         res.json({ length: nurseries.length, page: page, nurseries: nurseries });
-});
+    });
 
     /**
      * @desc      Get nursery by id
