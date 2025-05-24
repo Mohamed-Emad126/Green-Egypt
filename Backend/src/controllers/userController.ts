@@ -186,4 +186,26 @@ export default class UserController {
             res.json(trees);
         }
     });
+
+    /**
+   * @desc      Save or update device token for a user
+   * @route     PATCH /api/users/:id/device-token
+   * @access    Private
+   */
+    saveDeviceToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+    const { deviceToken } = req.body;
+
+    if (!deviceToken) {
+    return next(new ApiError("Device token is required", 400));
+    }
+
+    const user = await this.userService.updateUser(userId, { deviceToken });
+
+    if (!user) {
+    return next(new ApiError("User not found", 404));
+    }
+
+    res.status(200).json({ message: "Device token updated", user });
+    });
 }

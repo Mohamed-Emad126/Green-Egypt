@@ -17,6 +17,7 @@ export interface IUser extends Document {
     createdAt?: Date
     updatedAt?: Date
     isVerified: boolean;
+    deviceToken?: string;
     generateToken(expiration?: string): Promise<string>;
 }
 
@@ -38,6 +39,7 @@ export interface IUpdateInput {
         type?: string;
         coordinates?: [number, number]
     }
+    deviceToken?: string;
 }
 
 export type TUserActivity = 'locate' | 'report' | 'plant' | 'care';
