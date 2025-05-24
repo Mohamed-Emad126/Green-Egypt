@@ -8,6 +8,30 @@ export const getTreeValidator = [
     validatorMiddleware
 ];
 
+export const getTreesByLocationValidator = [
+    check('location')
+        .notEmpty().withMessage('Location is required')
+        .custom((value) => {
+            if (typeof value === "string") {
+                value = JSON.parse(value);
+            }
+            if (!value.type || value.type !== 'Point') {
+                throw new Error("Location must have type 'Point'");
+            }
+            if (!Array.isArray(value.coordinates) || value.coordinates.length !== 2) {
+                throw new Error("Coordinates must be an array with exactly two elements [longitude, latitude]");
+            }
+            if (value.coordinates[0] < 24 || value.coordinates[0] > 37) {
+                throw new Error("Longitude must be between 24 and 37");
+            }
+            if (value.coordinates[1] < 22 || value.coordinates[1] > 32) {
+                throw new Error("Latitude must be between 22 and 32");
+            }
+            return true;
+        }),
+    validatorMiddleware
+];
+
 export const locateTreeValidator = [
     check('id').isMongoId().withMessage('Invalid tree ID Format'),
 
@@ -19,37 +43,20 @@ export const locateTreeValidator = [
     check('treeLocation')
         .notEmpty().withMessage('Location is required')
         .custom((value) => {
-            try {
-                if (typeof value === "string") {
-                    value = JSON.parse(value);
-                }
-                if (!value.type || value.type !== 'Point') {
-                    throw new Error("Location must have type 'Point'");
-                }
-                if (!Array.isArray(value.coordinates) || value.coordinates.length !== 2) {
-                    throw new Error("Coordinates must be an array with exactly two elements [longitude, latitude]");
-                }
-                if (value.coordinates[0] < 24 || value.coordinates[0] > 37) {
-                    throw new Error("Longitude must be between 24 and 37");
-                }
-                if (value.coordinates[1] < 22 || value.coordinates[1] > 32) {
-                    throw new Error("Latitude must be between 22 and 32");
-                }            
-                return true;
-            } catch (error) {
-                throw new Error("Invalid location format. Must be a valid JSON object.");
+            if (typeof value === "string") {
+                value = JSON.parse(value);
             }
-        }),
-
-    check('healthStatus')
-        .notEmpty().withMessage('Health status is required')
-        .isIn(['Healthy', 'Diseased', 'Dying']).withMessage('Invalid health status'),
-
-    check('problem')
-        .custom((value, { req }) => {
-            const healthStatus = req.body.healthStatus;
-            if ((healthStatus === 'Diseased' || healthStatus === 'Dying') && !value) {
-                throw new Error('Problem description is required for Diseased/Dying trees');
+            if (!value.type || value.type !== 'Point') {
+                throw new Error("Location must have type 'Point'");
+            }
+            if (!Array.isArray(value.coordinates) || value.coordinates.length !== 2) {
+                throw new Error("Coordinates must be an array with exactly two elements [longitude, latitude]");
+            }
+            if (value.coordinates[0] < 24 || value.coordinates[0] > 37) {
+                throw new Error("Longitude must be between 24 and 37");
+            }
+            if (value.coordinates[1] < 22 || value.coordinates[1] > 32) {
+                throw new Error("Latitude must be between 22 and 32");
             }
             return true;
         }),
@@ -96,18 +103,6 @@ export const updateTreeValidator = [
         .if(check('treeLocation.coordinates').exists())
         .notEmpty().withMessage('Latitude is required')
         .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
-
-    check('healthStatus')
-        .optional()
-        .isIn(['Healthy', 'Diseased', 'Dying']).withMessage('Invalid health status')
-        .custom((val, { req }) => {
-            if(val === 'Diseased' || val === 'Dying') {
-                if(!req.body.problem) {
-                    throw new Error('Problem is required');
-                }
-            }
-            return true;
-        }),
 
     validatorMiddleware
 ];

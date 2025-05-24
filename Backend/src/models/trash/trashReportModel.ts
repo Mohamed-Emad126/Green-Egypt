@@ -15,13 +15,9 @@ const TrashReportSchema: Schema<IReport> = new mongoose.Schema({
     location: {
         type: {
             type: String,
-            enum: ['Point'],
-            required: true,
         },
         coordinates: {
             type: [Number],
-            required: true, 
-            length: 2
         }
     },
     images: [
@@ -64,6 +60,14 @@ const TrashReportSchema: Schema<IReport> = new mongoose.Schema({
             default: Date.now 
         }
     }],
+    volunteering: {
+        volunteer: {
+            type: mongoose.Types.ObjectId,
+            ref: 'User',
+            default: null
+        },
+        at: Date || null
+    },
     responses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Response'
@@ -71,8 +75,22 @@ const TrashReportSchema: Schema<IReport> = new mongoose.Schema({
     comments: [{
         type:mongoose.Schema.Types.ObjectId, 
         ref: 'Comment'
-    }]
-});
+    }],
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        role: {
+            type: String,
+            enum: ['user', 'admin'],
+        },
+        hisID:{
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
+    }
+}, { timestamps: true });
 
 const TrashReport: Model<IReport> = mongoose.model<IReport>('TrashReport', TrashReportSchema);
 export default TrashReport;

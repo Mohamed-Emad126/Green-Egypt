@@ -11,5 +11,11 @@ export interface IComment extends Document {
     replies?: mongoose.Types.ObjectId[];
     parentCommentID?: mongoose.Types.ObjectId;
     createdAt?: Date;
-    updatedAt?: Date
+    updatedAt?: Date;
+    deletedAt?: Date;
+    deletedBy?: {
+        role: string;
+        hisID: mongoose.Types.ObjectId;
+    };
+
 }

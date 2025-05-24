@@ -16,7 +16,7 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         type: {
             type: String,
             enum: ['Point'],
-            required: true,
+            default: 'Point',
         },
         coordinates: {
             type: [Number],
@@ -25,8 +25,8 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
                 validator: function (value: number[]) {
                     return value.length === 2;
                 },
-                message: 'Coordinates must have exactly two elements',
-            },
+                message: 'Coordinates must have exactly two elements [longitude, latitude]'
+            }
         }
     },
     images: [
@@ -40,7 +40,7 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         required: true
     },
     treeID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: 'Tree',
     },
     upVotes: { 
@@ -68,8 +68,17 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         updatedAt: { 
             type: Date, 
             default: Date.now 
-        }
+        },
+        _id: false
     }],
+    volunteering: {
+        volunteer: {
+            type: mongoose.Types.ObjectId,
+            ref: 'User',
+            default: null
+        },
+        at: Date || null
+    },
     responses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Response'

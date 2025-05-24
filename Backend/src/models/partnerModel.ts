@@ -43,7 +43,7 @@ const PartnerSchema : Schema = new Schema({
         default: false
     },
     addByAdmin: {
-        type : mongoose.Schema.Types.ObjectId,
+        type : mongoose.Types.ObjectId,
         ref : 'User',
         require : true
     }

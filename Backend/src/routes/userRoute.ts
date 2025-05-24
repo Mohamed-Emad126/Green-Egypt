@@ -8,9 +8,13 @@ import {getUserValidator,
         uploadUserImageValidator, 
         deleteUserImageValidator, 
         updateUserPointsValidator, 
-        claimPendingCouponsValidator,
+        //claimPendingCouponsValidator,
         promoteUserValidator, 
-        getUserTreesValidator} from "../utils/validators/userValidator";
+        getUserTreesValidator, 
+        getUserPointsHistoryValidator,
+        getUserSavedReportsValidator
+        } from "../utils/validators/userValidator";
+
 import { createTaskValidator, getUserTreesWithTasksValidator } from "../utils/validators/taskValidator";
 import { locateTreeValidator } from "../utils/validators/treeValidator";
 import { verifyUserMiddleware , verifyToken, verifyAdminMiddleware} from "../middlewares/authMiddleware";
@@ -32,9 +36,11 @@ const { getUsers,
         uploadUserPicture,
         deleteUserPicture, 
         updateUserPoints,
-        claimPendingCoupons,
+        //claimPendingCoupons,
         promoteUserToAdmin,
         getUserTrees,
+        getUserPointsHistory,
+        getUserSavedReports,
         saveDeviceToken} = new UserController(userService);
 
 const taskService = new TaskService();
@@ -54,8 +60,11 @@ userRouter.route('/:id')
 userRouter.route('/:id/activity')
         .put(verifyUserMiddleware, updateUserPointsValidator, updateUserPoints);
 
-userRouter.route('/:id/claim-coupon')
-        .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);
+userRouter.route('/:id/points-history')
+        .get(verifyUserMiddleware, getUserPointsHistoryValidator, getUserPointsHistory);
+
+// userRouter.route('/:id/claim-coupon')
+//         .post(verifyUserMiddleware, claimPendingCouponsValidator, claimPendingCoupons);
 
 userRouter.route('/:id/image')
         .patch(verifyUserMiddleware, uploadImage, uploadUserImageValidator, uploadUserPicture)
@@ -65,18 +74,23 @@ userRouter.route('/:id/change-password')
         .put(verifyUserMiddleware, changeUserPasswordValidator, changeUserPassword);
 
 userRouter.route('/:id/promote-admin')
-        .put(verifyAdminMiddleware,promoteUserValidator, promoteUserToAdmin);
+        .put(verifyAdminMiddleware, promoteUserValidator, promoteUserToAdmin);
 
 userRouter.route('/:id/tree')
         .get(verifyToken, getUserTreesValidator, getUserTrees)
-        .post(verifyToken, uploadImage, locateTreeValidator, LocateTree);
+        .post(verifyUserMiddleware, uploadImage, locateTreeValidator, LocateTree);
 
 userRouter.route('/:id/task')
         .post(verifyUserMiddleware, createTaskValidator, createTask)
         .get(verifyUserMiddleware, getUserTreesWithTasksValidator,  getUserTreesWithTasks);
 
+
 userRouter.route('/:id/device-token')
         .patch(verifyUserMiddleware, updateUserValidator, saveDeviceToken);
+
+
+userRouter.route('/:id/saved-reports')
+        .get(verifyUserMiddleware, getUserSavedReportsValidator, getUserSavedReports);
 
 
 export default userRouter;

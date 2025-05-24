@@ -16,8 +16,7 @@ const trashUserSchema: Schema = new Schema({
     },
     profilePic: {
         type: String,
-    }
-    ,
+    },
     password: {
         type: String,
         required: [true, 'Password is required'],
@@ -27,12 +26,20 @@ const trashUserSchema: Schema = new Schema({
         type: Number,
         min: [0, 'Points cannot be negative']
     },
-    pendingCoupons: {
-        type: Number,
-    },
+    pointsHistory: [
+        {
+            points: Number,
+            activity: String,
+            date: Date,
+            img: String
+        }
+    ],
+    // pendingCoupons: {
+    //     type: Number,
+    // },
     isActive: {
         type: Boolean,
-        default: [false, 'User must be inactive']
+        default: false
     },
     role: {
         type: String,
@@ -45,8 +52,31 @@ const trashUserSchema: Schema = new Schema({
         coordinates: {
             type: [Number],
         }
+    },
+    address: {
+        type: String,
+    },
+    isVerified: {
+        type: Boolean,
+    },
+    savedReports: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'Report'
+    }],
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        role: {
+            type: String,
+            enum: ['user', 'admin'],
+        },
+        hisID:{
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
     }
-    
 }, { timestamps: true });
 
 const trashUserModel: Model<IUser> = mongoose.model<IUser>('TrashUser', trashUserSchema);

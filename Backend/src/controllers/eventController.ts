@@ -2,14 +2,20 @@ import EventService from "../services/eventService";
 import { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
-import { IEventInput } from "../interfaces/iEvent";
+import { IEventInput, IEventFilter } from "../interfaces/iEvent";
 
 
 export default class EventController {
 
     constructor(private eventService: EventService) {
         this.getEvents = this.getEvents.bind(this);
-        
+        this.getEventById = this.getEventById.bind(this);
+        this.createEvent = this.createEvent.bind(this);
+        this.updateEvent = this.updateEvent.bind(this);
+        this.deleteEvent = this.deleteEvent.bind(this);
+        this.uploadEventPicture = this.uploadEventPicture.bind(this);
+        this.addInterested = this.addInterested.bind(this);
+        this.removeInterested = this.removeInterested.bind(this);
     }
 
     /**
@@ -21,10 +27,10 @@ export default class EventController {
     getEvents = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const page: number = req.query.page ? +req.query.page : 1;
         const limit: number = req.query.limit ? +req.query.limit : 6;
-        const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
+        const filters: IEventFilter = req.body;
         const events = await this.eventService.getEvents(page, limit , filters);
         res.json({ length: events.length, page: page, events: events });
-});
+    });
 
     /**
      * @desc      Get event by id
@@ -47,13 +53,12 @@ export default class EventController {
      * @access    Public
      */
     createEvent = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const { eventName,eventDate,description,location,eventImage,eventStatus,organizedWithPartnerID }: IEventInput = req.body;
-        const event = await this.eventService.createEvent({eventName,eventDate,description,location,eventImage,eventStatus,organizedWithPartnerID});
-        if (event) {
-            console.log(event.eventDate);
+        const { eventName,eventDate,description,location,city,eventStatus,organizedWithPartnerID }: IEventInput = req.body;
+        const event = await this.eventService.createEvent({eventName,eventDate,description,location,city,eventStatus,organizedWithPartnerID});
+        if (event !== false) {
             res.json({ message: 'Event created successfully' });
         } else {
-            return next(new ApiError("Error creating event", 500));
+            return next(new ApiError("Partner not found", 404));
         }
     });
 
@@ -65,10 +70,10 @@ export default class EventController {
 
     updateEvent = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const eventAfterUpdate = await this.eventService.updateEvent(req.params.id, req.body);
-        if (eventAfterUpdate) {
-            res.json({ message: 'Event updated successfully' });
+        if (eventAfterUpdate.status === 200) {
+            res.json({ message: eventAfterUpdate.message });
         } else {
-            return next(new ApiError("Event not found", 404));
+            return next(new ApiError(eventAfterUpdate.message, 404));
         }
     });
 
@@ -79,7 +84,7 @@ export default class EventController {
      */
 
     deleteEvent = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const event = await this.eventService.deleteEvent(req.params.id);
+        const event = await this.eventService.deleteEvent(req.params.id, req.body.user.id);
         if (event) {
             res.json({ message: 'Event deleted successfully' });
         } else {
@@ -90,7 +95,7 @@ export default class EventController {
     /**
      * @desc      Upload event picture
      * @route     POST /api/events/:id/picture
-     * @access    Puiblic
+     * @access    Public
      */
     uploadEventPicture = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const result = await this.eventService.uploadEventPicture(req.params.id, req.file);
@@ -125,20 +130,6 @@ export default class EventController {
         const result = await this.eventService.removeInterested(req.params.id, req.body.interestedUser);
         if (result) {
             res.json({ message: "User removed successfully"});
-        } else {
-            return next(new ApiError("Event not found", 404));
-        }
-    });
-
-    /**
-     * @desc      Count interested users
-     * @route     GET /api/events/:id/interested/count
-     * @access    Public
-     */
-    countInterested = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const result = await this.eventService.countInterested(req.params.id);
-        if (result) {
-            res.json({ interestedCount: result});
         } else {
             return next(new ApiError("Event not found", 404));
         }

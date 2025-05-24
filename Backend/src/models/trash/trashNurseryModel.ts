@@ -16,7 +16,7 @@ const TrashNurserySchema: Schema = new Schema({
         type: String,
         required: [true, 'location is required'],
         minlength: [3, 'location must be at least 3 characters long'],
-        maxlength: [100, 'location must not exceed 100 characters'],
+        maxlength: [300, 'location must not exceed 100 characters'],
     },
     location: {
         type: {
@@ -32,11 +32,19 @@ const TrashNurserySchema: Schema = new Schema({
     rate: {
         type: Number,
         required: [true, 'rate is required'],
-        min: [1, 'rate must be at least 1'],
+        min: [0, 'rate must be at least 0'],
         max: [5, 'rate must not exceed 5']
+    },
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
     }
 
-})
+}, { timestamps: true })
 
 const TrashNurseryModel: Model<INursery> = mongoose.model<INursery>('TrashNursery', TrashNurserySchema);
 export default TrashNurseryModel;

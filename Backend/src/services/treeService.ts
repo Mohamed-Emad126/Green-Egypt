@@ -3,8 +3,9 @@ import Tree from "../models/treeModel";
 import trashTree from "../models/trash/trashTreeModel";
 import uploadToCloud from "../config/cloudinary";
 import fs from "fs";
+import mongoose from "mongoose";
+import Report from "../models/reportModel";
 
-// TODO: Compare the input tree with previously located trees (locatedTree)
 
 export default class TreesService {
     async getTrees(filters : any) {
@@ -16,40 +17,81 @@ export default class TreesService {
         return tree ? tree : null;
     }
 
-    async LocateTree(newTree : Partial<ITreeInput>, imageFile: Express.Multer.File, userID : string) {
-        if (newTree.healthStatus === 'Healthy') {
-            newTree.problem = 'No problem';
+    async getTreesByLocation(location: { type: string; coordinates: [number, number] }) {
+        return await Tree.find({
+            treeLocation: {
+                $nearSphere: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: location.coordinates
+                    },
+                    $maxDistance: 10
+                }
+            }
+        });
+    }
+
+    async LocateTree(newTree : ITreeInput, imageFile: Express.Multer.File, userID : string) {
+        const existing = await Tree.findOne({
+            treeLocation: {
+                $near: {
+                $geometry: {
+                    type: "Point",
+                    coordinates: newTree.treeLocation!.coordinates
+                },
+                $maxDistance: 0.3
+                }
+            }
+        });
+
+        if (existing) {
+            return {status: 400, existingTree: existing};
         }
 
         const imageUploadResult = await uploadToCloud(imageFile.path);
         newTree.image = imageUploadResult.url;
         fs.unlinkSync(imageFile.path);
 
-        return Tree.create({ ...newTree, byUser: userID });
+        const theTree = await Tree.create({ 
+            treeName: newTree.treeName,
+            image: newTree.image,
+            treeLocation: newTree.treeLocation, 
+            byUser: userID,
+            healthStatus: "Healthy",
+            plantedRecently: newTree.plantedRecently? true : false,
+        });
+
+        return { status: 201, theTree };
     }
 
     async updateTree(treeID : string, updateData : Partial<ITreeInput>) {
-        const tree = await Tree.findById(treeID);
+        const allowedUpdates = ['treeName', 'treeLocation'];
+        const filteredUpdates: Partial<ITreeInput> = {
+            ...Object.fromEntries(
+                Object.entries(updateData).filter(([key]) => allowedUpdates.includes(key))
+            )
+        };
+
+        const tree = await Tree.findByIdAndUpdate(treeID, filteredUpdates, { new: true });
+
         if (!tree){
-            return false;
+            return {status: 404, message: 'Tree not found'};
         }
 
-        if (updateData.healthStatus === 'Healthy' && updateData.problem) {
-                updateData.problem = 'No problem';
-        }
-
-        Object.assign(tree, updateData);
-        await tree.save();
-        return true;
+        return {status: 200, message: 'Tree updated successfully'};
     }
 
-    async deleteTree(treeID : string , reason : TDeleteReason) {
+    async deleteTree(treeID : string , deletedBy : {role : string, id : string}, reason : TDeleteReason) {
         const tree = await Tree.findById(treeID);
         if (!tree){
             return false;
         }
         
-        const toTrash = new trashTree({...tree.toObject(), deletionReason : reason});
+        const toTrash = new trashTree({
+            ...tree.toObject(), 
+            deletionReason : reason, 
+            deletedBy : {role : deletedBy.role, hisID : new mongoose.Types.ObjectId(deletedBy.id)}
+        });
         await toTrash.save();
 
         await tree.deleteOne();
