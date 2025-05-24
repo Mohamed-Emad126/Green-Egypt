@@ -10,12 +10,13 @@ const NurserySchema: Schema = new Schema({
     },
     nurseryPic: {
         type: String,
+        default: '../uploads/not-found-image.png'
     },
     address: {
         type: String,
         required: [true, 'location is required'],
         minlength: [3, 'location must be at least 3 characters long'],
-        maxlength: [100, 'location must not exceed 100 characters'],
+        maxlength: [300, 'location must not exceed 100 characters'],
     },
     location: {
         type: {
@@ -25,16 +26,25 @@ const NurserySchema: Schema = new Schema({
         },
         coordinates: {
             type: [Number],
-            required: true
+            required: true,
+            validate: {
+                validator: function (value: number[]) {
+                    return value.length === 2;
+                },
+                message: 'Coordinates must have exactly two elements',
+            },
         }
     },
     rate: {
         type: Number,
         required: [true, 'rate is required'],
-        min: [1, 'rate must be at least 1'],
+        min: [0, 'rate must be at least 0'],
         max: [5, 'rate must not exceed 5']
     }
-});
+}, { timestamps: true });
+
+NurserySchema.index({ location: '2dsphere' });
+
 const NurseryModel: Model<INursery> = mongoose.model<INursery>('Nursery', NurserySchema);
 export default NurseryModel;
 

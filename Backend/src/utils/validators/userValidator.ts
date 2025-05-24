@@ -44,6 +44,11 @@ export const updateUserValidator = [
         .notEmpty().withMessage('Latitude is required')
         .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
 
+    check('address')
+        .optional()
+        .isLength({min : 3, max : 50}).withMessage('Address must be between 3 and 50 characters'),
+
+
     validatorMiddleware
 ];
 
@@ -113,10 +118,10 @@ export const updateUserPointsValidator = [
     validatorMiddleware
 ];
 
-export const claimPendingCouponsValidator = [
-    check('id').isMongoId().withMessage('Invalid user ID Format'),
-    validatorMiddleware
-];
+// export const claimPendingCouponsValidator = [
+//     check('id').isMongoId().withMessage('Invalid user ID Format'),
+//     validatorMiddleware
+// ];
 
 export const promoteUserValidator =[
     check('id').isMongoId().withMessage('Invalid user ID Format'),
@@ -124,6 +129,16 @@ export const promoteUserValidator =[
 ];
 
 export const getUserTreesValidator =[
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
+    validatorMiddleware
+];
+
+export const getUserPointsHistoryValidator =[
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
+    validatorMiddleware
+];
+
+export const getUserSavedReportsValidator =[
     check('id').isMongoId().withMessage('Invalid user ID Format'),
     validatorMiddleware
 ];

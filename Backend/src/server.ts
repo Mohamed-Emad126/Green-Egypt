@@ -3,6 +3,7 @@ import { Server } from 'socket.io';
 import connectDB from './config/db';
 import app from './app';
 import CommentService from "./services/commentService";
+import "./utils/cronJobs";
 
 //* Connect to database
 connectDB();
@@ -26,7 +27,7 @@ io.on('connection', (socket) => {
                 content,
                 createdBy,
                 reportID,
-                parentCommentID: parentCommentID || null,
+                parentCommentID: parentCommentID ? parentCommentID : null,
             });
 
             io.emit('commentBroadcast', newComment);

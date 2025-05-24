@@ -1,8 +1,6 @@
 import User from "../models/userModel";
 import Task from "../models/taskModel";
 import Tree from "../models/treeModel";
-import { start } from "repl";
-import e from "express";
 
 
 export default class TaskService {
@@ -76,12 +74,17 @@ export default class TaskService {
             .lean();
     
             if (tasks.length === 0) return null;
+
+            const completed = tasks.filter(task => task.isDone);
+            const pending = tasks.filter(task => !task.isDone);
     
             return {
                 treeID,
                 treeName: (tasks[0].tree as any).treeName,
-                pendingTasks: tasks.filter(task => !task.isDone),
-                completedTasks: tasks.filter(task => task.isDone)
+                pendingTasks: pending,
+                completedTasks: completed,
+                totalCount: tasks.length,
+                completedCount: completed.length
             };
         });
     

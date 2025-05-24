@@ -36,11 +36,23 @@ const UserSchema: Schema = new Schema({
         default: 0,
         min: [0, 'Points cannot be negative']
     },
-    pendingCoupons: {
-        type: Number,
-        default: 0,
-        min: [0, 'Points cannot be negative']
-    },
+    pointsHistory: [
+        {
+            points: Number,
+            activity: {
+                type: String,
+                enum: ['locate', 'report', 'plant', 'care'],
+            },
+            date: Date,
+            img: String,
+            _id: false
+        }
+    ],
+    // pendingCoupons: {
+    //     type: Number,
+    //     default: 0,
+    //     min: [0, 'Points cannot be negative']
+    // },
     isActive: {
         type: Boolean,
         default: true
@@ -57,13 +69,20 @@ const UserSchema: Schema = new Schema({
         coordinates: {
             type: [Number],
         }
-
+    },
+    address: {
+        type: String,
+        default: 'Not provided',
+        trim: true
     },
     isVerified: {
         type: Boolean,
         default: false
-    }
-
+    },
+    savedReports: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'Report'
+    }]
 }, { timestamps: true });
 
 UserSchema.index({ location: '2dsphere' });

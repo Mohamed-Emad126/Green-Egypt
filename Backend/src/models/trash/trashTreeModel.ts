@@ -15,23 +15,18 @@ const trashTreeSchema: Schema = new Schema({
         coordinates: {
             type: [Number],
             required: true,
-            length: 2
         }
     },
     healthStatus: {
         type: String,
-        enum: ['Healthy', 'Diseased', 'Dying'],
+        enum: ['Healthy', 'Needs Care'],
         required: true
     },
     problem: {
-        type: String,
+        type: mongoose.Types.ObjectId,
+        ref: 'Report',
     },
     image: String,
-    deletionReason: {
-        type: String,
-        enum: ['Died', 'Cut down', 'False Record'],
-        required: true
-    },
     plantedRecently: {
         type: Boolean,
         required: true,
@@ -41,12 +36,40 @@ const trashTreeSchema: Schema = new Schema({
         ref: "User", 
         required: true
     },
-    reportsAboutIt: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Report"
-    }],
-
-});
+    reportsAboutIt: {
+        type: {
+            resolved: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }],
+            unresolved: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }]
+        }
+    },
+    deletionReason: {
+        type: String,
+        enum: ['Died', 'Cut down', 'False Record'],
+        required: true
+    },
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        role: {
+            type: String,
+            enum: ['user', 'admin'],
+        },
+        hisID:{
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
+    }
+}, { timestamps: true });
 
 const trashTreeModel: Model<ITree> = mongoose.model<ITree>('TrashTree', trashTreeSchema);
 export default trashTreeModel;

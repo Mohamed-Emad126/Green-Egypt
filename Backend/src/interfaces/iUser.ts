@@ -1,4 +1,4 @@
-import { Date, Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface IUser extends Document {
     username: string;
@@ -6,7 +6,13 @@ export interface IUser extends Document {
     password: string;
     passwordChangedAt: Date;
     points: number;
-    pendingCoupons: number;
+    pointsHistory: {
+        points: number;
+        activity: TUserActivity;
+        date: Date;
+        img: string;
+    }[];
+    // pendingCoupons: number;
     profilePic: string;
     isActive: boolean;
     role: string;
@@ -14,10 +20,18 @@ export interface IUser extends Document {
         type?: string;
         coordinates?: [number, number]
     };
-    createdAt?: Date
-    updatedAt?: Date
+    address?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+    deletedAt?: Date;
+    deletedBy?: {
+        role: string;
+        hisID: mongoose.Types.ObjectId;
+    };
     isVerified: boolean;
+
     deviceToken?: string;
+    savedReports: mongoose.Types.ObjectId[];
     generateToken(expiration?: string): Promise<string>;
 }
 
@@ -38,8 +52,9 @@ export interface IUpdateInput {
     location?:{
         type?: string;
         coordinates?: [number, number]
-    }
+     },
     deviceToken?: string;
+    address?: string;
 }
 
 export type TUserActivity = 'locate' | 'report' | 'plant' | 'care';

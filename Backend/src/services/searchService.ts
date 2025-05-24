@@ -8,15 +8,7 @@ import Nursery from "../models/nurseryModel";
 export default class SearchService {
 
     async homeSearch(key : string) {
-        const [articles, events, nurseries] = await Promise.all([
-            Guide.find(
-                {
-                    "$or":[
-                        {articletitle: {$regex: key, $options: 'i'}}, 
-                        {content: {$regex: key, $options: 'i'}}
-                    ]
-                }
-            ),
+        const [events, nurseries] = await Promise.all([
             Event.find(
                 {
                     "$or":[
@@ -35,15 +27,14 @@ export default class SearchService {
             ),
         ]);
 
-        const articlesResult = articles || "No articles found";
         const eventsResult = events || "No events found";
         const nurseriesResult = nurseries || "No nurseries found";
 
-        if(articlesResult.length === 0 && eventsResult.length === 0 && nurseriesResult.length === 0) {
+        if(eventsResult.length === 0 && nurseriesResult.length === 0) {
             return 404;
         }
 
-        return [articlesResult, eventsResult, nurseriesResult];
+        return [eventsResult, nurseriesResult];
     }
 
 

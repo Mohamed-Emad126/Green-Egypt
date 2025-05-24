@@ -20,7 +20,7 @@ export default class GuideController {
 
     getArticles = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const page: number = req.query.page ? +req.query.page : 1;
-        const limit: number = req.query.limit ? +req.query.limit : 6;
+        const limit: number = req.query.limit ? +req.query.limit : 6;        
         const filters = req.query.filters ? JSON.parse(req.query.filters as string) : {};
         const articles = await this.guideService.getArticles(page, limit);
         res.json({ length: articles.length, page: page, articles: articles });
@@ -47,8 +47,8 @@ export default class GuideController {
      * @access    Public
      */
     createArticle = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const {articletitle,content,articlePic}: IGuideInput = req.body;
-        const article = await this.guideService.createArticle({articletitle,content,articlePic,createdAt: new Date(Date.now())});
+        const {articleTitle,content,articlePic}: IGuideInput = req.body;
+        const article = await this.guideService.createArticle({articleTitle,content,articlePic,createdAt: new Date(Date.now())});
         if (article) {
             res.json({ message: 'article created successfully' });
         } else {
@@ -78,7 +78,7 @@ export default class GuideController {
      */
 
     deleteArticle = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const article = await this.guideService.deleteArticle(req.params.id);
+        const article = await this.guideService.deleteArticle(req.params.id, req.body.user.id);
         if (article) {
             res.json({ message: 'Article deleted successfully' });
         } else {
@@ -89,7 +89,7 @@ export default class GuideController {
     /**
      * @desc      Upload article picture
      * @route     POST /api/guide/:id/picture
-     * @access    Puiblic
+     * @access    Public
      */
     uploadArticlePicture = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const result = await this.guideService.uploadArticlePicture(req.params.id, req.file);

@@ -6,7 +6,6 @@ const TrashPartnerSchema : Schema = new Schema({
         type: String,
         trim: true,
         required: true,
-        unique: true
     },
     startDate: {
         type: Date,
@@ -29,14 +28,7 @@ const TrashPartnerSchema : Schema = new Schema({
         required: [true, 'Description is required'],
     },
     logo: {
-        imageName: {
-            type: String,
-            default: 'default-logo.png'
-        },
-        imageUrl: {
-            type: String,
-            default: '../../uploads/default-logo.png'
-        }
+        type: String,
     },
     hasExpired: {
         type: Boolean,
@@ -46,8 +38,16 @@ const TrashPartnerSchema : Schema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         require : true
+    },
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
     }
-});
+}, { timestamps: true });
 
 const TrashPartnerModel : Model<IPartner> = mongoose.model<IPartner>('TrashPartner', TrashPartnerSchema);
 export default TrashPartnerModel;

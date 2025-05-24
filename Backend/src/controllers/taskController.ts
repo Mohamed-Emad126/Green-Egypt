@@ -13,6 +13,7 @@ export default class TaskController {
         this.markTask = this.markTask.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
         this.getUserTreesWithTasks = this.getUserTreesWithTasks.bind(this);
+        this.deleteAllTreeTasks = this.deleteAllTreeTasks.bind(this);
     }
 
     /**
