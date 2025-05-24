@@ -27,6 +27,10 @@ const UserSchema: Schema = new Schema({
         minlength: [8, 'Password must be at least 8 characters long']
     },
     passwordChangedAt: Date,
+    deviceToken: {
+        type: String,
+        default: null
+    },
     points: {
         type: Number,
         default: 0,
