@@ -15,8 +15,8 @@ export default class NotificationController {
     */
 
     createNotification = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const { userId, title, type, message }: INotificationInput = req.body;
-        const notification = await this.notificationService.createNotification({ userId, title, type, message });
+        const { userId, title, type, message, reportId }: INotificationInput = req.body;
+        const notification = await this.notificationService.createNotification({ userId, title, type, message,reportId});
         if (notification) {
             res.status(201).json({ message: "Notification created successfully"});
             return;
@@ -49,8 +49,8 @@ export default class NotificationController {
     */
 
     sendNotificationWithSave = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const {userId , type, title, message } = req.body;
-        const notification = await this.notificationService.sendNotificationWithSave({userId, type, title, message});
+        const {userId , type, title, message, reportId } = req.body;
+        const notification = await this.notificationService.sendNotificationWithSave({userId, type, title, message, reportId});
         if (notification.savedNotification && notification.fcmResult?.success) {
             res.json({ message: "Notification saved and push notification sent successfully" });
             return;
@@ -60,14 +60,15 @@ export default class NotificationController {
     });
 
     /**
-     * @desc      Get user notifications
-     * @route     GET /api/notifications/get-user-notifications
+     * @desc      Get user notifications, optionally filtered by type
+     * @route     GET /api/notifications/get-user-notifications?type=TYPE
      * @access    Private
     */
 
     getUserNotifications = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { userId } = req.body;
-        const userNotifications = await this.notificationService.getUserNotifications(userId);
+        const { type } = req.query;
+        const userNotifications = await this.notificationService.getUserNotifications(userId, type as string);
         if (userNotifications) {
             res.json(userNotifications);
             return;
@@ -118,9 +119,9 @@ export default class NotificationController {
 
     deleteAllNotifications = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const {userId} = req.body;
-        const notifications = await this.notificationService.deleteAllNotifications(userId);
-        if (notifications) {
-            res.json({ message: "All notifications deleted successfully" });
+        const result = await this.notificationService.deleteAllNotifications(userId);
+        if (result.deleted > 0) {
+            res.json({ message: "All notifications deleted successfully", deleted: result.deleted});
             return;
         }else{
             return next(new ApiError("Error deleting notifications", 404));

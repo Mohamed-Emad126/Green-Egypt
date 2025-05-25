@@ -6,7 +6,7 @@ import uploadToCloud from "../config/cloudinary";
 import fs from "fs";
 import User from "../models/userModel";
 import Tree from "../models/treeModel";
-
+import notificationService from "./notificationService";
 
 
 export default class ResponseService {
@@ -47,6 +47,21 @@ export default class ResponseService {
         if (!existing) {
             user!.savedReports.push(report.id);
             await user!.save();
+        }
+
+        // Send notification to report owner if response submitted by someone else
+        if (report.createdBy.toString() !== userID.toString()) {
+            const responder = await User.findById(userID); 
+            const responderName = responder ? responder.username : "Someone";
+
+            const notificationServiceInstance = new notificationService();
+            await notificationServiceInstance.sendNotificationWithSave({
+                userId: report.createdBy.toString(),
+                type: "community",
+                title: "Response to your report",
+                message: `${responderName} submitted a response to your report.`,
+                reportId: reportID
+            });
         }
 
         return response;

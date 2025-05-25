@@ -10,6 +10,8 @@
 
   "devDependencies": {
 
+    "@types/axios": "^0.14.4",
+
     "@types/bcryptjs": "^2.4.6",
 
     "@types/express": "^4.17.21",
@@ -41,6 +43,8 @@
   },
 
   "dependencies": {
+
+    "@types/jsonwebtoken": "^9.0.2",
 
     "axios": "^1.8.4",
 
@@ -75,6 +79,8 @@
     "nodemailer": "^6.9.15",
 
     "passport": "^0.7.0",
+
+    "readdirp": "^4.1.2",
 
     "socket.io": "^4.8.1",
 

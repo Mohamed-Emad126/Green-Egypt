@@ -1,8 +1,7 @@
-import mongoose, { Schema, Model} from "mongoose";
-import { INotification } from "../interfaces/iNotification";
+import mongoose,{ Schema, Model } from "mongoose";
+import { INotification } from "../../interfaces/iNotification";
 
-
-const NotificationSchema: Schema = new mongoose.Schema({
+const TrashNotificationSchema: Schema = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
         required: true,
@@ -33,10 +32,13 @@ const NotificationSchema: Schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Report',
         required: false
+    },
+    deletedAt: { 
+        type: Date, 
+        default: Date.now 
     }
-    
-});
 
-const NotificationModel: Model<INotification> = mongoose.model<INotification>('Notification', NotificationSchema);
+})
 
-export default NotificationModel;
+const trashNotificationModel: Model<INotification> = mongoose.model<INotification>('TrashNotification', TrashNotificationSchema);
+export default trashNotificationModel;
