@@ -7,7 +7,9 @@ import Token from "../models/tokenModel";
 import Response from "../models/responseModel";
 import Report from "../models/reportModel";
 import Tree from "../models/treeModel";
-
+import Task from "../models/taskModel";
+import EventModel from "../models/eventModel";
+import notificationService from "../services/notificationService";
 
 cron.schedule("0 0 * * *", async () => {
     try {
@@ -183,3 +185,96 @@ cron.schedule("20 0 * * *", async () => {
     }
 });
 
+cron.schedule("0 9 * * *", async () => {
+    try {
+        console.log("Starting daily notification for users with pending tasks...");
+
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date(startOfDay);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const pendingTasks = await Task.find({
+        isDone: false,
+        date: { $gte: startOfDay, $lte: endOfDay },
+        }).populate("user", "name deviceToken");
+
+        if (pendingTasks.length === 0) {
+        console.log("No pending tasks found for today.");
+        return;
+        }
+
+        const userMap = new Map<
+        string,
+        { name: string; deviceToken: string }
+        >();
+
+        for (const task of pendingTasks) {
+        const user = task.user as any;
+        if (user && user.deviceToken) {
+            userMap.set(user._id.toString(), {
+            name: user.name,
+            deviceToken: user.deviceToken,
+            });
+        }
+        }
+
+        let sentCount = 0;
+        const NotificationService = new notificationService();
+
+        for (const [userId, userInfo] of userMap.entries()) {
+        await NotificationService.sendNotificationWithSave({
+            userId,
+            type: "daily-task",
+            title: "🌿 Time to Care for Your Trees!",
+            message: `Don’t forget your tasks today. Keep up the great work and give your trees some love! 🌱💧`,
+        });
+        sentCount++;
+        }
+
+        console.log(`Sent ${sentCount} notifications to users with pending tasks.`);
+    } catch (error) {
+        console.error("Error in daily pending tasks notification:", error);
+    }
+});
+
+cron.schedule("0 0 * * *", async () => {
+        try {
+        console.log("Running daily event status updater...");
+    
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+    
+        // Mark past events as completed (eventDate < today)
+        const events = await EventModel.find({
+            eventDate: { $lt: startOfToday }
+        });
+    
+        for (const event of events) {
+            event.eventStatus = "completed";
+            await event.save();
+            console.log(`Event ${event._id} marked as completed.`);
+        }
+
+        // Mark events with date equal to today as ongoing
+        const ongoingEvents = await EventModel.find({
+            eventDate: {$gte: startOfToday, $lte: endOfToday}
+        });
+
+        for (const event of ongoingEvents) {
+            if (event.eventStatus !== "ongoing") { 
+                event.eventStatus = "ongoing";
+                await event.save();
+                console.log(`Event ${event._id} marked as ongoing.`);
+            }
+        }
+    
+        console.log("Finished checking events.");
+        } catch (err) {
+        console.error("Error updating event statuses:", err);
+        }
+});
