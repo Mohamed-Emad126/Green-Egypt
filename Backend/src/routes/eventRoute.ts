@@ -29,7 +29,7 @@ eventRouter.route('/:id')
 eventRouter.route('/image/:id')
         .post(verifyAdminMiddleware, uploadImage, uploadEventImageValidator, uploadEventPicture)        
 
-eventRouter.route('/interested/:id')
+eventRouter.route('/:id/interested')
         .post(verifyToken, addInterestedValidator, addInterested)
         .delete(verifyToken, removeInterestedValidator, removeInterested);
 

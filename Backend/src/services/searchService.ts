@@ -13,10 +13,11 @@ export default class SearchService {
                 {
                     "$or":[
                         {eventName: {$regex: key, $options: 'i'}}, 
-                        {description: {$regex: key, $options: 'i'}}
+                        {description: {$regex: key, $options: 'i'}},
+                        {city: {$regex: key, $options: 'i'}}
                     ]
                 }
-            ),
+            ).limit(10),
             Nursery.find(
                 {
                     "$or":[
@@ -24,17 +25,14 @@ export default class SearchService {
                         {address: {$regex: key, $options: 'i'}}
                     ]
                 }
-            ),
+            ).limit(10)
         ]);
 
-        const eventsResult = events || "No events found";
-        const nurseriesResult = nurseries || "No nurseries found";
-
-        if(eventsResult.length === 0 && nurseriesResult.length === 0) {
+        if(events.length === 0 && nurseries.length === 0) {
             return 404;
         }
 
-        return [eventsResult, nurseriesResult];
+        return [events, nurseries];
     }
 
 
@@ -44,14 +42,11 @@ export default class SearchService {
             Report.find({description: {$regex: key, $options: 'i'}})
         ]);
 
-        const usersResult = users || "No users found for this search";
-        const reportsResult = reports || "No reports found for this search";
-
-        if(usersResult.length === 0 && reportsResult.length === 0) {
+        if(users.length === 0 && reports.length === 0) {
             return 404;
         }
 
-        return [usersResult, reportsResult];
+        return [users, reports];
     }
 
 }

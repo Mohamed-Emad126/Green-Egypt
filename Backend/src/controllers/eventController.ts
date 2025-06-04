@@ -1,5 +1,5 @@
 import EventService from "../services/eventService";
-import { Request, Response, NextFunction } from "express";
+import e, { Request, Response, NextFunction } from "express";
 import asyncHandler from 'express-async-handler';
 import ApiError from "../utils/apiError";
 import { IEventInput, IEventFilter } from "../interfaces/iEvent";
@@ -29,6 +29,25 @@ export default class EventController {
         const limit: number = req.query.limit ? +req.query.limit : 6;
         const filters: IEventFilter = req.body;
         const events = await this.eventService.getEvents(page, limit , filters);
+        res.json({ length: events.length, page: page, events: events });
+    });
+
+    /**
+     * @desc      Get 
+     * @route     GET /api/users/:id/events
+     * @access    Private
+    */
+
+    getUserInterestedEvents = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const page: number = req.query.page ? +req.query.page : 1;
+        const limit: number = req.query.limit ? +req.query.limit : 6;
+        const events = await this.eventService.getUserInterestedEvents(req.params.id, page, limit);
+        
+        if (events === false) {
+            return next(new ApiError("User not found", 404));
+        } else if (events === null) {
+            return next(new ApiError("No interested Events", 404));
+        }
         res.json({ length: events.length, page: page, events: events });
     });
 
