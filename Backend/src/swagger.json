@@ -149,9 +149,25 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Email already exists"
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Email already exists"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "email"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -226,9 +242,25 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Wrong password"
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Wrong Password"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "password"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -322,6 +354,38 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "error sending email or invalid email format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Please enter a valid email address"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "email"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "404": {
                         "description": "User not found",
                         "content": {
@@ -332,22 +396,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "There is no user with this email"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "error sending email or invalid email format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Email could not be sent - {err}"
                                         }
                                     }
                                 }
@@ -410,6 +458,38 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Passwords do not match or are shorter than 8 characters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "passwords do not match"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "password"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "404": {
                         "description": "Invalid token or user not found",
                         "content": {
@@ -420,22 +500,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Invalid token"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Passwords do not match or are shorter than 8 characters",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "passwords do not match"
                                         }
                                     }
                                 }
@@ -518,7 +582,7 @@
                 "tags": ["Auth"]
             }
         },
-        "api/users/": {
+        "/api/users/": {
             "get": {
                 "tags": ["Users"],
                 "summary": "Retrieve all users",
@@ -624,7 +688,7 @@
                 }
             }
         },
-        "api/users/{id}": {
+        "/api/users/{id}": {
             "get": {
                 "tags": ["Users"],
                 "summary": "Get specific user",
@@ -655,16 +719,32 @@
                             }
                         }
                     },
-                    "404": {
-                        "summary": "User not found",
+                    "400": {
+                        "description": "Invalid ID Format",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "User not found"
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid user ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -681,6 +761,22 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "summary": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
                                         }
                                     }
                                 }
@@ -783,9 +879,25 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "New email must be different from current email"
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Location must be a Point"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "location.type"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -793,7 +905,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid token, session expired, or password recently changed.",
+                        "description": "Invalid token, session expired, or password recently changed",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -809,7 +921,7 @@
                         }
                     },
                     "403": {
-                        "description": "User is not authorized to update this profile.",
+                        "description": "User is not authorized to update this profile",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -825,7 +937,7 @@
                         }
                     },
                     "404": {
-                        "description": "User not found.",
+                        "description": "User not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -896,7 +1008,7 @@
                         }
                     },
                     "403": {
-                        "description": "The user who requested is not the owner of the ID in the path",
+                        "description": "The user who requested is not the owner of the ID in the path or admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -912,7 +1024,7 @@
                         }
                     },
                     "404": {
-                        "description": "User not found.",
+                        "description": "User not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -930,7 +1042,7 @@
                 }
             }
         },
-        "api/users/{id}/activity": {
+        "/api/users/{id}/activity": {
             "put": {
                 "tags": ["Users"],
                 "summary": "Update user points",
@@ -991,9 +1103,25 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Invalid activity"
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid activity"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "activity"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1113,9 +1241,25 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Image is required."
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Image is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "image"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1174,7 +1318,7 @@
             },
             "delete": {
                 "summary": "Delete user profile picture",
-                "description": "Removes the user's profile picture and resets it to the default avatar.",
+                "description": "Removes the user's profile picture and resets it to the default avatar",
                 "tags": ["Users"],
                 "security": [{
                     "BearerAuth": []
@@ -1202,7 +1346,39 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Picture deleted successfully."
+                                            "example": "Picture deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid user ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1334,9 +1510,25 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Current password is incorrect."
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "New password must be at least 8 characters long"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "newPassword"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1473,6 +1665,38 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid user ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "401": {
                         "description": "Invalid token , Session expired or password recently changed",
                         "content": {
@@ -1554,6 +1778,38 @@
                                     "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/Report"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid user ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1645,15 +1901,31 @@
                         }
                     },
                     "400": {
-                        "description": "if user Enters something that conflicts with the validation rules",
+                        "description": "Invalid ID Format",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Invalid User ID Format"
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid user ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1784,9 +2056,25 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Latitude must be between 22 and 32"
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Location must be a Point"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "location.type"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1863,6 +2151,38 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid user ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "401": {
                         "description": "Invalid token , Session expired or password recently changed",
                         "content": {
@@ -1914,6 +2234,381 @@
                 }
             }
         },
+        "/api/users/{id}/task": {
+            "post": {
+                "summary": "Create a new task for a user and a tree",
+                "description": "Allows an authenticated user to create a new task associated with one of their recently planted trees",
+                "tags": ["Care"],
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "User ID",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "treeID": {
+                                        "type": "string",
+                                        "format": "objectid",
+                                        "description": "ID of the tree to associate the task with. The tree must be recently planted by the user",
+                                        "example": "67da1529cd23e1273a0dbfb3"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "description": "Title or description of the task.",
+                                        "enum": ["Water the tree", "Prune dead branches", "Fertilize the soil", "Check for pests"],
+                                        "example": "Water the tree"
+                                    }
+                                },
+                                "required": ["treeID", "title"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task created successfully"
+                                        },
+                                        "task": {
+                                            "type": "string",
+                                            "description": "The title of the created task.",
+                                            "example": "Water the Ficus tree"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or task already exists for today",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Tree ID is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "treeID"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid token, session expired, or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - User is not authorized to create a task for this tree (e.g., tree not owned by user, or not recently planted) or path ID mismatch.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This tree not belongs to this user"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User or Tree not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "Get user's trees with their tasks for today",
+                "description": "Retrieves a list of specified trees for a user, along with their pending and completed tasks for the current day",
+                "tags": ["Care"],
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "User ID",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }],
+                "requestBody": {
+                    "description": "Specifies the tree IDs for which to retrieve tasks",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "treeIDs": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "objectid"
+                                        },
+                                        "description": "An array of Tree IDs for which to fetch tasks.",
+                                        "example": ["67da1529cd23e1273a0dbfb3", "67da1529cd23e1273a0dbfb4"]
+                                    }
+                                },
+                                "required": ["treeIDs"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation. Returns tasks grouped by tree or a message if no tasks exist.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "array",
+                                            "description": "Array of trees with their tasks for today. Empty if no tasks for specified trees.",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TreeWithTasks"
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "There are no tasks today"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "user enters something that conflicts with the validation rules",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Tree IDs must be unique"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "treeIDs"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid token, session expired, or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the tasks",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/{id}/events": {
+            "get": {
+                "tags": ["Users"],
+                "summary": "Get user's interested events",
+                "description": "Retrieves all events a specified user is interested in, sorted by creation date (newest first) and Excludes events with status 'cancelled' or 'completed'",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID for whom to fetch interested events",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67da1529cd23e1273a0dbfa2"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of events per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 6,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "description": "Number of events returned on the current page",
+                                            "example": 3
+                                        },
+                                        "page": {
+                                            "type": "integer",
+                                            "description": "The current page number",
+                                            "example": 1
+                                        },
+                                        "events": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/EventResponseItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/tasks/{id}": {
             "post": {
                 "tags": ["Care"],
@@ -1950,8 +2645,40 @@
                             }
                         }
                     },
-                    "404": {
-                        "summary": "Task not found",
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid task ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1959,7 +2686,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Task not found"
+                                            "example": "Unauthorized access - please log in"
                                         }
                                     }
                                 }
@@ -1981,13 +2708,29 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "summary": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
             "delete": {
                 "tags": ["Care"],
                 "summary": "Delete task",
-                "description": "Delete task",
+                "description": "Delete specific task",
                 "security": [{
                     "bearerAuth": []
                 }],
@@ -2011,6 +2754,54 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Task deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid task ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
                                         }
                                     }
                                 }
@@ -2088,16 +2879,32 @@
                             }
                         }
                     },
-                    "404": {
-                        "summary": "Tree not found",
+                    "400": {
+                        "description": "Invalid ID Format",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Tree not found"
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid tree ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -2119,6 +2926,22 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "summary": "Tree not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -2127,7 +2950,7 @@
             "get": {
                 "tags": ["Search"],
                 "summary": "Search home",
-                "description": "Search for articles or events in the home",
+                "description": "Search for events or nurseries in the home",
                 "security": [{
                     "bearerAuth": []
                 }],
@@ -2286,119 +3109,59 @@
                 }
             }
         },
-        "/api/nursery": {
+        "/api/nursery/": {
             "get": {
                 "tags": ["Nurseries"],
-                "summary": "Get all nurseries (pagination + location filter)",
-                "description": "Retrieve paginated list of nurseries with optional user's location filtering (Within a range of no more than 50 kilometers from the user's location)",
+                "summary": "Get all nurseries (pagination)",
+                "description": "Display all nurseries registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter",
                 "parameters": [
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Page number (1-based)",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "default": 1
+                        "description" : "The number of the page",
+                        "require" : "false",
+                        "schema":{
+                            "type": "number",
+                            "format": "integer",
+                            "default": 1,
+                            "validation": "From 1 to (total number of elements / number of elements on one page)"
                         }
                     },
                     {
                         "name": "limit",
                         "in": "query",
-                        "description": "Number of items per page",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "default": 6
+                        "description" : "The number of elements on one page",
+                        "require" : "false",
+                        "schema":{
+                            "type": "number",
+                            "default": 5
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": false,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "location": {
-                                        "type": "object",
-                                        "properties": {
-                                            "type": {
-                                                "type": "string",
-                                                "enum": ["Point"],
-                                                "example": "Point",
-                                                "description": "GeoJSON type (always 'Point' for coordinates)"
-                                            },
-                                            "coordinates": {
-                                                "type": "array",
-                                                "minItems": 2,
-                                                "maxItems": 2,
-                                                "example": [31.20886, 30.07694],
-                                                "prefixItems": [
-                                                    {
-                                                        "type": "number",
-                                                        "minimum": 24,
-                                                        "maximum": 37,
-                                                        "description": "Longitude (between 24 and 37)"
-                                                    },
-                                                    {
-                                                        "type": "number",
-                                                        "minimum": 22,
-                                                        "maximum": 32,
-                                                        "description": "Latitude (between 22 and 32)"
-                                                    }
-                                                ],
-                                                "description": "[longitude, latitude] coordinates"
-                                            }
-                                        },
-                                        "description": "user location"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Paginated nurseries list",
+                        "description": "successful operation",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "length": {
-                                        "type": "integer",
-                                        "description": "Number of nurseries in current page",
-                                        "example": 6
+                                            "type": "integer",
+                                            "description": "Number of nurseries in the current page",
+                                            "example": 6
                                         },
                                         "page": {
-                                        "type": "integer",
-                                        "description": "Current page number",
-                                        "example": 1
+                                            "type": "integer",
+                                            "description": "Current page number",
+                                            "example": 1
                                         },
                                         "nurseries": {
                                             "type": "array",
+                                            "description": "List of nurseries",
                                             "items": {
                                                 "$ref": "#/components/schemas/Nursery"
                                             }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid location format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Longitude must be between 24 and 37"
                                         }
                                     }
                                 }
@@ -2408,7 +3171,7 @@
                 }
             }
         },
-        "api/nursery/{id}": {
+        "/api/nursery/{id}": {
             "get":{
                 "tags": ["Nurseries"],
                 "summary": "Get specific nursery",
@@ -2476,34 +3239,36 @@
         "/api/events": {
             "get": {
                 "tags": ["Events"],
-                "summary": "Get filtered and paginated events",
-                "description": "Retrieve events with pagination, user location-based filtering, and time filtering (Results include count of interested users)",
+                "summary": "Get all events (paginated and filterable)",
+                "description": "Displays all events, paginated. Supports filtering by user location (sorted by proximity within 50km) and time period (thisWeek, nextWeek, thisMonth)",
                 "parameters": [
-                {
-                    "name": "page",
-                    "in": "query",
-                    "description": "Page number (1-based)",
-                    "required": false,
-                    "schema": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "default": 1
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "The number of the page to retrieve",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "The number of events to return per page. Defaults to 6.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 6,
+                            "minimum": 1
+                        }
                     }
-                },
-                {
-                    "name": "limit",
-                    "in": "query",
-                    "description": "Number of items per page",
-                    "required": false,
-                    "schema": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "default": 6
-                    }
-                }
                 ],
                 "requestBody": {
-                    "description": "Filter criteria (user location or time or both)",
+                    "description": "Optional filters for events",
                     "required": false,
                     "content": {
                         "application/json": {
@@ -2511,42 +3276,34 @@
                                 "type": "object",
                                 "properties": {
                                     "location": {
+                                        "description": "GeoJSON Point for user-location-based filtering. Filters events within 50km and sorts by distance",
                                         "type": "object",
                                         "properties": {
                                             "type": {
                                                 "type": "string",
                                                 "enum": ["Point"],
-                                                "example": "Point",
-                                                "description": "GeoJSON type (always 'Point' for coordinates)"
+                                                "description": "GeoJSON type, must be 'Point'",
+                                                "example": "Point"
                                             },
                                             "coordinates": {
                                                 "type": "array",
+                                                "description": "Array of [longitude, latitude]. Longitude (24 to 37), Latitude (22 to 32)",
+                                                "items": {
+                                                "type": "number",
+                                                "format": "float"
+                                                },
                                                 "minItems": 2,
                                                 "maxItems": 2,
-                                                "example": [31.20886, 30.07694],
-                                                "prefixItems": [
-                                                    {
-                                                        "type": "number",
-                                                        "minimum": 24,
-                                                        "maximum": 37,
-                                                        "description": "Longitude (between 24 and 37)"
-                                                    },
-                                                    {
-                                                        "type": "number",
-                                                        "minimum": 22,
-                                                        "maximum": 32,
-                                                        "description": "Latitude (between 22 and 32)"
-                                                    }
-                                                ],
-                                                "description": "[longitude, latitude] coordinates"
+                                                "example": [31.20886, 30.07694]
                                             }
                                         },
-                                        "description": "user location"
+                                        "required": ["type", "coordinates"]
+                                    
                                     },
                                     "timeFilter": {
                                         "type": "string",
-                                        "enum": ["thisWeek", "nextWeek","thisMonth"],
-                                        "description": "Time range filter for events",
+                                        "enum": ["thisWeek", "nextWeek", "thisMonth"],
+                                        "description": "Filter events by a specific time period",
                                         "example": "thisWeek"
                                     }
                                 }
@@ -2556,7 +3313,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "successful operation",
+                        "description": "Successful operation",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2564,7 +3321,7 @@
                                     "properties": {
                                         "length": {
                                             "type": "integer",
-                                            "description": "Number of events in current page",
+                                            "description": "Number of events in the current page",
                                             "example": 6
                                         },
                                         "page": {
@@ -2574,8 +3331,9 @@
                                         },
                                         "events": {
                                             "type": "array",
+                                            "description": "List of events matching the criteria",
                                             "items": {
-                                                "$ref": "#/components/schemas/Event"
+                                                "$ref": "#/components/schemas/EventResponseItem"
                                             }
                                         }
                                     }
@@ -2584,7 +3342,7 @@
                         }
                     },
                     "400": {
-                        "description": "If user enters something that conflicts with the validation rules",
+                        "description": "Validation Error - Invalid input for filters",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2592,7 +3350,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Invalid time filte"
+                                            "example": "Invalid time filter"
                                         }
                                     }
                                 }
@@ -2602,7 +3360,7 @@
                 }
             }
         },
-        "api/event/{id}": {
+        "/api/event/{id}": {
             "get":{
                 "tags": ["Events"],
                 "summary": "Get specific event",
@@ -2664,6 +3422,254 @@
                 }
             }
         },
+        "/api/events/{id}/interested": {
+            "post": {
+                "tags": ["Events"],
+                "summary": "Add an interested user to an event",
+                "description": "Allows an authenticated user to mark themselves as interested in a specific event",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the event.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "615d8f8b8f8f8f8f8f8f8f01"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "The ID of the user to be marked as interested",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "interestedUser": {
+                                        "type": "string",
+                                        "format": "objectid",
+                                        "description": "The User ID to add to the interested list",
+                                        "example": "67da1529cd23e1273a0dbfa2"
+                                    }
+                                },
+                                "required": ["interestedUser"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User added successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid event ID format, or missing/invalid `interestedUser` in the request body",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": { 
+                                                        "type": "string",
+                                                        "example": "interestedUser is required" 
+                                                    },
+                                                    "param": { 
+                                                        "type": "string", 
+                                                        "example": "interestedUser" 
+                                                    },
+                                                    "location": {
+                                                        "type": "string", 
+                                                        "example": "body" 
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Event was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Event not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Events"],
+                "summary": "Remove an interested user from an event",
+                "description": "Allows an authenticated user to remove themselves from the interested list of a specific even",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the event.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "615d8f8b8f8f8f8f8f8f8f01"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "The ID of the user to be removed from the interested list",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "interestedUser": {
+                                        "type": "string",
+                                        "format": "objectid",
+                                        "description": "The User ID to remove from the interested list",
+                                        "example": "67da1529cd23e1273a0dbfa2"
+                                    }
+                                },
+                                "required": ["interestedUser"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User removed successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid event ID format, or missing/invalid `interestedUser` in the request body",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": { 
+                                                        "type": "string", 
+                                                        "example": "Invalid event ID Format" 
+                                                    },
+                                                    "param": { 
+                                                        "type": "string", 
+                                                        "example": "id" 
+                                                    },
+                                                    "location": { 
+                                                        "type": "string", 
+                                                        "example": "path" 
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Event was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Event not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/trees": {
             "get": {
                 "summary": "Get all trees",
@@ -2709,16 +3715,14 @@
                 }
             }
         },
-        "api/trees/{id}": {
+        "/api/trees/{id}": {
             "get": {
                 "summary": "Get tree by ID",
                 "description": "Retrieves a specific tree by its ID",
                 "tags": ["Trees"],
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
+                "security": [{
+                    "BearerAuth": []
+                }],
                 "parameters": [
                     {
                         "name": "id",
@@ -2739,6 +3743,38 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/Tree"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid tree ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -2779,25 +3815,23 @@
             },
             "patch": {
                 "summary": "Update tree information",
-                "description": "Update specific tree properties such as name, health status, or location.",
+                "description": "Update specific tree properties such as name, health status, or location",
                 "tags": ["Trees"],
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
+                "security": [{
+                    "BearerAuth": []
+                }],
                 "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "description": "Tree ID",
-                    "schema": {
-                        "type": "string",
-                        "format": "objectid",
-                        "example": "67978b5804bb6348dd0f63cf"
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Tree ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67978b5804bb6348dd0f63cf"
+                        }
                     }
-                }
                 ],
                 "requestBody": {
                     "required": true,
@@ -2859,7 +3893,7 @@
                         }
                     },
                     "400": {
-                        "description": "Validation error - user enters something that conflicts with the validation rules.",
+                        "description": "Validation error - user enters something that conflicts with the validation rules",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2910,13 +3944,11 @@
             },
             "delete": {
                 "summary": "Delete a tree",
-                "description": "Remove a tree from the database and store its details in the trash collection.",
+                "description": "Remove a tree from the database and store its details in the trash collection",
                 "tags": ["Trees"],
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
+                "security": [{
+                    "BearerAuth": []
+                }],
                 "parameters": [
                     {
                         "name": "id",
@@ -3015,16 +4047,14 @@
                 }
             }
         },
-        "/trees/{id}/image": {
+        "api/trees/{id}/image": {
             "patch": {
                 "summary": "Upload tree image",
                 "description": "Allows uploading an image (png / jpg / jpeg) for a specific tree to update it",
                 "tags": ["Trees"],
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
+                "security": [{
+                    "BearerAuth": []
+                }],
                 "parameters": [
                     {
                         "name": "id",
@@ -3113,6 +4143,327 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Tree not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/trees/location": {
+            "get": {
+                "summary": "Get trees by location",
+                "description": "Retrieves trees within a 10-meter radius of the specified geographical point",
+                "tags": ["Trees"],
+                "operationId": "getTreesByLocation",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["location"],
+                                "properties": {
+                                    "location": {
+                                        "type": "object",
+                                        "required": ["type", "coordinates"],
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "enum": ["Point"],
+                                                "default": "Point",
+                                                "description": "The GeoJSON type of the location",
+                                                "example": "Point"
+                                            },
+                                            "coordinates": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "number",
+                                                    "format": "double"
+                                                },
+                                                "minItems": 2,
+                                                "maxItems": 2,
+                                                "description": "Array of [longitude, latitude]. Longitude must be between 24 and 37. Latitude must be between 22 and 32",
+                                                "example": [25.12345, 30.54321]
+                                            }
+                                        },
+                                        "description": "GeoJSON Point object representing the location to search around"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "description": "Location object to find nearby trees. Even though this is a GET request, the current implementation expects the location in the request body"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "description": "Number of trees found",
+                                            "example": 5
+                                        },
+                                        "trees": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Tree"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - Invalid input for location",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Location must be a Point"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "location.type"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or unauthorized access",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/coupons/available": {
+            "get": {
+                "tags": ["Rewards"],
+                "summary": "Get available coupons for the authenticated user",
+                "description": "Retrieves a list of coupons that the authenticated user can afford based on their current points",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of coupons per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "description": "Number of coupons returned on the current page",
+                                            "example": 5
+                                        },
+                                        "page": {
+                                            "type": "integer",
+                                            "description": "The current page number",
+                                            "example": 1
+                                        },
+                                        "coupons": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AvailableCouponItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/coupons/{id}/redeem": {
+            "get": {
+                "tags": ["Rewards"],
+                "summary": "Redeem a specific coupon",
+                "description": "Allows an authenticated user to redeem a coupon using their points. The coupon cost is deducted from the user's points, and a unique code from the coupon is assigned to the user",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the coupon to redeem one code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "68210b6688ecfbf7b3d7dfb8"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Coupon redeemed successfully"
+                                        },
+                                        "redeemed_coupon": {
+                                            "$ref": "#/components/schemas/RedeemedCouponDetails"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid coupon ID format, or the user does not have enough points to redeem the coupon",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "errors": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "msg": { 
+                                                                "type": "string", 
+                                                                "example": "Invalid coupon ID Format" 
+                                                            },
+                                                            "param": { 
+                                                                "type": "string", 
+                                                                "example": "id" 
+                                                            },
+                                                            "location": { 
+                                                                "type": "string", 
+                                                                "example": "path" 
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Not enough points"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or password recently changed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Coupon was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Coupon not found"
                                         }
                                     }
                                 }
@@ -3316,6 +4667,65 @@
                     "eventStatus",
                     "organizedWithPartnerID"
                 ]
+            },
+            "EventResponseItem": {
+                "type": "object",
+                "description": "Structure of an event item as returned in the list. Based on the $project stage",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "format": "objectid",
+                        "description": "Event ID",
+                        "example": "67da1529cd23e1273a0ebfa4"
+                    },
+                    "eventName": {
+                        "type": "string",
+                        "description": "Name of the event.",
+                        "example": "Community Tree Planting Day"
+                    },
+                    "eventDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Date and time of the event",
+                        "example": "2024-03-15T10:00:00Z"
+                    },
+                    "location": {
+                        "type": "object",
+                        "description": "GeoJSON location of the event",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["Point"],
+                                "example": "Point"
+                            },
+                            "coordinates": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number",
+                                    "format": "float"
+                                },
+                                "example": [31.20000, 30.00000]
+                            }
+                        }
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City where the event takes place",
+                        "example": "Cairo"
+                    },
+                    "eventImage": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URL of the event's image",
+                        "example": "../uploads/event.png"
+                    },
+                    "interestedCount": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Number of users interested in this event",
+                        "example": 25
+                    }
+                }
             },
             "User": {
                 "type": "object",
@@ -3557,6 +4967,97 @@
                     }
                 },
                 "required": ["codes", "value", "brand", "cost", "expiryDate", "addByAdmin"]
+            },
+            "AvailableCouponItem": {
+                "type": "object",
+                "description": "Details of an available coupon, including populated brand information",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "68210b6688ecfbf7b3d7dfb8"
+                    },
+                    "value": {
+                        "type": "number",
+                        "description": "The monetary value or discount percentage of the coupon",
+                        "example": 10
+                    },
+                    "cost": {
+                        "type": "integer",
+                        "description": "The number of points required to redeem this coupon",
+                        "example": 50
+                    },
+                    "brand": {
+                        "type": "object",
+                        "description": "Details of the partner/brand offering the coupon",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "format": "objectid",
+                                "example": "68210b6688ecfbf7b3d7dfb8"
+                            },
+                            "partnerName": {
+                                "type": "string",
+                                "example": "Noon"
+                            },
+                            "logo": {
+                                "type": "string",
+                                "format": "url",
+                                "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1745668307/o7kigoqfe9sr56qhvcsl.png"
+                            }
+                        },
+                        "required": ["_id", "partnerName"]
+                    }
+                },
+                "required": ["_id", "value", "cost", "brand"]
+            },
+            "RedeemedCouponDetails": {
+                "type": "object",
+                "description": "Details of the coupon after successful redemption",
+                "properties": {
+                    "brand": {
+                        "type": "object",
+                        "description": "Details of the partner/brand offering the coupon",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "format": "objectid",
+                                "example": "68210b6688ecfbf7b3d7dfb8"
+                            },
+                            "partnerName": {
+                                "type": "string",
+                                "example": "Noon"
+                            },
+                            "logo": {
+                                "type": "string",
+                                "format": "url",
+                                "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1745668307/o7kigoqfe9sr56qhvcsl.png"
+                            }
+                        }
+                    },
+                    "code": {
+                        "type": "string",
+                        "description": "The unique code from the coupon that the user can use",
+                        "example": "XMAS2024S"
+                    },
+                    "expiryDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The expiry date of the coupon",
+                        "example": "2024-12-31T23:59:59Z"
+                    },
+                    "value": {
+                        "type": "number",
+                        "description": "The monetary value or discount percentage of the coupon",
+                        "example": 10
+                    },
+                    "cost": {
+                        "type": "integer",
+                        "description": "The number of points that were required to redeem this coupon",
+                        "example": 50
+                    }
+                },
+                "required": ["brand", "code", "expiryDate", "value", "cost"]
             },
             "Report": {
                 "type": "object",
@@ -3942,6 +5443,48 @@
                 },
                 "description": "A task assigned to a user for tree maintenance",
                 "required": ["title", "tree", "user", "date"]
+            },
+            "TreeWithTasks": {
+                "type": "object",
+                "properties": {
+                    "treeID": {
+                        "type": "string",
+                        "format": "objectid",
+                        "description": "ID of the tree",
+                        "example": "67da1529cd23e1273a0dbfb3"
+                    },
+                    "treeName": {
+                        "type": "string",
+                        "description": "Name of the tree",
+                        "example": "tree 1"
+                    },
+                    "pendingTasks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Task"
+                        },
+                        "description": "List of tasks that are not yet completed for today"
+                    },
+                    "completedTasks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Task"
+                        },
+                        "description": "List of tasks that have been completed today"
+                    },
+                    "totalCount": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Total number of tasks for this tree today",
+                        "example": 5
+                    },
+                    "completedCount": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Number of completed tasks for this tree today",
+                        "example": 2
+                    }
+                }
             }
         }
     }

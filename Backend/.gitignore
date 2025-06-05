@@ -131,6 +131,7 @@ dist
 
 # project files 
 src/uploads/Comment.html
+src/config/serviceAccountKey.json
 
 
 
