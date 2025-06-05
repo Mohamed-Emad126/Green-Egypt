@@ -44,7 +44,7 @@ const { getUsers,
         getUserTrees,
         getUserPointsHistory,
         getUserSavedReports,
-        } = new UserController(userService);
+        saveDeviceToken} = new UserController(userService);
 
 const taskService = new TaskService();
 const { createTask, getUserTreesWithTasks } = new TaskController(taskService);
@@ -89,6 +89,11 @@ userRouter.route('/:id/tree')
 userRouter.route('/:id/task')
         .post(verifyUserMiddleware, createTaskValidator, createTask)
         .get(verifyUserMiddleware, getUserTreesWithTasksValidator,  getUserTreesWithTasks);
+
+
+userRouter.route('/:id/device-token')
+        .patch(verifyUserMiddleware, updateUserValidator, saveDeviceToken);
+
 
 userRouter.route('/:id/saved-reports')
         .get(verifyUserMiddleware, getUserSavedReportsValidator, getUserSavedReports);

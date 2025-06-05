@@ -29,6 +29,8 @@ export interface IUser extends Document {
         hisID: mongoose.Types.ObjectId;
     };
     isVerified: boolean;
+
+    deviceToken?: string;
     savedReports: mongoose.Types.ObjectId[];
     generateToken(expiration?: string): Promise<string>;
 }
@@ -50,7 +52,8 @@ export interface IUpdateInput {
     location?:{
         type?: string;
         coordinates?: [number, number]
-    },
+     },
+    deviceToken?: string;
     address?: string;
 }
 

@@ -133,5 +133,6 @@ dist
 src/uploads/Comment.html
 src/config/serviceAccountKey.json
 
+serviceAccountKey.json
 
 
