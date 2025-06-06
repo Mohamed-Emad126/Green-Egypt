@@ -13,11 +13,11 @@ export default class TaskController {
 
     searchHome = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const result = await this.taskService.homeSearch(req.params.key);
-        if (result === 404) {
+        if (result === 404 ) {
             res.status(404).json({ massage: "No result found" });
         } else {
-            const eventResult = result[1].length !== 0 ? result[1] : "No events found";
-            const nurseriesResult = result[2].length !== 0 ? result[2] : "No nurseries found";
+            const eventResult = result[0].length !== 0 ? result[0] : "No events found for this search";
+            const nurseriesResult = result[1].length !== 0 ? result[1] : "No nurseries found for this search";
             res.json({ Events: eventResult, Nurseries: nurseriesResult });
         }
     })
@@ -27,8 +27,8 @@ export default class TaskController {
         if (result === 404) {
             res.status(404).json({ massage: "No result found" });
         } else {
-            const userResult = result[0].length !== 0 ? result[0] : "No users found";
-            const reportResult = result[1].length !== 0 ? result[1] : "No reports found";
+            const userResult = result[0].length !== 0 ? result[0] : "No users found for this search";
+            const reportResult = result[1].length !== 0 ? result[1] : "No reports found for this search";
             res.json({ Users: userResult, Reports: reportResult });
         }
     })

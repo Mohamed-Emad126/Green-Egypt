@@ -17,12 +17,15 @@ import {getUserValidator,
 
 import { createTaskValidator, getUserTreesWithTasksValidator } from "../utils/validators/taskValidator";
 import { locateTreeValidator } from "../utils/validators/treeValidator";
+import { getUserInterestedEventsValidator } from "../utils/validators/eventValidator";
 import { verifyUserMiddleware , verifyToken, verifyAdminMiddleware} from "../middlewares/authMiddleware";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
 import TaskController from "../controllers/taskController";
 import TaskService from "../services/taskService";
 import TreeController from "../controllers/treeController";
 import TreeService from "../services/treeService";
+import EventService from "../services/eventService";
+import EventController from "../controllers/eventController";
 
 
 const userRouter = Router();
@@ -48,6 +51,9 @@ const { createTask, getUserTreesWithTasks } = new TaskController(taskService);
 
 const treeService = new TreeService();
 const { LocateTree } = new TreeController(treeService);
+
+const eventService = new EventService();
+const { getUserInterestedEvents } = new EventController(eventService);
 
 userRouter.route('/')
         .get(verifyAdminMiddleware, getUsers);
@@ -92,5 +98,7 @@ userRouter.route('/:id/device-token')
 userRouter.route('/:id/saved-reports')
         .get(verifyUserMiddleware, getUserSavedReportsValidator, getUserSavedReports);
 
+userRouter.route('/:id/events')
+        .get(verifyUserMiddleware, getUserInterestedEventsValidator, getUserInterestedEvents);
 
 export default userRouter;

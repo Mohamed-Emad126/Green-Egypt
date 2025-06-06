@@ -5,6 +5,7 @@ import { IEventInput, IEventFilter } from "../interfaces/iEvent";
 import fs from "fs";
 import mongoose from "mongoose";
 import Partner from "../models/partnerModel";
+import User from "../models/userModel";
 
 export default class EventService {
 
@@ -133,8 +134,53 @@ export default class EventService {
         return filter;
     }
 
+    async getUserInterestedEvents(userID : string, page: number, limit: number) {
+        const user = await User.findById(userID);
+        if (!user) {
+            return false;
+        }
+
+        const offset: number = (page - 1) * limit;
+        const events = await Event.aggregate([
+            {
+                $match: {
+                    interestedIn: user._id,
+                    eventStatus: { $nin: ['cancelled', 'completed'] }
+                }
+            },
+            {
+                $addFields: {
+                    interestedCount: { $size: "$interestedIn" }
+                }
+            },
+            {
+                $sort: { createdAt: -1 }
+            },
+            {
+                $skip: offset
+            },
+            {
+                $limit: limit
+            },
+            {
+                $project: {
+                    eventName: 1,
+                    eventDate: 1,
+                    location: 1,
+                    city: 1,
+                    description: 1,
+                    eventImage: 1,
+                    eventStatus: 1,
+                    interestedCount: 1
+                }
+            }
+        ]);
+
+        return events.length > 0 ? events : null;
+    }
+
     async getEventById(eventID : string) {
-        const event =await Event.findById(eventID);
+        const event = await Event.findById(eventID);
         return event ? event : null;
     }
     async createEvent(eventData : IEventInput) {

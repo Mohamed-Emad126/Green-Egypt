@@ -1,5 +1,6 @@
 import { check } from 'express-validator';
 import { validatorMiddleware } from '../../middlewares/validatorMiddleware';
+import { get } from 'http';
 
 
 
@@ -43,6 +44,10 @@ export const getEventValidator = [
     validatorMiddleware
 ];
 
+export const getUserInterestedEventsValidator = [
+    check('id').isMongoId().withMessage('Invalid User ID Format'),
+    validatorMiddleware
+];
 
 export const createEventValidator = [
     check('eventName')
