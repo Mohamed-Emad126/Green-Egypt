@@ -1,12 +1,7 @@
 import { check } from 'express-validator';
 import { validatorMiddleware } from '../../middlewares/validatorMiddleware';
-import { get } from 'http';
 
-
-
-export const getEventValidator = [
-    check('id').isMongoId().withMessage('Invalid event ID Format'),
-
+export const getAllEventsValidator = [
     check('location')
         .optional()
         .isObject().withMessage('Location must be an object'),
@@ -40,6 +35,14 @@ export const getEventValidator = [
     check('timeFilter')
         .optional()
         .isIn(['thisWeek', 'nextWeek','thisMonth']).withMessage('Invalid time filter'),
+
+    validatorMiddleware
+];
+
+
+
+export const getEventValidator = [
+    check('id').isMongoId().withMessage('Invalid event ID Format'),
 
     validatorMiddleware
 ];

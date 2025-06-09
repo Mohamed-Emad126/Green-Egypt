@@ -1008,7 +1008,7 @@
                         }
                     },
                     "403": {
-                        "description": "The user who requested is not the owner of the ID in the path or admin",
+                        "description": "The user who requested is not the owner of the report or admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1145,7 +1145,7 @@
                         }
                     },
                     "403": {
-                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "summary": "The user who requested is not the owner of the report or admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1283,7 +1283,7 @@
                         }
                     },
                     "403": {
-                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "summary": "The user who requested is not the owner of the report or admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1299,7 +1299,7 @@
                         }
                     },
                     "404": {
-                        "description": "User not found.",
+                        "description": "User not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1402,7 +1402,7 @@
                         }
                     },
                     "403": {
-                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "summary": "The user who requested is not the owner of the report or admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1552,7 +1552,7 @@
                         }
                     },
                     "403": {
-                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "summary": "The user who requested is not the owner of the report or the admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1714,7 +1714,7 @@
                         }
                     },
                     "403": {
-                        "description": "The user who requested is not the owner of the ID in the path",
+                        "description": "The user who requested is not the owner of the report or admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1832,7 +1832,7 @@
                         }
                     },
                     "403": {
-                        "description": "The user who requested is not the owner of the ID in the path",
+                        "description": "The user who requested is not the owner of the report or admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2082,7 +2082,7 @@
                         }
                     },
                     "403":{
-                        "summary": "The user who requested is not the owner of the ID in the path",
+                        "summary": "The user who requested is not the owner of the report or admin",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3112,8 +3112,8 @@
         "/api/nursery/": {
             "get": {
                 "tags": ["Nurseries"],
-                "summary": "Get all nurseries (pagination)",
-                "description": "Display all nurseries registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter",
+                "summary": "Get all nurseries (pagination, location filtering)",
+                "description": "Display all nurseries registered in the application in the form of pages. Each page displays a specific number of elements that you will specify as a parameter. Optional filter for filtering nurseries in the user region (50-k radius of the user’s location)",
                 "parameters": [
                     {
                         "name": "page",
@@ -3138,6 +3138,44 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "description": "Optional filter for nursery by user locaton",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "location": {
+                                        "description": "GeoJSON Point for user-location-based filtering. Filters nursery within 50km and sorts by distance",
+                                        "type": "object",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "enum": ["Point"],
+                                                "description": "GeoJSON type, must be 'Point'",
+                                                "example": "Point"
+                                            },
+                                            "coordinates": {
+                                                "type": "array",
+                                                "description": "Array of [longitude, latitude]. Longitude (24 to 37), Latitude (22 to 32)",
+                                                "items": {
+                                                "type": "number",
+                                                "format": "float"
+                                                },
+                                                "minItems": 2,
+                                                "maxItems": 2,
+                                                "example": [31.20886, 30.07694]
+                                            }
+                                        },
+                                        "required": ["type", "coordinates"]
+                                    
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "successful operation",
@@ -3162,6 +3200,54 @@
                                             "items": {
                                                 "$ref": "#/components/schemas/Nursery"
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input for location filter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Location must be a Point"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "location.type"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or unauthorized access",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
                                         }
                                     }
                                 }
@@ -3342,7 +3428,39 @@
                         }
                     },
                     "400": {
-                        "description": "Validation Error - Invalid input for filters",
+                        "description": "Invalid input for filters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Location must be a Point"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "location.type"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or unauthorized access",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3350,7 +3468,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Invalid time filter"
+                                            "example": "Unauthorized access - please log in"
                                         }
                                     }
                                 }
@@ -3360,7 +3478,7 @@
                 }
             }
         },
-        "/api/event/{id}": {
+        "/api/events/{id}": {
             "get":{
                 "tags": ["Events"],
                 "summary": "Get specific event",
@@ -4472,6 +4590,3020 @@
                     }
                 }
             }
+        },
+        "/api/reports": {
+            "get": {
+                "summary": "Get all reports",
+                "description": "Retrieves a paginated and filtered list of reports. Reports are sorted by status, then proximity (if a location is provided in the body), up-votes, and creation date",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "The page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "The number of reports to return per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 5,
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "filters",
+                        "in": "query",
+                        "description": "A JSON-stringified object for filtering reports based on MongoDB query syntax",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "{\"reportType\":\"A tree needs care\"}"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Optional. Provide user's location to sort reports by city (50-km radius of the user location)",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "location": {
+                                        "type": "object",
+                                        "description": "GeoJSON object representing the user's current location",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "enum": ["Point"],
+                                                "example": "Point"
+                                            },
+                                            "coordinates": {
+                                                "type": "array",
+                                                "description": "[longitude(min:24, max:37), latitude(min:22, max:32]",
+                                                "items": {
+                                                    "type": "number"
+                                                },
+                                                "example": [31.2357,30.0444]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successfull operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "reports": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Report"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input for location filter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Location must be a Point"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "location.type"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or unauthorized access",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create new report",
+                "description": "Creates a new report",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "reportType": {
+                                        "type": "string",
+                                        "description": "The type of the report, Enum: [A tree needs care, A place needs tree, Other]"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "A detailed description of the report (max 600 characters), Example: 'This tree needs pruning'",
+                                        "maxLength": 600
+                                    },
+                                    "images": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "description": "At least one image file is required"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "description": "A JSON-stringified GeoJSON Point object. `Required if 'reportType' is 'A place needs tree' or 'Other'`, Example: '{\"type\":\"Point\",\"coordinates\":[31.2357,30.0444]}'"
+                                    },
+                                    "treeID": {
+                                        "type": "string",
+                                        "description": "The MongoDB ObjectId of the tree. `Required if 'reportType' is 'A tree needs care'`, Example: '67a53b762d3889664beff056'",
+                                        "format": "objectid"
+                                    }
+                                },
+                                "required": ["reportType", "description","images"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report created successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request. This can be a validation error from the request data, or a business logic error such as 'An unresolved report already exists in this location' or 'Tree already has a unresolved report'.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Location must be a Point"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "location.type"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token, session expired, or unauthorized access",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The specified 'treeID' does not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tree not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/{id}": {
+            "get": {
+                "summary": "Get report by ID",
+                "description": "Retrieves the details of a specific report by its unique ID",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the report",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67da1529cd23e1273a0dbfa2"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Report"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example":  "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update a report",
+                "description": "Updates a specific report's details, A report with 'Resolved' status cannot be updated",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the report to update",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67da1529cd23e1273a0dbfa2"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "reportType": {
+                                        "type": "string",
+                                        "enum": ["A tree needs care", "A place needs tree", "Other"],
+                                        "description": "The new type of the report"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "The new description of the report (max 600 characters)",
+                                        "maxLength": 600
+                                    },
+                                    "location": {
+                                        "type": "object",
+                                        "description": "User's location, `Require if changing reportType to 'A place needs tree'`",
+                                        "required": false,
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "enum": ["Point"],
+                                                "example": "Point"
+                                            },
+                                            "coordinates": {
+                                                "type": "array",
+                                                "items": { "type": "number" },
+                                                "minItems": 2,
+                                                "maxItems": 2,
+                                                "example": [30.04444564, 31.23572343]
+                                            }
+                                        }
+                                    },
+                                    "treeID": {
+                                        "type": "string",
+                                        "description": "mongoID of the tree `Required if changing reportType to 'A tree needs care'`",
+                                        "format": "objectid",
+                                        "example": "67da1529cd23e1273a0dbfa3"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report updated successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the report or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example":  "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Register or cancel volunteering for a report",
+                "description": "Allows an authenticated user to register as a volunteer for a 'Pending' report. This action changes the report's status to 'In Progress'. If the same user makes the request again for a report they are volunteering for, it cancels their volunteering, and the status reverts to 'Pending'",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the report to volunteer for",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67da1529cd23e1273a0dbfa2"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Volunteering registered successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Report is not in a 'Pending' state for new volunteering",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report is not pending for volunteering"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a report",
+                "description": "Deletes a report and all associated content (comments, responses)",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the report to delete",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67da1529cd23e1273a0dbfa2"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the report or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example":  "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/{id}/image": {
+            "patch": {
+                "summary": "Add images to a report",
+                "description": "Uploads and adds one or more new images to an existing report",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the report to which images will be added",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67da1529cd23e1273a0dbfa2"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "images": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "description": "At least one image file to upload"
+                                    }
+                                },
+                                "required": ["images"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Images uploaded successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format or Invalid image format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the report or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example":  "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete an image from a report",
+                "description": "Deletes a specific image from a report's `images` array by providing its URL/path",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the report",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67da1529cd23e1273a0dbfa2"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "imagePath": {
+                                        "type": "string",
+                                        "description": "The full URL of the image to be deleted",
+                                        "example": "http://res.cloudinary.com/your-cloud/image/upload/v123456/image_id.jpg"
+                                    }
+                                },
+                                "required": ["imagePath"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format or missing image path",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token , Session expired or password recently changed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the report or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found or image not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example":  "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/{id}/upvote": {
+            "patch": {
+                "summary": "Toggle upvote for a report",
+                "description": "Adds or removes the authenticated user's upvote for a specific report. If the user has not upvoted the report, an upvote is added. If they have already upvoted, the upvote is removed",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the report",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": ["Upvote added successfully", "Upvote removed successfully"],
+                                            "example": "Upvote added successfully",
+                                            "description": "Indicates whether the upvote was added or removed"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/{id}/save": {
+            "put": {
+                "summary": "Save or unsave a report",
+                "description": "Adds a report to the authenticated user's list of saved reports, or removes it if it's already present in the list",
+                "tags": ["Reports"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the report",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": ["Report saved successfully", "Report unsaved successfully"],
+                                            "example": "Report saved successfully",
+                                            "description": "The message indicates whether the report was saved or removed from saved reports"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/{id}/comment": {
+            "get": {
+                "summary": "Get comments for a report",
+                "description": "Retrieves a paginated list of top-level comments for a specific report",
+                "tags": ["Comments"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the report",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }, {
+                    "name": "page",
+                    "in": "query",
+                    "required": false,
+                    "description": "The page number for pagination",
+                    "schema": {
+                        "type": "integer",
+                        "default": 1,
+                        "minimum": 1,
+                        "example": 1
+                    }
+                }, {
+                    "name": "limit",
+                    "in": "query",
+                    "required": false,
+                    "description": "The number of comments to return per page",
+                    "schema": {
+                        "type": "integer",
+                        "default": 6,
+                        "example": 10
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "comments": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/CommentResponseItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Add a new comment to a report",
+                "description": "Adds a new comment to a specific report. Can also be used to reply to an existing comment by providing a `parentCommentID` in the request body",
+                "tags": ["Comments"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the report",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "content": {
+                                        "type": "string",
+                                        "description": "The text content of the comment",
+                                        "example": "Very insightful report, thank you for sharing!"
+                                    },
+                                    "parentCommentID": {
+                                        "type": "string",
+                                        "format": "objectid",
+                                        "description": "Optional. The ID of the comment this is a reply to",
+                                        "example": "67f1b9f3c3d4e5f6a7b8c9d0"
+                                    }
+                                },
+                                "required": ["content"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment added successfully"
+                                        },
+                                        "comment": {
+                                            "$ref": "#/components/schemas/Comment"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing 'content' or invalid report ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Content is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "content"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/{id}/response": {
+            "get": {
+                "summary": "Get responses for a report",
+                "description": "Retrieves a paginated list of responses submitted for a specific report. Responses are sorted by creation date and votes",
+                "tags": ["Responses"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the report",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }, {
+                    "name": "page",
+                    "in": "query",
+                    "required": false,
+                    "description": "The page number for pagination",
+                    "schema": {
+                        "type": "integer",
+                        "default": 1,
+                        "minimum": 1,
+                        "example": 1
+                    }
+                }, {
+                    "name": "limit",
+                    "in": "query",
+                    "required": false,
+                    "description": "The number of responses to return per page",
+                    "schema": {
+                        "type": "integer",
+                        "default": 6,
+                        "example": 10
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "length": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "responses": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ResponseResponseItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Submit a response to a report",
+                "description": "Submits a new response to a report, including one or more images as proof of action. This action changes the report's status to 'Awaiting Verification' and automatically saves the report for the responding user",
+                "tags": ["Responses"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the report",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67da1529cd23e1273a0dbfa2"
+                    }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "images": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "description": "At least one image file to upload as part of the response"
+                                    }
+                                },
+                                "required": ["images"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Response added successfully"
+                                        },
+                                        "Response": {
+                                            "$ref": "#/components/schemas/ResponseResponseItem"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format or Invalid image format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/comments/{id}": {
+            "get": {
+                "summary": "Get a specific comment by ID",
+                "description": "Retrieves a single comment by its unique ID, populating information about the creator and any direct replies along with their creators",
+                "tags": ["Comments"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the comment",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67f1b9f3c3d4e5f6a7b8c9d0"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommentResponseItem"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Comment ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Comment not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update a comment",
+                "description": "Updates the content of a specific comment, A history of modifications is kept",
+                "tags": ["Comments"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the comment",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67f1b9f3c3d4e5f6a7b8c9d0"
+                    }
+                }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "content": {
+                                        "type": "string",
+                                        "description": "The new text content for the comment",
+                                        "example": "This is the updated comment text"
+                                    }
+                                },
+                                "required": ["content"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment updated successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Comment ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the comment or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Comment not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a comment and its replies",
+                "description": "Deletes a comment and all its associated replies",
+                "tags": ["Comments"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the comment to delete",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67f1b9f3c3d4e5f6a7b8c9d0"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Comment ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the comment or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Comment not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/comments/{id}/replies": {
+            "get": {
+                "summary": "Get all replies for a comment",
+                "description": "Retrieves a list of all direct replies for a given parent comment ID",
+                "tags": ["Comments"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The MongoDB ObjectId of the parent comment",
+                    "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "67f1b9f3c3d4e5f6a7b8c9d0"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "_id": {
+                                                "type": "string",
+                                                "format": "objectid"
+                                            },
+                                            "content": {
+                                                "type": "string"
+                                            },
+                                            "createdBy": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_id": {
+                                                        "type": "string",
+                                                        "format": "objectid",
+                                                        "example": "680cb5e1a1267cab5d892980"
+                                                    },
+                                                    "username": {
+                                                        "type": "string",
+                                                        "example": "Hagar"
+                                                    },
+                                                    "profilePic": {
+                                                        "type": "string",
+                                                        "format": "uri",
+                                                        "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1747846843/kcjj1y.png"
+                                                    }
+                                                },
+                                                "description": "Author of the comment"
+                                            },
+                                            "parentCommentID": {
+                                                "type": "string",
+                                                "format": "objectid"
+                                            },
+                                            "modificationHistory": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "oldData": {
+                                                            "type": "object",
+                                                            "description": "Previous version of modified fields"
+                                                        },
+                                                        "updatedAt": {
+                                                            "type": "string",
+                                                            "format": "date-time",
+                                                            "description": "When the modification occurred"
+                                                        }
+                                                    }
+                                                },
+                                                "description": "History of comment edits"
+                                            },
+                                            "createdAt": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-06-08T19:04:58.517Z",
+                                                "description": "When the comment was created"
+                                            },
+                                            "updatedAt": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-06-08T19:05:14.329Z",
+                                                "description": "When the comment was last updated"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Comment ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Comment not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/responses/{id}": {
+            "get": {
+                "tags": [
+                    "Responses"
+                ],
+                "summary": "Get a specific response by ID",
+                "description": "Retrieves the details of a single response using its unique MongoDB ObjectId. The response is populated with information about the respondent (name - avatar - id)",
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the response",
+                        "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "65d3a5a4d6f8e7b9c8a1b2c3"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format or Invalid image format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Response ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Response not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Response not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/responses/{id}/images": {
+            "put": {
+                "tags": ["Responses"],
+                "summary": "Add images to a response",
+                "description": "Uploads and adds new images to an existing, non-verified response",
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the response",
+                        "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "65d3a5a4d6f8e7b9c8a1b2c3"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "images": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "description": "One or more image files to upload"
+                                    }
+                                },
+                                "required": ["images"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": { 
+                            "application/json": {
+                                "schema": { 
+                                    "type": "object",
+                                    "properties": {
+                                        "message": { 
+                                            "type": "string", 
+                                            "example": "New images uploaded successfully" 
+                                        }
+                                    }
+                                } 
+                            } 
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format , Invalid image format or the response is verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Response ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the response or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Response not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Response not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Responses"],
+                "summary": "Delete an image from a response",
+                "description": "Removes a specific image from a response's image array using its public URL, non-verified response",
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the response",
+                        "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "65d3a5a4d6f8e7b9c8a1b2c3"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "imageURL": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "The full URL of the image to be deleted from the response",
+                                        "example": "https://res.cloudinary.com/demo/image/upload/sample.jpg"
+                                    }
+                                },
+                                "required": ["imageURL"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": { 
+                            "application/json": { 
+                                "schema": { 
+                                    "type": "object",
+                                    "properties": {
+                                        "message": { 
+                                            "type": "string", 
+                                            "example": "Image deleted successfully" 
+                                        }
+                                    }
+                                } 
+                            } 
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format , Invalid url, not Cloudinary URL or the response is verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Response ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the response or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Response not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Response not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/responses/{id}/vote": {
+            "post": {
+                "tags": ["Responses"],
+                "summary": "Vote on a response",
+                "description": "Allows an authenticated user to cast, update, or cancel a vote on a response. A user cannot vote on their own response. Casting the same vote again cancels it. Casting an opposite vote updates the existing one",
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the response",
+                        "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "65d3a5a4d6f8e7b9c8a1b2c3"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "vote": {
+                                        "type": "boolean",
+                                        "description": "`true` for an upvote (positive), `false` for a downvote (negative)"
+                                    }
+                                },
+                                "required": ["vote"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [ "Successfully voted positive", "The vote has been updated to negative", "The vote has been cancelled"],
+                                            "examples": "Successfully voted positive"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format , Invalid vote input, user votes for his response or the response is verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Response ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Response not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Response not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/responses/{id}/analysis": {
+            "put": {
+                "tags": ["Responses"],
+                "summary": "Request analysis of a verified response",
+                "description": "Triggers an analysis on a *verified* response to determine the outcome and rewards for the respondent, The returned object details the next steps required from the user",
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the response to analyze.",
+                        "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "65d3a5a4d6f8e7b9c8a1b2c3"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AnalysisPlantResponse"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/AnalysisCareResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID Format or Response is not verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Response ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the response or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Response not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Response not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/responses/{id}/verify": {
+            "put": {
+                "tags": ["Responses"],
+                "summary": "Attempt to verify a response",
+                "description": "The system checks if the response *_it must Verified by the system automatically first_* meets the criteria (e.g., sufficient upvotes). If successful, the response `isVerified` flag is set to true and the parent report's status is updated else it is left unchanged",
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the response",
+                        "schema": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "65d3a5a4d6f8e7b9c8a1b2c3"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseNote"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID formate, the response is already verified or does not meet verification criteria",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Response ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user who requested is not the owner of the response or admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized to perform this action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Response not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Response not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -5485,6 +8617,325 @@
                         "example": 2
                     }
                 }
+            },
+            "Comment": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "507f1f77bcf86cd799439012"
+                    },
+                    "content": {
+                        "type": "string",
+                        "maxLength": 500,
+                        "description": "Comment text content"
+                    },
+                    "createdBy": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "507f1f77bcf86cd799439013",
+                        "description": "Reference to the comment author"
+                    },
+                    "reportID": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "507f1f77bcf86cd799439013",
+                        "description": "Reference to the related report"
+                    },
+                    "modificationHistory": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "oldData": {
+                                    "type": "object",
+                                    "description": "Previous version of modified fields"
+                                },
+                                "updatedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "When the modification occurred"
+                                }
+                            }
+                        },
+                        "description": "History of comment edits"
+                    },
+                    "replies": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "507f1f77bcf86cd799439013"
+                        },
+                        "description": "Array of reply comment IDs"
+                    },
+                    "parentCommentID": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "507f1f77bcf86cd799439013",
+                        "description": "Reference to parent comment if this is a reply",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": ["content", "createdBy", "reportID"]
+            },
+            "CommentResponseItem": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "6845deda1186253859705180",
+                        "description": "Unique identifier for the comment"
+                    },
+                    "content": {
+                        "type": "string",
+                        "example": "test get comments by report",
+                        "maxLength": 500,
+                        "description": "The text content of the comment"
+                    },
+                    "createdBy": {
+                        "type": "object",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "format": "objectid",
+                                "example": "680cb5e1a1267cab5d892980"
+                            },
+                            "username": {
+                                "type": "string",
+                                "example": "Hagar"
+                            },
+                            "profilePic": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1747846843/kcjj1y.png"
+                            }
+                        },
+                        "description": "Author of the comment"
+                    },
+                    "reportID": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "682da1a32ee992cf84b61a90",
+                        "description": "ID of the report this comment belongs to"
+                    },
+                    "replies": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Comment"
+                        },
+                        "description": "Array of reply comments `with 'createdBy' info(avatar - name - id)`"
+                    },
+                    "parentCommentID": {
+                        "type": "string",
+                        "format": "objectid",
+                        "nullable": true,
+                        "example": null,
+                        "description": "ID of parent comment if this is a reply"
+                    },
+                    "modificationHistory": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "oldData": {
+                                    "type": "object",
+                                    "description": "Previous version of modified fields"
+                                },
+                                "updatedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "When the modification occurred"
+                                }
+                            }
+                        },
+                        "description": "History of comment edits"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-08T19:04:58.517Z",
+                        "description": "When the comment was created"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-08T19:05:14.329Z",
+                        "description": "When the comment was last updated"
+                    }
+                },
+                "required": ["_id", "content", "createdBy", "reportID", "replies", "createdAt", "updatedAt"]
+            },
+            "Response": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "507f1f77bcf86cd799439011"
+                    },
+                    "reportID": {
+                        "type": "string",
+                        "format": "objectid",
+                        "example": "507f1f77bcf86cd799439013",
+                        "description": "Reference to the report"
+                    },
+                    "respondentID": {
+                        "type": "object",
+                        "description": "Populated user object of the person who responded",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "format": "objectid",
+                                "example": "67e0a1b2c3d4e5f6a7b8c9d0"
+                            },
+                            "username": {
+                                "type": "string",
+                                "example": "Hagar Gamal"
+                            },
+                            "profilePic": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://res.cloudinary.com/dvlao566z/image/upload/v1747846843/kcjj1y.png" 
+                            }
+                        }
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL of the response image"
+                        }
+                    },
+                    "votes": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "userID": {
+                                    "type": "string",
+                                    "format": "objectid",
+                                    "description": "Reference to the voting user",
+                                    "example": "507f1f77bcf86cd799439013"
+                                },
+                                "vote": {
+                                    "type": "boolean",
+                                    "description": "true for upvote, false for downvote"
+                                }
+                            }
+                        }
+                    },
+                    "upVotes": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "default": 0
+                    },
+                    "downVotes": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "default": 0
+                    },
+                    "isVerified": {
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "note": {
+                        "$ref": "#/components/schemas/ResponseNote"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": ["reportID", "respondentID"]
+            },
+            "AnalysisPlantResponse": {
+                "type": "object",
+                "properties": {
+                    "action": { 
+                        "type": "string", 
+                        "example": "plant" 
+                    },
+                    "user": { 
+                        "type": "string", 
+                        "format": "objectid", 
+                        "example": "65d3a5a4d6f8e7b9c8a1b2c4" 
+                    },
+                    "message": { 
+                        "type": "string", 
+                        "example": "Make user locate it on the map to reward 50 points and he/she can unsave the report" 
+                    },
+                    "requiredField": { 
+                        "type": "string", 
+                        "example": "treeName , treeLocation { type, coordinates }, treeImage" 
+                    },
+                    "defaultValues": {
+                        "type": "object",
+                        "properties": {
+                            "plantedRecently": { 
+                                "type": "boolean",
+                                "description": "always true",
+                                "example": true 
+                            },
+                            "byUser": { 
+                                "type": "string", 
+                                "format": "objectid", 
+                                "example": "65d3a5a4d6f8e7b9c8a1b2c4" 
+                            }
+                        },
+                        "description": "Default values for the new tree being planted, `It is added by the front-end and sent with the rest of the user input data`"
+                    }
+                }
+            },
+            "AnalysisCareResponse": {
+                "type": "object",
+                "properties": {
+                    "action": { 
+                        "type": "string", 
+                        "example": "care" 
+                    },
+                    "message": { 
+                        "type": "string", 
+                        "example": "Tree health status become healthy and the user reward 20 points, Make user chick whether the tree location or image needs modification or not and he/she can unsave the report"
+                    },
+                    "user": { 
+                        "type": "string", 
+                        "format": "objectid", 
+                        "example": "65d3a5a4d6f8e7b9c8a1b2c4" 
+                    }
+                }
+            },
+            "ResponseNote": {
+                "type": "object",
+                "nullable": true,
+                "properties": {
+                    "message": { 
+                        "type": "string",
+                        "enum": ["Request an analysis of your response to get your reward", "Try again, Share with others to get more up votes or just unsave the report", "Response has been accepted but the report is already resolved, you can unsaved the report"],
+                        "example": "Request an analysis of your response to get your reward" 
+                    },
+                    "status": { 
+                        "type": "string", 
+                        "enum": ["accepted", "rejected", "accepted but rejected"], 
+                        "example": "accepted" 
+                    }
+                },
+                "description": "It is the result of the response verification to inform the responding user whether his response was accepted and he got points or rejected and what he should do in this case"
             }
         }
     }

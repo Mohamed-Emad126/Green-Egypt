@@ -37,7 +37,10 @@ const ResponseSchema: Schema<IResponse> = new mongoose.Schema({
     },
     note: {
         message: String,
-        status: String,
+        status:{ 
+            type: String,
+            enum: ["accepted", "rejected", "accepted but rejected"]
+        },
     }
 
 }, { timestamps: true });

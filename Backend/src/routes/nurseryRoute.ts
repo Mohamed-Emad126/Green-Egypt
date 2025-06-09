@@ -1,7 +1,7 @@
 import { Router } from "express";
 import NurseryService from "../services/nurseryService";
 import NurseryController from "../controllers/nurseryController";
-import {getNurseryValidator, createNurseryValidator, deleteNurseryValidator, updateNurseryValidator, uploadNurseryPictureValidator} from "../utils/validators/nurseryValidator";
+import {getAllNurseriesValidator, getNurseryValidator, createNurseryValidator, deleteNurseryValidator, updateNurseryValidator, uploadNurseryPictureValidator} from "../utils/validators/nurseryValidator";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
 import { verifyToken, verifyAdminMiddleware } from "../middlewares/authMiddleware";
 
@@ -16,7 +16,7 @@ const { getNurseries,
         uploadNurseryPicture} = new NurseryController(nurseryService);
 
 nurseryRouter.route('/')
-        .get(getNurseries)
+        .get(verifyToken, getAllNurseriesValidator, getNurseries)
         .post(verifyAdminMiddleware, createNurseryValidator, createNursery);
 
 nurseryRouter.route('/:id')

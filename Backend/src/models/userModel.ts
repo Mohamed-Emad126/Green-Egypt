@@ -1,6 +1,6 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { IUser } from "../interfaces/iUser";
-import jwt from "jsonwebtoken";
+import jwt ,{ SignOptions } from "jsonwebtoken";
 import Token from "./tokenModel";
 
 const UserSchema: Schema = new Schema({
@@ -88,9 +88,13 @@ const UserSchema: Schema = new Schema({
 UserSchema.index({ location: '2dsphere' });
 
 UserSchema.methods.generateToken = async function (customExpireTime?: string): Promise<string> {
-    const expiresIn = customExpireTime || process.env.JWT_EXPIRE_TIME as string;
+    const expiresIn = customExpireTime || (process.env.JWT_EXPIRE_TIME as string);
 
-    const token = jwt.sign({ id: this.id, role: this.role }, process.env.JWT_SECRET as string, { expiresIn });
+    const token = jwt.sign(
+        { id: this.id, role: this.role },
+        process.env.JWT_SECRET as string,
+        { expiresIn: expiresIn } as SignOptions
+    );
 
     const expireValue = parseInt(expiresIn.slice(0, -1));
     const expireUnit = expiresIn.slice(-1);
