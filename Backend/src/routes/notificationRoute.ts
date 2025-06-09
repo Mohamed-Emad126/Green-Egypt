@@ -13,13 +13,13 @@ const notificationRouter  = Router();
 
 const notificationService = new NotificationService();
 const {
-    createNotification,
-    sendPushNotification,
-    sendNotificationWithSave,
-    getUserNotifications,
-    markAsRead,
-    deleteNotification,
-    deleteAllNotifications} = new NotificationController(notificationService);
+        createNotification,
+        sendPushNotification,
+        sendNotificationWithSave,
+        getUserNotifications,
+        markAsRead,
+        deleteNotification,
+        deleteAllNotifications} = new NotificationController(notificationService);
 
 notificationRouter.route("/create")
         .post(createNotificationValidator, createNotification);

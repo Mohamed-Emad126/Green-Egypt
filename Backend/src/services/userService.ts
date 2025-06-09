@@ -12,7 +12,7 @@ import Response from "../models/responseModel";
 import CommentService from "./commentService";
 import ReportService from "./reportService";
 import trashResponse from "../models/trash/trashResponseModel";
-
+import notificationService from "./notificationService";
 
 
 
@@ -186,9 +186,22 @@ export default class UserService {
                 img = '../uploads/plant.png';
                 break;
         }
+        
+        const previousPoints = user.points;
 
         user.points += points;
         user.pointsHistory.push({ points, activity, date: new Date(), img });
+        
+        // send notification if user reaches 50 points
+        if (previousPoints < 50 && user.points >= 50) {
+            const NotificationService = new notificationService();
+            await NotificationService.sendNotificationWithSave({  
+                userId: user.id,                        
+                type: "coupon",                                     
+                title: "🎉 You reached 50 points!",                 
+                message: "Great job! You’ve unlocked a coupon at 50 points! 🎉 You can redeem it anytime. Keep up the good work! 🌟",  
+            });
+        }
         await user.save();
 
         // if (user.points >= 500) {

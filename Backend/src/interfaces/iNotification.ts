@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import { Document } from "mongoose";
 
 export interface INotification extends Document {
     userId: string;
@@ -7,6 +7,7 @@ export interface INotification extends Document {
     message: string;
     createdAt: Date;
     read: boolean;
+    reportId?: string;
 }
 
 export interface INotificationInput {
@@ -14,13 +15,6 @@ export interface INotificationInput {
     type: 'info' | 'warning' | 'daily-task' | 'community' | 'coupon';
     title: string;
     message: string;
-}
+    reportId?: string;
 
-
-export interface ISendNotificationInput {
-    userId: string;
-    type: 'info' | 'warning' | 'daily-task' | 'community' | 'coupon';
-    title: string;
-    message: string;
-    token: string;
 }

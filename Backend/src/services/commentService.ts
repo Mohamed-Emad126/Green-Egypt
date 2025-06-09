@@ -3,6 +3,8 @@ import Comment from "../models/commentModel";
 import trashComment from "../models/trash/trashCommentModel";
 import Report from "../models/reportModel";
 import mongoose from "mongoose";
+import  UserModel from "../models/userModel";
+import notificationService from "./notificationService";
 
 export default class CommentService {
 
@@ -26,6 +28,21 @@ export default class CommentService {
 
         report.comments.push(newComment.id);
         await report.save();
+        
+        // send notification to report creator
+        if (createdBy && report.createdBy.toString() !== createdBy.toString()) {
+            const commenter = await UserModel.findById(createdBy);
+            const commenterName = commenter ? commenter.username : "Someone";
+    
+            const NotificationService = new notificationService();
+            await NotificationService.sendNotificationWithSave({ 
+                userId: report.createdBy.toString(),             
+                type: "community",                                
+                title: "New comment on your report",            
+                message: `${commenterName} commented: "${content?.substring(0, 50)}"`,
+                reportId: reportID?.toString(),                               
+            }); 
+        }
     
         return newComment;
     }
