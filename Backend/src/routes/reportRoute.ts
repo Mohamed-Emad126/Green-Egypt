@@ -3,7 +3,8 @@ import ReportService from "../services/reportService";
 import ReportController from "../controllers/reportController";
 import { uploadImages } from "../middlewares/uploadImageMiddleware";
 import { verifyToken, verifyReporterMiddleware } from "../middlewares/authMiddleware";
-import { getReportValidator, 
+import { getAllReportsValidator,
+        getReportValidator, 
         createReportValidator, 
         updateReportValidator, 
         uploadReportImagesValidator, 
@@ -42,14 +43,14 @@ const responseService = new ResponseService();
 const { getReportResponses, createResponse } = new ResponseController(responseService);
 
 reportRouter.route('/')
-        .get(verifyToken, getReports)
+        .get(verifyToken, getAllReportsValidator, getReports)
         .post(verifyToken, uploadImages, createReportValidator, createNewReport);
 
 reportRouter.route('/:id')
         .get(verifyToken, getReportValidator, getReportById)
         .patch(verifyReporterMiddleware, updateReportValidator, updateReport)
         .delete(verifyReporterMiddleware, deleteReportValidator, deleteReportAndContent)
-        .put(verifyToken,registerVolunteeringValidator, registerVolunteering);
+        .put(verifyToken, registerVolunteeringValidator, registerVolunteering);
 
 reportRouter.route('/:id/image')
         .patch(verifyReporterMiddleware, uploadImages, uploadReportImagesValidator, uploadReportImages)

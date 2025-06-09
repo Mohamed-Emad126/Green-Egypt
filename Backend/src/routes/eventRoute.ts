@@ -1,7 +1,7 @@
 import { Router } from "express";
 import EventService from "../services/eventService";
 import EventController from "../controllers/eventController";
-import {getEventValidator, createEventValidator, deleteEventValidator, updateEventValidator, uploadEventImageValidator, addInterestedValidator, removeInterestedValidator} from "../utils/validators/eventValidator";
+import {getAllEventsValidator, getEventValidator, createEventValidator, deleteEventValidator, updateEventValidator, uploadEventImageValidator, addInterestedValidator, removeInterestedValidator} from "../utils/validators/eventValidator";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
 import { verifyAdminMiddleware, verifyToken } from "../middlewares/authMiddleware";
 
@@ -18,7 +18,7 @@ const { getEvents,
         removeInterested} = new EventController(eventService);
 
 eventRouter.route('/')
-        .get(getEvents)
+        .get(verifyToken, getAllEventsValidator, getEvents)
         .post(verifyAdminMiddleware, createEventValidator, createEvent);
 
 eventRouter.route('/:id')

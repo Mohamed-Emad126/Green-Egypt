@@ -1,11 +1,7 @@
 import { check } from 'express-validator';
 import { validatorMiddleware } from '../../middlewares/validatorMiddleware';
 
-
-
-export const getNurseryValidator = [
-    check('id').isMongoId().withMessage('Invalid Nursery ID Format'),
-
+export const getAllNurseriesValidator = [
     check('location')
         .optional()
         .isObject().withMessage('Location must be an object'),
@@ -35,6 +31,13 @@ export const getNurseryValidator = [
         .if(check('location.coordinates').exists())
         .notEmpty().withMessage('Latitude is required')
         .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+
+    validatorMiddleware
+];
+
+export const getNurseryValidator = [
+    check('id').isMongoId().withMessage('Invalid Nursery ID Format'),
+
     validatorMiddleware
 ];
 

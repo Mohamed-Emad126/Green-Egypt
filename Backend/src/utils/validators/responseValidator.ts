@@ -54,7 +54,11 @@ export const addResponseImagesValidator = [
 export const deleteResponseImageValidator = [
     check('id').isMongoId().withMessage('Invalid Response ID Format'),
 
-    check('imageURL').isString().withMessage('Image URL is required'),
+    check('imageURL')
+        .notEmpty().withMessage('Image URL is required')
+        .isURL().withMessage('Invalid URL format')
+        .matches(/^https:\/\/res\.cloudinary\.com\/.+/)
+        .withMessage('Only Cloudinary URLs are allowed'),
 
     validatorMiddleware
 ];

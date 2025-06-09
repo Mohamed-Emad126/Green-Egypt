@@ -64,11 +64,11 @@ export default class ResponseService {
             .skip(offset)
             .limit(limit)
             .sort({ createdAt: -1, votes: -1 })
-            .populate("respondentID")
+            .populate("respondentID", "username profilePic _id")
     }
 
     async getResponseById(ResponseID: string) {
-        return await Response.findById(ResponseID).populate("respondentID").populate("reportID");
+        return await Response.findById(ResponseID).populate("respondentID", "username profilePic _id");
     }
 
     async deleteResponse(ResponseID : string, deletedBy : {role : string, id : string}) {

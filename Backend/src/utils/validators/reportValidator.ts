@@ -1,9 +1,7 @@
 import { check } from "express-validator";
 import { validatorMiddleware } from "../../middlewares/validatorMiddleware";
 
-export const getReportValidator = [
-    check('id').isMongoId().withMessage('Invalid report ID Format'),
-
+export const getAllReportsValidator = [
     check('location')
         .optional()
         .isObject().withMessage('Location must be an object'),
@@ -34,6 +32,12 @@ export const getReportValidator = [
         .notEmpty().withMessage('Latitude is required')
         .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
     
+    validatorMiddleware
+];
+
+export const getReportValidator = [
+    check('id').isMongoId().withMessage('Invalid report ID Format'),
+
     validatorMiddleware
 ]
 

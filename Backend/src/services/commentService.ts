@@ -41,15 +41,21 @@ export default class CommentService {
             .skip(offset)
             .limit(limit)
             .sort({ createdAt: -1 })
-            .populate("createdBy")
+            .populate("createdBy", "username profilePic _id")
             .populate({
                 path: "replies",
-                populate: { path: "createdBy" },
+                populate: { path: "createdBy", select: "username profilePic _id" },
             });
     }
 
     async getCommentById(commentID: string) {
-        return await Comment.findById(commentID).populate("createdBy").populate("reportID");
+        return await Comment
+            .findById(commentID)
+            .populate("createdBy", "username profilePic _id")
+            .populate({
+                path: "replies",
+                populate: { path: "createdBy", select: "username profilePic _id" },
+            });;
     }
 
     async updateComment(commentID : string, updateData :Partial<IComment>) {
@@ -107,7 +113,9 @@ export default class CommentService {
             return false;
         }
         
-        return Comment.find({ parentCommentID : commentID});
+        return Comment
+            .find({ parentCommentID : commentID})
+            .populate("createdBy", "username profilePic _id");
     }
 
 }
