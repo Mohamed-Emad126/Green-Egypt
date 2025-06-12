@@ -16,12 +16,19 @@ export default class NotificationController {
 
     createNotification = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { userId, title, type, message, reportId }: INotificationInput = req.body;
-        const notification = await this.notificationService.createNotification({ userId, title, type, message,reportId});
-        if (notification) {
+        
+        try{
+            const notification = await this.notificationService.createNotification({ userId, title, type, message,reportId});
             res.status(201).json({ message: "Notification created successfully"});
             return;
-        }else{
-            return next(new ApiError("Error creating notification", 500));
+        } catch (err: any) {
+            if (err.message === "reportId is required for community notifications") {
+                return next(new ApiError(err.message, 400));
+        }
+            if (err.message === "Report not found") {
+                return next(new ApiError(err.message, 404));
+        }
+        return next(new ApiError("Error creating notification", 500));
         }
     });
 
