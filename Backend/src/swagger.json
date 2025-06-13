@@ -9873,6 +9873,62 @@
                     }
                 },
                 "description": "It is the result of the response verification to inform the responding user whether his response was accepted and he got points or rejected and what he should do in this case"
+            },
+            "Notification": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "format": "objectid",
+                        "description": "Unique identifier for the notification",
+                        "example": "6833a607320a6ff995031ab4"
+                        },
+                    "user": {
+                        "type": "string",
+                        "format": "objectid",
+                        "description": "ID of the user who receives the notification",
+                        "example": "67da4fd880c2917bff17a47f"
+                        },
+                    "message": {
+                        "type": "string",
+                        "description": "Notification message content",
+                        "example": "Your community report has been approved."
+                        },
+                    "type": {
+                        "type": "string",
+                        "description": "Type of the notification (e.g., 'info', 'community')",
+                        "example": "community"
+                        },
+                    "reportId": {
+                        "type": "string",
+                        "format": "objectid",
+                        "nullable": true,
+                        "description": "Related report ID (only applicable for community notifications)",
+                        "example": "682de1ae26405ac7cee03f42"
+                        },
+                    "isRead": {
+                        "type": "boolean",
+                        "description": "Whether the notification has been read",
+                        "example": false
+                        },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp when the notification was created",
+                        "example": "2025-05-25T23:25:43.206+00:00"
+                        },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp when the notification was last updated",
+                        "example": "2025-05-25T23:25:43.206+00:00"
+                        }
+                },
+                "required": [
+                    "user",
+                    "message",
+                    "type"
+                ]
             }
         }
     }
