@@ -17,6 +17,6 @@ rootRouter.route('/logout').post(verifyToken, logout);
 rootRouter.route('/forgot-password').post(forgetPasswordValidator, forgotPassword);
 rootRouter.route('/verify-email/:token').post(verifyEmail);
 rootRouter.route('/reset-password/:token').patch(resetPasswordValidator, resetPassword);
-rootRouter.route('/google/callback').get(verifyGoogleIdToken);
+rootRouter.route('/google/callback').post(verifyGoogleIdToken);
 
 export default rootRouter;

@@ -2,19 +2,33 @@ import admin from '../utils/firebase';
 import NotificationModel from '../models/notificationModel';
 import { INotificationInput } from '../interfaces/iNotification';
 import UserModel from '../models/userModel';
+import ReportModel from '../models/reportModel';
 import trashNotification from '../models/trash/trashNotificationModel';
 import mongoose from "mongoose";
 
 
 export default class NotificationService {
-        async createNotification(notificationData: INotificationInput) {
+    async createNotification(notificationData: INotificationInput) {
+        const { userId, type, title, message, reportId } = notificationData;
+
+        if (type === 'community') {
+            if (!reportId) {
+                throw new Error("reportId is required for community notifications");
+            }
+
+            const reportExists = await ReportModel.findById(reportId);
+            if (!reportExists) {
+                throw new Error("Report not found");
+            }
+        }
+
         const notification = {
-            userId: new mongoose.Types.ObjectId(notificationData.userId),
-            type: notificationData.type,
-            title: notificationData.title,
-            message: notificationData.message,
-            reportId: notificationData.reportId ? new mongoose.Types.ObjectId(notificationData.reportId) : undefined,
-        };
+        userId: new mongoose.Types.ObjectId(userId),
+        type,
+        title,
+        message,
+        reportId: reportId ? new mongoose.Types.ObjectId(reportId) : undefined,
+    };
 
         const newNotification = new NotificationModel(notification);
         return await newNotification.save();

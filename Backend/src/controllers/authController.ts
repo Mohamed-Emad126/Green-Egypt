@@ -160,29 +160,23 @@ export default class AuthController {
     */
     verifyGoogleIdToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { idToken } = req.body;
+
         if (!idToken) {
             next( res.status(400).json({ error: 'ID Token is missing' }));
         }
 
         const message = await this.authService.verifyGoogleIdToken(idToken);
         switch (message) {
-            case 'Invalid token':
-                next(new ApiError('Invalid token', 400));
-                break;
-            case 'Email or name is missing from payload':
-                next(new ApiError('Email or name is missing from payload', 400));
-                break;
-            case 'Logged in successfully':
-                res.json({message});
-                break;
-            case 'Error occurred while verifying token':
-                next(new ApiError('Error occurred while verifying token', 400));
-                break;
-            case "Unable to create user":
-                next(new ApiError("Unable to create user", 400));
-                break;
-            default:
-                next(new ApiError(message as string, 400));
-        }
+        case 'Invalid token':
+        case 'Email or name is missing from payload':
+        case 'Error occurred while verifying token':
+        case 'Unable to create user':
+            return next(new ApiError(message, 400));
+        case 'Logged in successfully':
+            res.json({ message });
+            return;
+        default:
+            return next(new ApiError(message || 'Unknown error', 400));
+    }
     });
 }

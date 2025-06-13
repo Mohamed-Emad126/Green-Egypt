@@ -119,35 +119,43 @@ export default class AuthService {
         return "Password reset, but unable to log in automatically"; 
     };
 
-    async verifyGoogleIdToken(idToken: string | any) : Promise<string | undefined > {
+    async verifyGoogleIdToken(idToken: string) : Promise<string> {
         const oauthClient = new OAuth2Client();
-    
-        idToken = await this.createNewUser({email: "default_email", username: "default_username", password: "default_password"});
+
         if (!idToken) {
-            return "Unable to create user";
+        return "ID Token is missing";
         }
-        console.log("idToken:", idToken);
         try {
             const response = await oauthClient.verifyIdToken({
                 idToken,
-                audience: [
-                    process.env.GOOGLE_CLIENT_ID as string,
-                ],
-            });
-            const payload = response.getPayload();
-    
+                audience: [process.env.GOOGLE_CLIENT_ID as string],
+        });
+
+        console.log("Using client ID:", process.env.GOOGLE_CLIENT_ID);
+
+        const payload = response.getPayload();
+
             if (payload) {
                 const { email, name } = payload;
-                
+
                 if (email && name) {
                     const defaultPassword = 'default_password';
-                    await this.createNewUser({ email, username: name, password: defaultPassword });
+
+                    const existingUser = await User.findOne({email});
+                    if (!existingUser) {
+                    await this.createNewUser({
+                        email,
+                        username: name,
+                        password: defaultPassword,
+                    });
+                    }
+
                     return "Logged in successfully";
                 } else {
                     return "Email or name is missing from payload";
                 }
             } else {
-                return "Token is invalid";
+                return "Invalid token";
             }
         } catch (e) {
             console.error('Error verifying token:', e);

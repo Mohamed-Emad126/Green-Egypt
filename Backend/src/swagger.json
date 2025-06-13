@@ -57,7 +57,7 @@
             "description": "Operations about Search in the home and community"
         },
         {
-            "name": "notifications",
+            "name": "Notifications",
             "description": "Operations about Notifications"
         },
         {
@@ -579,7 +579,83 @@
         },
         "/api/auth/google/callback": {
             "post": {
-                "tags": ["Auth"]
+                "tags": ["Auth"],
+                "summary": "Verify Google ID token",
+                "description": "Verifies a Google ID token, logs in the user, or creates a new user if not found. Returns a success message or specific error.",
+                "security": [],
+                "requestBody":{
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "required": ["idToken"],
+                            "properties": {
+                            "idToken": {
+                                "type": "string",
+                                "description": "Google ID token retrieved from the frontend or OAuth Playground",
+                                "example": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij..."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+                "responses":{
+                    "200": {
+                        "description": "Successful login or user creation",
+                        "content": {
+                        "application/json": {
+                            "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                "type": "string",
+                                "example": "Logged in successfully"
+                                }
+                                }
+                            }
+                        }
+                    }
+                    },
+                    "400":{
+                        "description": "Bad request due to invalid token, missing fields, or user creation failure",
+                        "content": {
+                        "application/json": {
+                            "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                "type": "string",
+                                "example": "Error occurred while verifying token"
+                                },
+                                "error": {
+                                "type": "object",
+                                "properties": {
+                                    "statusCode": {
+                                    "type": "integer",
+                                    "example": 400
+                                    },
+                                    "name": {
+                                    "type": "string",
+                                    "example": "ApiError"
+                                    },
+                                    "status": {
+                                    "type": "string",
+                                    "example": "fail"
+                                    },
+                                    "operational": {
+                                    "type": "boolean",
+                                    "example": true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/users/": {
@@ -7596,6 +7672,867 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Response not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/create":{
+            "post":{
+                "summary": "Create new notification",
+                "description": "Creates a new notification",
+                "tags": ["Notifications"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "requestBody":{
+                    "required": true,
+                    "content":{
+                        "multipart/form-data":{
+                            "schema": {
+                                "type": "object",
+                                "properties":{
+                                    "userId":{
+                                        "type":"string",
+                                        "description":"The MongoDB ObjectId of the user to notify. Example:'67da4fd880c2917bff17a47f'",
+                                        "format": "objectid"
+                                    },
+                                    "type":{
+                                        "type":"string",
+                                        "description":"The type of the notification, Enum: [info,warning,daily-task,community,coupon]"
+                                    },
+                                    "title":{
+                                        "type":"string",
+                                        "description":"Notification title",
+                                        "example":"new comment on your report"
+                                    },
+                                    "message":{
+                                        "type":"string",
+                                        "description":"Notification message body",
+                                        "example":"someone added response to your report"
+                                    },
+                                    "reportId":{
+                                        "type":"string",
+                                        "description":"The MongoDB ObjectId of the report. `Required if 'type' is 'community'`, Example: '682de1ae26405ac7cee03f42'",
+                                        "format": "objectid"
+                                    }
+                                },
+                                "required":["userId", "title", "message"]
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "201":{
+                        "description": "Notification created successfully",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification created successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description": "Bad Request. Validation error or input issue",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "errors":{
+                                            "type": "array",
+                                            "items":{
+                                                "type":"object",
+                                                "properties":{
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "userId is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "userId"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description": "User or report not found",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Report not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500":{
+                        "description": "Internal Server Error - Firebase or system failure",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error creating notification"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/send":{
+            "post":{
+                "summary": "Send push notification",
+                "description": "Sends a push notification to a user without saving it to the database.",
+                "tags": ["Notifications"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "requestBody":{
+                    "required":"true",
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "type":"object",
+                                "properties":{
+                                    "userId":{
+                                        "type":"string",
+                                        "description":"The MongoDB ObjectId of the user to notify. Example:'67da4fd880c2917bff17a47f'",
+                                        "format": "objectid"
+                                    },
+                                    "title":{
+                                        "type":"string",
+                                        "description":"Notification title",
+                                        "example":"new comment on your report"
+                                    },
+                                    "message":{
+                                        "type":"string",
+                                        "description":"Notification message body",
+                                        "example":"someone added response to your report"
+                                    }
+                                },
+                                "required":["userId", "title", "message"]
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description": "Push notification sent successfully",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Push notification sent successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description": "Bad Request. Validation error or input issue",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "errors":{
+                                            "type": "array",
+                                            "items":{
+                                                "type":"object",
+                                                "properties":{
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "userId is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "userId"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description": "The specified 'userId' does not exist",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found or device token missing"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500":{
+                        "description": "Internal Server Error - Firebase or system failure",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error sending push notification"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/send-with-save":{
+            "post":{
+                "summary": "Send and save notification",
+                "description": "Saves a notification to the database and sends a push notification to the user.",
+                "tags": ["Notifications"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "requestBody":{
+                    "required":"true",
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "type":"object",
+                                "properties":{
+                                    "userId":{
+                                        "type":"string",
+                                        "description":"The MongoDB ObjectId of the user to notify. Example:'67da4fd880c2917bff17a47f'",
+                                        "format": "objectid"
+                                    },
+                                    "type":{
+                                        "type":"string",
+                                        "description":"The type of the notification, Enum: [info,warning,daily-task,community,coupon]"
+                                    },
+                                    "title":{
+                                        "type":"string",
+                                        "description":"Notification title",
+                                        "example":"new comment on your report"
+                                    },
+                                    "message":{
+                                        "type":"string",
+                                        "description":"Notification message body",
+                                        "example":"someone added response to your report"
+                                    },
+                                    "reportId":{
+                                        "type":"string",
+                                        "description":"The MongoDB ObjectId of the report. `Required if 'type' is 'community'`, Example: '682de1ae26405ac7cee03f42'",
+                                        "format": "objectid"
+                                    }
+                                },
+                                "required":["userId", "type", "title", "message"]
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description": "Notification saved and push sent successfully",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification saved and push notification sent successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description": "Bad Request. Validation error or input issue",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "errors":{
+                                            "type": "array",
+                                            "items":{
+                                                "type":"object",
+                                                "properties":{
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "userId is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "userId"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description": "User or report not found",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found or device token missing"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500":{
+                        "description": "Internal Server Error - saving or FCM failure",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error sending notification with save"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/get-user-notifications":{
+            "get":{
+                "summary": "Get user notifications",
+                "description": "Retrieves all notifications for a user. You can optionally filter notifications by type.",
+                "tags": ["Notifications"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters":{
+                    "name": "type",
+                    "in": "query",
+                    "required": false,
+                    "schema":{
+                        "type": "string",
+                        "enum": ["info", "warning", "daily-task", "community", "coupon"]
+                    },
+                    "description": "Optional filter by notification type"
+                },
+                "requestBody":{
+                    "required": true,
+                    "content": {
+                        "application/json":{
+                            "schema":{
+                                "type": "object",
+                                "properties":{
+                                    "userId":{
+                                        "type":"string",
+                                        "description":"The MongoDB ObjectId of the user. Example:'67da4fd880c2917bff17a47f'",
+                                        "format": "objectid"
+                                    }
+                                },
+                                "required": ["userId"]
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description":"Successful operation",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "array",
+                                    "items":{
+                                        "$ref": "#/components/schemas/Notification"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description": "Invalid request body",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "errors":{
+                                            "type": "array",
+                                            "items":{
+                                                "type":"object",
+                                                "properties":{
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "userId is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "userId"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description": "No notifications found",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error getting user notifications"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/mark-as-read/{id}":{
+            "put":{
+                "summary": "Mark notification as read",
+                "description": "Marks a specific notification as read using its ID.",
+                "tags":["Notifications"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters":{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "MongoDB ObjectId of the notification",
+                    "schema":{
+                        "type":"string",
+                        "format":"objectid"
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description":"Notification marked as read successfully",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification marked as read successfully"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    },
+                    "400":{
+                        "description": "Invalid ID Format",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "errors":{
+                                            "type": "array",
+                                            "items":{
+                                                "type":"object",
+                                                "properties":{
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid notification ID format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "params"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description": "Notification not found",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error marking notification as read"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/delete/{id}":{
+            "delete":{
+                "summary": "Delete a notification",
+                "description": "Permanently deletes a notification by its ID and archives it in the trash collection.",
+                "tags":["Notifications"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters":{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "MongoDB ObjectId of the notification to delete",
+                    "schema":{
+                        "type":"string",
+                        "format":"objectid"
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description":"Notification deleted successfully",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification deleted successfully"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    },
+                    "400":{
+                        "description": "Invalid ID Format",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "errors":{
+                                            "type": "array",
+                                            "items":{
+                                                "type":"object",
+                                                "properties":{
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid notification ID format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "params"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description": "Notification not found",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/deleteAll":{
+            "delete":{
+                "summary": "Delete all notifications for a user",
+                "description": "Deletes all notifications associated with a user and archives them in a trash collection.",
+                "tags":["Notifications"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "requestBody":{
+                    "required":"true",
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "type":"object",
+                                "properties":{
+                                    "userId":{
+                                        "type":"string",
+                                        "description":" The ID of the user whose notifications should be deleted. Example:'67da4fd880c2917bff17a47f'",
+                                        "format": "objectid"
+                                    }
+                                },
+                                "required":["userId"]
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description":"All notifications deleted successfully",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All notifications deleted successfully"
+                                        },
+                                        "deleted":{
+                                            "type":"integer",
+                                            "example":"5"
+                                        }
+                                }
+                            }
+                        }
+                    }
+                    },
+                    "400":{
+                        "description": "Invalid ID Format",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "errors":{
+                                            "type": "array",
+                                            "items":{
+                                                "type":"object",
+                                                "properties":{
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid user ID format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "userId"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description": "Error deleting notifications",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error deleting notifications"
                                         }
                                     }
                                 }
