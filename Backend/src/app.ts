@@ -20,7 +20,7 @@ import guideRouter from "./routes/guideRoute";
 import searchRouter from "./routes/searchRoute";
 import nurseryRouter from "./routes/nurseryRoute";
 import notificationRouter from "./routes/notificationRoute";
-
+import modelRouter from "./routes/modelRoute";
 
 
 //* Environment variables
@@ -60,6 +60,7 @@ app.use('/api/guide', guideRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/nursery', nurseryRouter);
 app.use('/api/notifications', notificationRouter);
+app.use('/api/model', modelRouter);
 
 app.get("/comment", (req, res) => {
     res.sendFile(path.join(__dirname, "uploads", "comment.html"));
@@ -70,10 +71,6 @@ const swaggerDocument = JSON.parse(
     fs.readFileSync(path.join(__dirname, 'swagger.json'), 'utf-8')
 );
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-app.get("/comment", (req, res) => {
-    res.sendFile(path.join(__dirname, "uploads", "comment.html"));
-});
 
 //? -----Error Handler
 app.use(notFoundErrorMiddleware);

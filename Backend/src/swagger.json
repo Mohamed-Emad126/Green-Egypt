@@ -7457,7 +7457,7 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "description": "The MongoDB ObjectId of the response to analyze.",
+                        "description": "The MongoDB ObjectId of the response to analyze",
                         "schema": {
                         "type": "string",
                         "format": "objectid",
@@ -8533,6 +8533,131 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Error deleting notifications"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/model/detect-disease": {
+            "post": {
+                "tags": ["Models"],
+                "summary": "Detect tree disease from an image",
+                "description": "Uploads an image of a tree leaf to get a disease prediction from the AI model",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "description": "The image file to be analyzed",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "The image file of the tree leaf"
+                                    }
+                                },
+                                "required": ["image"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image processed successfully"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "class": {
+                                                    "type": "string",
+                                                    "example": "Tomato___Late_blight"
+                                                },
+                                                "confidence": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 0.9985
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The image file is missing from the request or invalid extension (Only allowed png, jpg or jpeg)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Image is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "image"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable. The AI model service is not responding or failed to process the request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The analysis service is currently unavailable"
                                         }
                                     }
                                 }

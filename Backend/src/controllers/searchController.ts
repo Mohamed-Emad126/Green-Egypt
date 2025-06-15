@@ -4,7 +4,7 @@ import asyncHandler from 'express-async-handler';
 
 
 
-export default class TaskController {
+export default class searchController {
 
     constructor(private taskService: SearchService) {
         this.searchHome = this.searchHome.bind(this);

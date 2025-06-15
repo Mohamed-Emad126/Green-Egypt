@@ -60,7 +60,7 @@ export default class TreeController {
     */
     LocateTree = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         req.body.treeLocation = JSON.parse(req.body.treeLocation);
-        const { treeLocation, treeName,  } : ITreeInput = req.body;
+        const { treeLocation, treeName } : ITreeInput = req.body;
 
         const result = await this.treeService.LocateTree(
             req.body,
