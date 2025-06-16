@@ -5,10 +5,11 @@ from tensorflow.keras.preprocessing.image import img_to_array
 from PIL import Image
 import numpy as np
 import io
+import os
 
 app = Flask(__name__)
 
-MODEL_PATH = r"C:\Users\SOFT ZONE\Downloads\PD\treedisease.keras"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "treedisease.keras")
 model = load_model(MODEL_PATH)
 
 CLASS_NAMES = [
@@ -45,4 +46,4 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=4000)

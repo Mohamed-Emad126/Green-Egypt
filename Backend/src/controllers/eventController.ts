@@ -10,6 +10,7 @@ export default class EventController {
     constructor(private eventService: EventService) {
         this.getEvents = this.getEvents.bind(this);
         this.getEventById = this.getEventById.bind(this);
+        this.getUserInterestedEvents = this.getUserInterestedEvents.bind(this);
         this.createEvent = this.createEvent.bind(this);
         this.updateEvent = this.updateEvent.bind(this);
         this.deleteEvent = this.deleteEvent.bind(this);
