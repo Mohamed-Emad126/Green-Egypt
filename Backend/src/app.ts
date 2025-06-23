@@ -21,6 +21,7 @@ import searchRouter from "./routes/searchRoute";
 import nurseryRouter from "./routes/nurseryRoute";
 import notificationRouter from "./routes/notificationRoute";
 import modelRouter from "./routes/modelRoute";
+import objectRouter  from "./routes/ODModelRoute";
 
 
 //* Environment variables
@@ -61,6 +62,7 @@ app.use('/api/search', searchRouter);
 app.use('/api/nursery', nurseryRouter);
 app.use('/api/notifications', notificationRouter);
 app.use('/api/model', modelRouter);
+app.use('/api/object', objectRouter);
 
 app.get("/comment", (req, res) => {
     res.sendFile(path.join(__dirname, "uploads", "comment.html"));
