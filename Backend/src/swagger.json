@@ -8666,6 +8666,143 @@
                     }
                 }
             }
+        },
+        "api/object/detect-objects":{
+            "post":{
+                "tags":["Models"],
+                "summary":"Detect objects in an image",
+                "description":"Uploads an image to detect objects using the object detection AI model",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody":{
+                    "description": "The image file to be analyzed",
+                    "required": true,
+                    "content":{
+                        "multipart/form-data":{
+                            "schema":{
+                                "type": "object",
+                                "properties":{
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "The image file to detect objects in"
+                                    }
+                                },
+                                "required":["image"]
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description": "Successful operation",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties": {
+                                        "message":{
+                                            "type": "string",
+                                            "example": "Object detection completed successfully"
+                                        },
+                                        "data":{
+                                            "type": "object",
+                                            "properties": {
+                                                "filename": {
+                                                "type": "string",
+                                                "example": "tree.jpg"
+                                                },
+                                                "detections":{
+                                                    "type":"array",
+                                                    "items":{
+                                                        "type": "object",
+                                                        "properties":{
+                                                            "label":{
+                                                                "type": "string",
+                                                                "example": "tree"
+                                                            },
+                                                            "confidence":{
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 0.945
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description": "The image file is missing or invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Image is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "image"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token or session expired",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "503":{
+                        "description": "AI service is unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The analysis service is currently unavailable"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
