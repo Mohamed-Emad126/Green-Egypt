@@ -8803,6 +8803,364 @@
                     }
                 }
             }
+        },
+        "/api/chatbot/chat":{
+            "post":{
+                "tags":["Models"],
+                "summary":"Get a chatbot response",
+                "description":"Sends a text message to the chatbot and returns an AI-generated response based on tree planting, diseases, or care.",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody":{
+                    "description": "User message input for chatbot",
+                    "required": true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "type":"object",
+                                "properties":{
+                                    "text":{
+                                        "type": "string",
+                                        "example": "كيف أزرع شجرة؟"
+                                    },
+                                    "user_id": {
+                                            "type": "string",
+                                            "example": "67da4fd880c2917bff17a47f"
+                                    }
+                                },
+                                "required": ["text", "user_id"]
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description": "Successful chatbot response",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties": {
+                                        "message":{
+                                            "type": "string",
+                                            "example": "Chatbot response generated successfully"
+                                        },
+                                        "data":{
+                                            "type": "object",
+                                            "properties": {
+                                                "response": {
+                                                "type": "string",
+                                                "example": "لزراعة شجرة: 1. اختر مكانًا به شمس كافية..."
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Text is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "text"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token or session expired",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "503":{
+                        "description": "Chatbot service unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The chatbot service is currently unavailable"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/chatbot/intent":{
+            "post":{
+                "tags":["Models"],
+                "summary":"Classify user intent",
+                "description":"Uses an AI model to classify the intent of the user's message (e.g., planting, diseases, care, etc.).",
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody":{
+                    "description": "Text input to classify intent",
+                    "required": true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "type":"object",
+                                "properties":{
+                                    "text":{
+                                        "type": "string",
+                                        "example": "كيف أزرع شجرة؟"
+                                    },
+                                    "user_id": {
+                                            "type": "string",
+                                            "example": "67da4fd880c2917bff17a47f"
+                                    }
+                                },
+                                "required": ["text", "user_id"]
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description": "Intent classified successfully",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties": {
+                                        "message":{
+                                            "type": "string",
+                                            "example": "Intent classified successfully"
+                                        },
+                                        "data":{
+                                            "type": "object",
+                                            "properties": {
+                                                "intent": {
+                                                "type": "string",
+                                                "example": "planting"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Text is required"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "text"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "body"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token or session expired",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "503":{
+                        "description": "Chatbot service unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The chatbot service is currently unavailable"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/chatbot/history/{user_id}":{
+            "get":{
+                "summary": "Get chat history for a user",
+                "description": "Retrieves the recent chat history for the given user ID.",
+                "tags": ["Models"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters":{
+                    "name": "user_id",
+                    "in": "path",
+                    "required": true,
+                    "schema":{
+                        "type": "string"
+                    },
+                    "example": "67da4fd880c2917bff17a47f"
+                },
+                "responses":{
+                    "200":{
+                        "description":"Chat history fetched successfully",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                        "type": "string",
+                                        "example": "Chat history fetched successfully"
+                                        },
+                                        "data":{
+                                            "type": "array",
+                                            "items": {
+                                            "type": "object",
+                                            "properties": {
+                                            "text": { "type": "string", "example": "كيف أزرع شجرة؟" },
+                                            "label": { "type": "string", "example": "planting" },
+                                            "timestamp": { "type": "string", "example": "2025-06-24 13:21:00" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    },
+                    "400": {
+                        "description": "Invalid User ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid User ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description": "User not found",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }   
+            }
         }
     },
     "components": {
