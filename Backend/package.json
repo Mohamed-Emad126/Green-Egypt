@@ -1,11 +1,9 @@
 {
 
   "scripts": {
-    "start": "node dist/server.js",
-
-    "build": "tsc",
+    "start:dev": "nodemon src/server.ts",
     
-    "dev": "nodemon src/server.ts"
+    "start:prod": "cross-env NODE_ENV=production tsc && node dist/server.js"
   },
 
   "devDependencies": {
