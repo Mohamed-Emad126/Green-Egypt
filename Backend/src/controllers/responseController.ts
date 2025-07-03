@@ -17,6 +17,7 @@ export default class ResponseController {
         this.verifyResponse = this.verifyResponse.bind(this);
         this.addResponseImages = this.addResponseImages.bind(this);
         this.deleteResponseImage = this.deleteResponseImage.bind(this);
+        this.getLastResponseToReport = this.getLastResponseToReport.bind(this);
     }
 
     /**
@@ -41,7 +42,7 @@ export default class ResponseController {
      * @desc      Get report Responses
      * @route     GET /api/reports/:id/Response
      * @param     {string} id - Report id
-     * @access    Public
+     * @access    Private(Admin)
     */
     getReportResponses = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const page: number = req.query.page ? +req.query.page : 1;
@@ -53,6 +54,23 @@ export default class ResponseController {
             res.json({length: responses.length, page: page, responses: responses});
         }
         
+    });
+
+    /**    
+     * @desc      Get last response to report
+     * @route     GET /api/reports/:id/Response/last
+     * @param     {string} id - Report id
+     * @access    Public
+    */
+    getLastResponseToReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const response = await this.ResponseService.getLastResponseToReport(req.params.id);
+        if(response === false) {
+            return next(new ApiError("Report not found", 404));
+        } else if(response === null) {
+            return next(new ApiError("the report has no valid responses", 404))
+        } else {
+            res.json(response);
+        }
     });
 
     /**

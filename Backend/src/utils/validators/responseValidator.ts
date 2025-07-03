@@ -2,15 +2,20 @@ import { check } from "express-validator";
 import  { validatorMiddleware } from '../../middlewares/validatorMiddleware';
 
 
+export const getLastResponseToReportValidator = [
+    check('id').isMongoId().withMessage('Invalid Report ID Format'),
+    validatorMiddleware
+];
+
 export const getResponseByIdValidator = [
     check('id').isMongoId().withMessage('Invalid Response ID Format'),
     validatorMiddleware
-]
+];
 
 export const getReportResponsesValidator = [
     check('id').isMongoId().withMessage('Invalid Report ID Format'),
     validatorMiddleware
-]
+];
 
 export const createResponseValidator = [
     check('id').isMongoId().withMessage('Invalid Report ID Format'),

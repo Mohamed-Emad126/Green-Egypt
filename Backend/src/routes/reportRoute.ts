@@ -18,7 +18,7 @@ import CommentService from "../services/commentService";
 import { createCommentValidator, getCommentsByReportValidator } from "../utils/validators/commentValidator";
 import ResponseController from "../controllers/responseController";
 import ResponseService from "../services/responseService";
-import { createResponseValidator, getReportResponsesValidator } from "../utils/validators/responseValidator";
+import { createResponseValidator, getReportResponsesValidator, getLastResponseToReportValidator } from "../utils/validators/responseValidator";
 
 const reportRouter = Router();
 
@@ -40,7 +40,7 @@ const commentService = new CommentService();
 const { getCommentsByReport, createComment } = new CommentController(commentService);
 
 const responseService = new ResponseService();
-const { getReportResponses, createResponse } = new ResponseController(responseService);
+const { getReportResponses, getLastResponseToReport, createResponse } = new ResponseController(responseService);
 
 reportRouter.route('/')
         .get(verifyToken, getAllReportsValidator, getReports)
@@ -66,6 +66,9 @@ reportRouter.route('/:id/comment')
 reportRouter.route('/:id/response')
         .get(verifyToken, getReportResponsesValidator, getReportResponses)
         .post(verifyToken, uploadImages, createResponseValidator, createResponse);
+
+reportRouter.route('/:id/response/last')
+        .get(verifyToken, getLastResponseToReportValidator, getLastResponseToReport);
 
 reportRouter.route('/:id/save')
         .put(verifyToken, saveReportValidator, saveReport);
