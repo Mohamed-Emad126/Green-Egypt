@@ -3,7 +3,7 @@ import FormData from 'form-data';
 import fs from 'fs';
 import { IObjectDetectionResponse } from '../interfaces/iODModel';
 
-const OBJECT_DETECTION_API_URL = process.env.OBJECT_API_URL || 'http://127.0.0.1:4000/predict';
+const OBJECT_DETECTION_API_URL = process.env.OBJECT_API_URL || 'http://127.0.0.1:4001/predict';
 
 export default class ObjectDetectionService {
     

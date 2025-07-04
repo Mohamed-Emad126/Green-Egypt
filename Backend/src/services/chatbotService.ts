@@ -1,7 +1,7 @@
 import axios from "axios";
-import { ChatRequest, ChatResponse, IntentResponse, ChatHistory } from "../interfaces/ichatbot";
+import { ChatRequest, ChatResponse, IntentResponse, ChatHistory } from "../interfaces/iChatbot";
 
-const CHATBOT_API_URL = process.env.CHATBOT_API_URL || "http://127.0.0.1:8000";
+const CHATBOT_API_URL = process.env.CHATBOT_API_URL || "http://127.0.0.1:4002";
 
 export default class ChatbotService {
 
