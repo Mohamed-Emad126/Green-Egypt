@@ -68,7 +68,7 @@ export default class ResponseService {
     }
     
 
-    async getReportResponses(page : number, limit : number,reportID: string) {
+    async getReportResponses(page : number, limit : number, reportID: string) {
         const report = await Report.findById(reportID);
         if(!report) {
             return false;
@@ -79,6 +79,17 @@ export default class ResponseService {
             .skip(offset)
             .limit(limit)
             .sort({ createdAt: -1, votes: -1 })
+            .populate("respondentID", "username profilePic _id")
+    }
+
+    async getLastResponseToReport( reportID: string) {
+        const report = await Report.findById(reportID);
+        if(!report) {
+            return false;
+        }
+
+        return await Response.findOne({reportID: reportID, "note.status": { $nin: ["rejected", "accepted but rejected"] }})
+            .sort({ createdAt: 1 })
             .populate("respondentID", "username profilePic _id")
     }
 

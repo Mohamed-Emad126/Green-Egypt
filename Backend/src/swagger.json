@@ -6428,6 +6428,114 @@
                 }
             }
         },
+        "/api/reports/{id}/response/last": {
+            "get": {
+                "summary": "Get the last valid response for a report",
+                "description": "Retrieves the most old response to a specific report that has not been rejected or 'accepted but rejected'",
+                "tags": ["Responses"],
+                "security": [{
+                    "BearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The MongoDB ObjectId of the report to which the response belongs",
+                        "schema": {
+                            "type": "string",
+                            "format": "objectid",
+                            "example": "67da1529cd23e1273a0dbfa2"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation. Returns the response object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Report ID Format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "msg": {
+                                                        "type": "string",
+                                                        "example": "Invalid Report ID Format"
+                                                    },
+                                                    "param": {
+                                                        "type": "string",
+                                                        "example": "id"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid token, session expired, or user not logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access - please log in"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found or has no valid responses",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "description": "Error message describing the reason for the 404",
+                                            "oneOf": [
+                                                {
+                                                    "type": "string",
+                                                    "example":  "Report not found"
+                                                },
+                                                {
+                                                     "type": "string",
+                                                    "example":  "the report has no valid responses"
+                                                }
+                                            ] 
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/comments/{id}": {
             "get": {
                 "summary": "Get a specific comment by ID",
