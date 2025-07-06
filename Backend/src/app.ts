@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import path from 'path';
 import fs from 'fs';
@@ -32,6 +33,9 @@ dotenv.config();
 const app = express();
 
 //* Middlewares
+//? -----Allow cross-origin requests
+app.use(cors());
+
 //? -----Body Parser
 app.use(express.json());
 
