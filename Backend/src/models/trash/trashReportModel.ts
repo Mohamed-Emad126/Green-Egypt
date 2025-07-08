@@ -13,23 +13,18 @@ const TrashReportSchema: Schema<IReport> = new mongoose.Schema({
         maxLength: [600, 'Description cannot be more than 500 characters']
     },
     location: {
-        latitude: {
-            type: Number,
-            required: true,
+        type: {
+            type: String,
         },
-        longitude: {
-            type: Number,
-            required: true,
+        coordinates: {
+            type: [Number],
         }
     },
-    images: [{
-        imageName: {
-            type: String,
-        },
-        imageUrl: {
+    images: [
+        {
             type: String,
         }
-    }],
+    ],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -38,24 +33,41 @@ const TrashReportSchema: Schema<IReport> = new mongoose.Schema({
     treeID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Tree',
-        required: true
     },
     upVotes: { 
         type: Number,
         default: 0 
     },
+    upVoters: [
+        { 
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
     status: {
         type: String,
         default: 'Pending',
-        enum: ['Pending', 'In Progress', 'Resolved', 'Rejected'],
+        enum: ['Pending', 'In Progress', 'Resolved', 'Awaiting Verification'],
         required: true
     },
-    modificationHistory: [
-        {
-            updatedData: { type: Object },
-            updatedAt: { type: Date, default: Date.now }
+    modificationHistory: [{
+        oldData: {
+            type: Map,
+            of: Schema.Types.Mixed,
+        },
+        updatedAt: { 
+            type: Date, 
+            default: Date.now 
         }
-    ],
+    }],
+    volunteering: {
+        volunteer: {
+            type: mongoose.Types.ObjectId,
+            ref: 'User',
+            default: null
+        },
+        at: Date || null
+    },
     responses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Response'
@@ -63,8 +75,22 @@ const TrashReportSchema: Schema<IReport> = new mongoose.Schema({
     comments: [{
         type:mongoose.Schema.Types.ObjectId, 
         ref: 'Comment'
-    }]
-});
+    }],
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        role: {
+            type: String,
+            enum: ['user', 'admin'],
+        },
+        hisID:{
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
+    }
+}, { timestamps: true });
 
 const TrashReport: Model<IReport> = mongoose.model<IReport>('TrashReport', TrashReportSchema);
 export default TrashReport;

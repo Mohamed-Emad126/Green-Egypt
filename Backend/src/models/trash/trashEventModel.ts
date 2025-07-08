@@ -11,10 +11,19 @@ const TrashEventSchema: Schema = new Schema({
         required: true
     },
     location: {
-        longitiude:{
-            type: Number,
-
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true,
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
         }
+    },
+    city: {
+        type: String,
+        required: true
     },
     description: {
         type: String,
@@ -22,7 +31,6 @@ const TrashEventSchema: Schema = new Schema({
     },
     eventImage: {
         type: String,
-        required: true
     },
     eventStatus: {
         type: String,
@@ -33,8 +41,20 @@ const TrashEventSchema: Schema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Partner',
         required: true
+    },
+    interestedIn: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+    }],
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
-})
+}, { timestamps: true });
 
-const trashEventModel: Model<IEvent> = mongoose.model<IEvent>('Trash', TrashEventSchema);
+const trashEventModel: Model<IEvent> = mongoose.model<IEvent>('TrashEvent', TrashEventSchema);
 export default trashEventModel;

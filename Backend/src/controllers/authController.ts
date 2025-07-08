@@ -3,6 +3,7 @@ import AuthService from "../services/authService";
 import { IAuthInput } from "../interfaces/iUser";
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/apiError";
+import  sendEmail from "../utils/email";
 
 
 export default class AuthController {
@@ -13,6 +14,7 @@ export default class AuthController {
         this.forgotPassword = this.forgotPassword.bind(this);
         this.resetPassword = this.resetPassword.bind(this);
         this.verifyGoogleIdToken = this.verifyGoogleIdToken.bind(this);
+        this.verifyEmail = this.verifyEmail.bind(this);
     }
 
 
@@ -23,13 +25,43 @@ export default class AuthController {
     */
     createNewUser = asyncHandler(async (req: Request, res: Response) => {
         const { username, email, password }: IAuthInput = req.body;
-        const result = await this.authService.createNewUser({username,email,password});
-        res.status(201)
-            .header("x-auth-token", result.token)
-            .json({ 
-                message: "User created successfully",
-                user_id: result.user_id
+        const result = await this.authService.createNewUser({ username, email, password });
+
+        const verifyUrl = `${req.protocol}://${req.get('host')}/api/auth/verify-email/${result.verificationToken}`;
+        const message = `Please verify your email by clicking the following link within 24 hours: ${verifyUrl}`;
+
+        try {
+            await sendEmail({
+                email,
+                subject: 'Verify your email',
+                message,
             });
+        } catch (err: any) {
+            console.error(`Email could not be sent: ${err.message}`);
+        }
+
+        res.status(201)
+            .header('x-auth-token', result.token)
+            .json({
+                message: 'User created successfully. A verification email has been sent.',
+                user_id: result.user_id,
+            });
+    });
+
+    /**
+     * @desc      Verify email of user
+     * @route     post /api/auth/verify-email/:token
+     * @access    Public
+    */
+    verifyEmail = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const { token } = req.params;
+        const result = await this.authService.verifyEmail(token);
+
+        if (result.status !== 200) {
+            return next(new ApiError(result.message, result.status));
+        }
+        
+        res.json(result.message);
     });
 
     /**
@@ -40,9 +72,8 @@ export default class AuthController {
     login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { email, password }: IAuthInput = req.body;
         const loginResult = await this.authService.login({ email, password });
-
-        if (!loginResult) {
-            next(new ApiError("Wrong email or password", 400));
+        if (loginResult.status === 400) {
+            next(new ApiError(loginResult.message!, 400));
         } else {
             res.header("x-auth-token", loginResult.token)
             .json({ 
@@ -129,29 +160,23 @@ export default class AuthController {
     */
     verifyGoogleIdToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { idToken } = req.body;
+
         if (!idToken) {
             next( res.status(400).json({ error: 'ID Token is missing' }));
         }
 
         const message = await this.authService.verifyGoogleIdToken(idToken);
         switch (message) {
-            case 'Invalid token':
-                next(new ApiError('Invalid token', 400));
-                break;
-            case 'Email or name is missing from payload':
-                next(new ApiError('Email or name is missing from payload', 400));
-                break;
-            case 'Logged in successfully':
-                res.json({message});
-                break;
-            case 'Error occurred while verifying token':
-                next(new ApiError('Error occurred while verifying token', 400));
-                break;
-            case "Unable to create user":
-                next(new ApiError("Unable to create user", 400));
-                break;
-            default:
-                next(new ApiError(message as string, 400));
-        }
+        case 'Invalid token':
+        case 'Email or name is missing from payload':
+        case 'Error occurred while verifying token':
+        case 'Unable to create user':
+            return next(new ApiError(message, 400));
+        case 'Logged in successfully':
+            res.json({ message });
+            return;
+        default:
+            return next(new ApiError(message || 'Unknown error', 400));
+    }
     });
 }

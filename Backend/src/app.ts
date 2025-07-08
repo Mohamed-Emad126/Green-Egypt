@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import path from 'path';
 import fs from 'fs';
@@ -15,6 +16,14 @@ import reportRouter from "./routes/reportRoute";
 import eventRouter from "./routes/eventRoute";
 import commentRouter from "./routes/commentRoute";
 import responseRouter from "./routes/responseRoute";
+import taskRouter from "./routes/taskRoute";
+import guideRouter from "./routes/guideRoute";
+import searchRouter from "./routes/searchRoute";
+import nurseryRouter from "./routes/nurseryRoute";
+import notificationRouter from "./routes/notificationRoute";
+import modelRouter from "./routes/modelRoute";
+import objectRouter  from "./routes/ODModelRoute";
+import chatbotRouter from "./routes/chatbotRoute";
 
 
 //* Environment variables
@@ -23,11 +32,10 @@ dotenv.config();
 //* Create Express App
 const app = express();
 
-//* View Engine
-app.set("view engine", "pug");
-app.set("views", path.join(__dirname, "views"));
-
 //* Middlewares
+//? -----Allow cross-origin requests
+app.use(cors());
+
 //? -----Body Parser
 app.use(express.json());
 
@@ -53,6 +61,14 @@ app.use('/api/reports', reportRouter);
 app.use('/api/events', eventRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/responses', responseRouter);
+app.use('/api/tasks', taskRouter);
+app.use('/api/guide', guideRouter);
+app.use('/api/search', searchRouter);
+app.use('/api/nursery', nurseryRouter);
+app.use('/api/notifications', notificationRouter);
+app.use('/api/model', modelRouter);
+app.use('/api/object', objectRouter);
+app.use('/api/chatbot', chatbotRouter);
 
 app.get("/comment", (req, res) => {
     res.sendFile(path.join(__dirname, "uploads", "comment.html"));
@@ -63,10 +79,6 @@ const swaggerDocument = JSON.parse(
     fs.readFileSync(path.join(__dirname, 'swagger.json'), 'utf-8')
 );
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-app.get("/comment", (req, res) => {
-    res.sendFile(path.join(__dirname, "uploads", "comment.html"));
-});
 
 //? -----Error Handler
 app.use(notFoundErrorMiddleware);

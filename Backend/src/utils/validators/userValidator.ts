@@ -19,13 +19,35 @@ export const updateUserValidator = [
         .optional()
         .isEmail().withMessage('Please enter a valid email address'),
 
-    check('location.latitude')
+    check('location')
         .optional()
-        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+        .isObject().withMessage('Location must be an object'),
+
+    check('location.type')
+        .if(check('location').exists())
+        .notEmpty().withMessage('Location type is required')
+        .isIn(['Point']).withMessage('Location must be a Point'),
         
-    check('location.longitude')
-        .optional()
+    check('location.coordinates')
+        .if(check('location').exists())
+        .notEmpty().withMessage('Location coordinates is required')
+        .isArray().withMessage('Location must be an array')
+        .isLength({min : 2, max : 2}).withMessage('Location must have exactly two elements'),
+        
+    check('location.coordinates.0')
+        .if(check('location.coordinates').exists())
+        .notEmpty().withMessage('Longitude is required')
         .isFloat({ min: 24, max: 37 }).withMessage('Longitude must be between 24 and 37'),
+
+    check('location.coordinates.1')
+        .if(check('location.coordinates').exists())
+        .notEmpty().withMessage('Latitude is required')
+        .isFloat({ min: 22, max: 32 }).withMessage('Latitude must be between 22 and 32'),
+
+    check('address')
+        .optional()
+        .isLength({min : 3, max : 50}).withMessage('Address must be between 3 and 50 characters'),
+
 
     validatorMiddleware
 ];
@@ -96,14 +118,27 @@ export const updateUserPointsValidator = [
     validatorMiddleware
 ];
 
-export const claimPendingCouponsValidator = [
-    check('id').isMongoId().withMessage('Invalid user ID Format'),
-    validatorMiddleware
-];
+// export const claimPendingCouponsValidator = [
+//     check('id').isMongoId().withMessage('Invalid user ID Format'),
+//     validatorMiddleware
+// ];
 
 export const promoteUserValidator =[
     check('id').isMongoId().withMessage('Invalid user ID Format'),
     validatorMiddleware
 ];
-    
 
+export const getUserTreesValidator =[
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
+    validatorMiddleware
+];
+
+export const getUserPointsHistoryValidator =[
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
+    validatorMiddleware
+];
+
+export const getUserSavedReportsValidator =[
+    check('id').isMongoId().withMessage('Invalid user ID Format'),
+    validatorMiddleware
+];

@@ -2,41 +2,74 @@ import mongoose, { Schema, Model } from "mongoose";
 import { ITree } from "../../interfaces/iTree";
 
 const trashTreeSchema: Schema = new Schema({
-    species: {
+    treeName: {
         type: String,
         trim: true,
-        required: [true, 'Species is required']
     },
     treeLocation: {
-        type: String,
-        required: [true, 'Location is required']
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true,
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+        }
     },
     healthStatus: {
         type: String,
-        enum: ['Healthy', 'Diseased', 'Dying'],
+        enum: ['Healthy', 'Needs Care'],
         required: true
     },
     problem: {
-        type: String,
+        type: mongoose.Types.ObjectId,
+        ref: 'Report',
     },
     image: String,
-    deletionReason: {
-        type: String,
-        enum: ['Died', 'Cut down', 'False Record'],
-        required: true
-    },
     plantedRecently: {
         type: Boolean,
         required: true,
-        default: false
     },
     byUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", 
         required: true
+    },
+    reportsAboutIt: {
+        type: {
+            resolved: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }],
+            unresolved: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }]
+        }
+    },
+    deletionReason: {
+        type: String,
+        enum: ['Died', 'Cut down', 'False Record'],
+        required: true
+    },
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        role: {
+            type: String,
+            enum: ['user', 'admin'],
+        },
+        hisID:{
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
     }
-
-});
+}, { timestamps: true });
 
 const trashTreeModel: Model<ITree> = mongoose.model<ITree>('TrashTree', trashTreeSchema);
 export default trashTreeModel;

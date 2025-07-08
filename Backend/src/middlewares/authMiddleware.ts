@@ -7,6 +7,8 @@ import Report from "../models/reportModel";
 import asyncHandler from 'express-async-handler';
 import Comment from "../models/commentModel";
 import ResponseM from "../models/responseModel";
+import Task from "../models/taskModel";
+import Tree from "../models/treeModel";
 
 export const verifyToken = asyncHandler( async (req : Request, res : Response, next : NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -121,4 +123,44 @@ export const verifyRespondentMiddleware = asyncHandler(async (req : Request, res
         }
     });
 });
+
+export const verifyTaskOwnerMiddleware = asyncHandler(async (req : Request, res : Response, next : NextFunction) => {
+    verifyToken(req, res, async (err) => {
+        if (err) {
+            return next(err);
+        }    
+
+        const task = await Task.findById(req.params.id);
+        if (!task) {
+            return next(new ApiError("Task not found", 404));    
+        }
+
+        if (req.body.user.id === task.user.toString() || req.body.user.role === 'admin') {
+            next();
+        } else {
+            return next(new ApiError("You are not authorized to perform this action", 403));
+        }
+    });
+});
+
+export const verifyTreeOwnerMiddleware = asyncHandler(async (req : Request, res : Response, next : NextFunction) => {
+    verifyToken(req, res, async (err) => {
+        if (err) {
+            return next(err);
+        }    
+
+        const tree = await Tree.findById(req.params.id);
+        if (!tree) {
+            return next(new ApiError("Tree not found", 404));    
+        }
+
+        if ((req.body.user.id === tree.byUser.toString() && tree.plantedRecently === true) || req.body.user.role === 'admin') {
+            next();
+        } else {
+            return next(new ApiError("You are not authorized to perform this action", 403));
+        }
+    });
+});
+
+
 

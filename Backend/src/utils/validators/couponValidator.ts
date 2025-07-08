@@ -1,6 +1,5 @@
 import { check } from "express-validator";
 import  { validatorMiddleware } from '../../middlewares/validatorMiddleware';
-import Coupon from "../../models/couponModel";
 
 
 export const getCouponValidator = [
@@ -8,24 +7,33 @@ export const getCouponValidator = [
     validatorMiddleware
 ]
 
+export const redeemCouponCodeValidator = [
+    check('id').isMongoId().withMessage('Invalid coupon ID Format'),
+    validatorMiddleware
+]
+
 
 export const createCouponValidator = [
-    check('codes').isArray({ min: 1 }).withMessage('Codes array must contain at least one code'),
+    check('codes')
+        .isArray({ min: 1 }).withMessage('Codes array must contain at least one code')
+        .custom((codes) => {
+            const uniqueCodes = [...new Set(codes)];
+            return uniqueCodes.length === codes.length;
+        })
+        .withMessage('Codes must be unique'),
 
     check('codes.*')
-        .notEmpty().withMessage('Each code is required')
-        .isLength({ min: 6, max: 6 }).withMessage('Each code must be exactly 6 characters')
-        .custom(async (code) => {
-            const existingCoupon = await Coupon.findOne({ code });
-            if (existingCoupon) {
-                throw new Error(`Coupon code ${code} already exists`);
-            }
-            return true;
-        }),
+        .trim()
+        .isLength({ min: 9, max: 9 }).withMessage('Each code must be exactly 9 characters')
+        .isAlphanumeric().withMessage('The code must contain only letters and numbers.'),
     
     check('value')
         .notEmpty().withMessage('Value is required')
-        .isFloat({ min: 1 }).withMessage('Value must be a positive number'),
+        .isFloat({ min: 0.01  }).withMessage('Value must be a positive number'),
+
+    check('cost')
+        .notEmpty().withMessage('Cost is required')
+        .isFloat({ min: 50 }).withMessage('Cost must be a positive number greater than 50'),
     
     check('brand')
         .notEmpty().withMessage('Brand is required')
@@ -33,29 +41,36 @@ export const createCouponValidator = [
     
     check('expiryDate')
         .notEmpty().withMessage('Expiry date is required')
-        .isDate().withMessage('Expiry date must be a valid date')   //isISO8601
-        .isAfter(new Date().toString()).withMessage('Expiry date must be in the future'), //toISOString
+        .isISO8601().withMessage('Expiry date must be a valid ISO8601 date')   
+        .isAfter(new Date().toISOString()).withMessage('Expiry date must be in the future'), 
 
     validatorMiddleware
 ];
 
 export const updateCouponValidator = [
 
-
-    check('code')
+    check('codes')
         .optional()
-        .isLength({ min: 6, max: 6 }).withMessage('Each code must be exactly 6 characters')
-        .custom(async (code) => {
-            const existingCoupon = await Coupon.findOne({ code });
-            if (existingCoupon) {
-                throw new Error(`Coupon code ${code} already exists`);
-            }
-            return true;
-        }),
+        .isArray({ min: 1 }).withMessage('Codes array must contain at least one code')
+        .custom((codes) => {
+            const uniqueCodes = [...new Set(codes)];
+            return uniqueCodes.length === codes.length;
+        })
+        .withMessage('Codes must be unique'),
+
+    check('codes.*')
+        .if((value, { req }) => req.body.codes !== undefined) 
+        .trim()
+        .isLength({ min: 9, max: 9 }).withMessage('Each code must be exactly 9 characters')
+        .isAlphanumeric().withMessage('The code must contain only letters and numbers.'),
     
     check('value')
         .optional()
-        .isFloat({ min: 1 }).withMessage('Value must be a positive number'),
+        .isFloat({ min: 0.1 }).withMessage('Value must be a positive number'),
+
+    check('cost')
+        .optional()
+        .isFloat({ min: 50 }).withMessage('Cost must be a positive number greater than 50'),
     
     check('brand')
         .optional()
@@ -63,8 +78,8 @@ export const updateCouponValidator = [
     
     check('expiryDate')
         .optional()
-        .isDate().withMessage('Expiry date must be a valid date')   //isISO8601
-        .isAfter(new Date().toString()).withMessage('Expiry date must be in the future'), //toISOString
+        .isISO8601().withMessage('Expiry date must be a valid ISO8601 date (YYYY-MM-DD)')   
+        .isAfter(new Date().toISOString()).withMessage('Expiry date must be in the future'), 
 
     validatorMiddleware
 ];

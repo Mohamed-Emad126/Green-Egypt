@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { IComment } from "../../interfaces/iComment";
 
 const TrashCommentSchema: Schema = new Schema({
@@ -27,6 +27,29 @@ const TrashCommentSchema: Schema = new Schema({
             default: Date.now 
         }
     }],
+    replies:[{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Comment'
+    }],
+    parentCommentID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment',
+        default: null
+    },
+    deletedAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedBy: {
+        role: {
+            type: String,
+            enum: ['user', 'admin'],
+        },
+        hisID:{
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
+    }
 }, { timestamps: true });
 
 const TrashComment = mongoose.model<IComment>("TrashComment", TrashCommentSchema);

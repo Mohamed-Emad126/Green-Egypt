@@ -2,28 +2,40 @@ import mongoose, { Schema, Model } from "mongoose";
 import { ITree } from "../interfaces/iTree";
 
 const TreeSchema: Schema = new Schema({
+    treeName: {
+        type: String,
+        required: [true, 'Tree name is required'],
+        trim: true,
+        maxLength: [15, 'Tree name cannot be more than 15 characters'],
+    },
     treeLocation: {
-        latitude: {
-            type: Number,
-            required: [true, 'Latitude is required'],
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point',
+            required: true,
         },
-        longitude: {
-            type: Number,
-            required: [true, 'Longitude is required'],
+        coordinates: {
+            type: [Number],
+            required: true,
+            validate: {
+                validator: function (value: number[]) {
+                    return value.length === 2;
+                },
+                message: 'Coordinates must have exactly two elements',
+            },
+            index: '2dsphere',
         }
     },
     healthStatus: {
         type: String,
-        enum: ['Healthy', 'Diseased', 'Dying'],
+        enum: ['Healthy', 'Needs Care'],
+        default: 'Healthy',
         required: true,
     },
     problem: {
-        type: String,
-        required: function () {
-            return this.healthStatus === 'Diseased' || this.healthStatus === 'Dying';
-        },
-        trim: true,
-        default: 'No problem'
+        type: mongoose.Types.ObjectId,
+        ref: 'Report',
     },
     image: {
         type: String,
@@ -39,12 +51,29 @@ const TreeSchema: Schema = new Schema({
         ref: "User", 
         required: true
     },
-    reportsAboutIt: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Report"
-    }],
+    reportsAboutIt: {
+        type: {
+            resolved: [{
+                type: mongoose.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }],
+            unresolved: [{
+                type: mongoose.Types.ObjectId,
+                ref: "Report",
+                default: []
+            }],
+            _id : false
+        },
+        default: {
+            resolved: [],
+            unresolved: []
+        }
+    }
     
 }, { timestamps: true });
+
+TreeSchema.index({ treeLocation: '2dsphere' });
 
 const TreeModel: Model<ITree> = mongoose.model<ITree>('Tree', TreeSchema);
 export default TreeModel;

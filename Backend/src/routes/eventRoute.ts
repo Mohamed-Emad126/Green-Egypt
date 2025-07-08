@@ -1,9 +1,9 @@
 import { Router } from "express";
 import EventService from "../services/eventService";
 import EventController from "../controllers/eventController";
-import {getEventValidator,createEventValidator ,deleteEventValidator ,updateEventValidator ,uploadEventImageValidator,deleteEventPictureValidator} from "../utils/validators/eventValidator";
+import {getAllEventsValidator, getEventValidator, createEventValidator, deleteEventValidator, updateEventValidator, uploadEventImageValidator, addInterestedValidator, removeInterestedValidator} from "../utils/validators/eventValidator";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
-import { verifyToken } from "../middlewares/authMiddleware";
+import { verifyAdminMiddleware, verifyToken } from "../middlewares/authMiddleware";
 
 const eventRouter = Router();
 
@@ -14,21 +14,24 @@ const { getEvents,
         deleteEvent, 
         updateEvent, 
         uploadEventPicture,
-        deleteEventPicture } = new EventController(eventService);
+        addInterested,
+        removeInterested} = new EventController(eventService);
 
 eventRouter.route('/')
-        .get(getEvents)
-        .post(verifyToken,createEventValidator, createEvent);
+        .get(verifyToken, getAllEventsValidator, getEvents)
+        .post(verifyAdminMiddleware, createEventValidator, createEvent);
 
 eventRouter.route('/:id')
         .get(verifyToken, getEventValidator, getEventById)
-        .patch(verifyToken, updateEventValidator, updateEvent)
-        .delete(verifyToken, deleteEventValidator, deleteEvent);
+        .patch(verifyAdminMiddleware, updateEventValidator, updateEvent)
+        .delete(verifyAdminMiddleware, deleteEventValidator, deleteEvent);
 
 eventRouter.route('/image/:id')
-        .post(verifyToken, uploadImage, uploadEventImageValidator, uploadEventPicture)
-        .delete(verifyToken,deleteEventPictureValidator ,deleteEventPicture);
-        
+        .post(verifyAdminMiddleware, uploadImage, uploadEventImageValidator, uploadEventPicture)        
+
+eventRouter.route('/:id/interested')
+        .post(verifyToken, addInterestedValidator, addInterested)
+        .delete(verifyToken, removeInterestedValidator, removeInterested);
 
 export default eventRouter;
 

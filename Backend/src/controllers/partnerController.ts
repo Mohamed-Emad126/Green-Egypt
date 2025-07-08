@@ -13,6 +13,7 @@ export default class PartnerController {
         this.createNewPartner = this.createNewPartner.bind(this);
         this.updatePartner = this.updatePartner.bind(this);
         this.deletePartner = this.deletePartner.bind(this);
+        this.uploadPartnerLogo = this.uploadPartnerLogo.bind(this);
     }
 
     /**
@@ -50,13 +51,13 @@ export default class PartnerController {
     createNewPartner = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { partnerName, startDate, duration, durationUnit, website = "No website", description } : IPartnerInput = req.body;
         const addByAdmin = req.body.user.id;
-        await this.partnerService.createNewPartner({ partnerName, startDate, duration, durationUnit, website, description, addByAdmin });
+        await this.partnerService.createNewPartner({ partnerName, startDate, duration, durationUnit, website, description, addByAdmin}, req.file as Express.Multer.File);
         res.status(201).json({ message: "Partner created successfully"});
     });
 
     /**
      * @desc      Update partner
-     * @route     patch /api/partners/:id
+     * @route     PATCH /api/partners/:id
      * @access    Private(Admin)
     */
     updatePartner = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -70,13 +71,29 @@ export default class PartnerController {
 
     /**
      * @desc      Delete partner
-     * @route     DELETE /api/partners/:id
+     * @route     DELETE /api/partners/:id/
      * @access    Private(Admin)
     */
     deletePartner = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const deletedPartner = await this.partnerService.deletePartner(req.params.id);
+
+        const options = {
+            deleteCoupons: req.query.deleteCoupons === 'true',
+            deleteFutureEvents: req.query.deleteFutureEvents === 'true',
+            cancelFutureEvents: req.query.cancelFutureEvents === 'true'
+        };
+
+        let message = "Partner deleted successfully";
+        if (options.deleteCoupons && options.deleteFutureEvents) {
+            message = "Partner, its coupons and its future events deleted successfully";
+        } else if (options.deleteCoupons) {
+            message = "Partner and its coupons deleted successfully";
+        } else if (options.deleteFutureEvents) {
+            message = "Partner and its future events deleted successfully";
+        }
+
+        const deletedPartner = await this.partnerService.deletePartner(req.params.id, req.body.user.id, options);
         if (deletedPartner) {
-            res.json({ message: "Partner deleted successfully"});
+            res.json({ message: message});
         } else {
             return next(new ApiError("Partner not found", 404));
         }

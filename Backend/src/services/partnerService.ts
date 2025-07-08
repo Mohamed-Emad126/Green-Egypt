@@ -3,6 +3,11 @@ import Partner from "../models/partnerModel";
 import trashPartner from "../models/trash/trashPartnerModel";
 import fs from "fs";
 import uploadToCloud from "../config/cloudinary";
+import mongoose from "mongoose";
+import Coupon from "../models/couponModel";
+import CouponService from "./couponService";
+import Event from "../models/eventModel";
+import EventService from "./eventService";
 
 
 export default class PartnerService {
@@ -15,7 +20,11 @@ export default class PartnerService {
         return await Partner.findById(partnerID);
     }
 
-    async createNewPartner(newPartner : IPartnerInput) {
+    async createNewPartner(newPartner : Partial<IPartnerInput>, imageFile: Express.Multer.File) {
+        const imageUploadResult = await uploadToCloud(imageFile.path);
+        newPartner.logo = imageUploadResult.url;
+        fs.unlinkSync(imageFile.path);
+
         return await Partner.create(newPartner);
     }
 
@@ -36,13 +45,43 @@ export default class PartnerService {
         return true;
     }
 
-    async deletePartner(partnerID : string) {
+    async deletePartner(partnerID : string, deletedBy : string, options : { deleteCoupons: boolean, deleteFutureEvents: boolean, cancelFutureEvents: boolean }) {
         const partner = await Partner.findById(partnerID);
         if (!partner){
             return false;
         }
         
-        const toTrash = new trashPartner({...partner.toObject()});
+        if (options.deleteCoupons) {
+            const partnerCoupons = await Coupon.find({ brand: partnerID });
+            if (partnerCoupons.length > 0) {
+                const couponService = new CouponService();
+                await Promise.all(partnerCoupons.map(async (coupon) => {
+                    await couponService.deleteCoupon(coupon.id, deletedBy);
+                }));
+            }
+        }
+        
+        if (options.cancelFutureEvents || options.deleteFutureEvents) {
+            const partnerFutureEvents = await Event.find({ organizedWithPartnerID : partnerID, eventDate : { $gt : new Date() }});
+            if (partnerFutureEvents.length > 0) {
+                await Promise.all(partnerFutureEvents.map(async (event) => {
+                    event.eventStatus = "cancelled";
+                    await event.save();
+                }));
+            }
+        }
+
+        if (options.deleteFutureEvents) {
+            const partnerFutureEvents = await Event.find({ organizedWithPartnerID : partnerID, eventDate : { $gt : new Date() }});
+            if (partnerFutureEvents.length > 0) {
+                const eventService = new EventService();
+                await Promise.all(partnerFutureEvents.map(async (event) => {
+                    await eventService.deleteEvent(event.id, deletedBy);
+                }));
+            }
+        }
+
+        const toTrash = new trashPartner({...partner.toObject(), deletedBy : new mongoose.Types.ObjectId(deletedBy)});
         toTrash.hasExpired = true;
         await toTrash.save();
 

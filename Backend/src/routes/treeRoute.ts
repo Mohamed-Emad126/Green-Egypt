@@ -1,7 +1,7 @@
 import { Router } from "express";
 import TreeService from "../services/treeService";
 import TreeController from "../controllers/treeController";
-import { getTreeValidator, locateTreeValidator, updateTreeValidator, deleteTreeValidator, uploadTreeImageValidator } from "../utils/validators/treeValidator";
+import { getTreeValidator, getTreesByLocationValidator, updateTreeValidator, deleteTreeValidator, uploadTreeImageValidator } from "../utils/validators/treeValidator";
 import { uploadImage } from "../middlewares/uploadImageMiddleware";
 import { verifyToken } from "../middlewares/authMiddleware";
 
@@ -10,14 +10,16 @@ const treeRouter = Router();
 const treeService = new TreeService();
 const { getTrees,
         getTreeById,
-        LocateTree,
+        getTreesByLocation,
         updateTree, 
         deleteTree,
         uploadTreePicture} = new TreeController(treeService);
 
 treeRouter.route('/')
-        .get(getTrees)
-        .post(verifyToken, locateTreeValidator, LocateTree);
+        .get(getTrees);
+        
+treeRouter.route('/location')
+        .get( getTreesByLocationValidator, getTreesByLocation);
 
 treeRouter.route('/:id')
         .get(verifyToken, getTreeValidator, getTreeById)
@@ -25,7 +27,7 @@ treeRouter.route('/:id')
         .delete(verifyToken, deleteTreeValidator, deleteTree);
 
 treeRouter.route('/:id/image')
-        .post(verifyToken, uploadImage, uploadTreeImageValidator, uploadTreePicture)
+        .patch(verifyToken, uploadImage, uploadTreeImageValidator, uploadTreePicture)
 
 
 export default treeRouter;

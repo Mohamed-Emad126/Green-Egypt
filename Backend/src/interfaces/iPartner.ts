@@ -10,9 +10,11 @@ export interface IPartner extends Document {
     description?: string;
     logo: string;
     hasExpired: boolean;
-    addByAdmin: mongoose.Schema.Types.ObjectId;
-    createdAt?: Date
-    updatedAt?: Date
+    addByAdmin: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+    deletedAt?: Date;
+    deletedBy?:  mongoose.Types.ObjectId;
 }
 
 export interface IPartnerInput {
@@ -22,5 +24,6 @@ export interface IPartnerInput {
     durationUnit: 'days' | 'months' | 'years' | 'one-time';
     website?: string;
     description?: string;
-    addByAdmin?: mongoose.Schema.Types.ObjectId;
+    logo: string;
+    addByAdmin?: mongoose.Types.ObjectId;
 }

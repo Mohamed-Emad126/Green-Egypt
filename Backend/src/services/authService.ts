@@ -1,5 +1,4 @@
 import { IAuthInput } from "../interfaces/iUser";
-import { IToken } from "../interfaces/iToken";
 import User from "../models/userModel";
 import Token from "../models/tokenModel";
 import bcrypt from "bcryptjs";
@@ -8,29 +7,53 @@ import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 
 
-
 export default class AuthService {
 
-    async createNewUser(newUser : IAuthInput): Promise<{ token: string; user_id: string }> {
+    async createNewUser(newUser : IAuthInput): Promise<{ token: string; user_id: string, verificationToken: string }> {
         const user = new User({
             username: newUser.username, 
             email: newUser.email, 
-            password: await bcrypt.hash(newUser.password, 10)
+            password: await bcrypt.hash(newUser.password, 10),
+            isVerified: false,
         });
         await user.save();
 
+        const verificationToken = await user.generateToken(process.env.VERIFICATION_TOKEN_EXPIRE_TIME);
+
         const token = await user.generateToken();
-        return {token, user_id : user.id};
+        return { token, user_id: user.id, verificationToken };
+
     }
 
-    async login(userData : IAuthInput): Promise<{ token: string; user_id: string } | false> {
+    async verifyEmail(token: string): Promise<{ status: number; message: string }> {
+        const tokenRecord = await Token.findOne({ token });
+        if (!tokenRecord) {
+            return { status: 400, message: "Invalid token" };
+        }
+
+        const user = await User.findById(tokenRecord.user);
+        if (!user) {
+            return { status: 400, message: "User not found" };
+        };
+
+        user.isVerified = true;
+        await user.save();
+
+        await Token.deleteOne({ token });
+
+        return { status: 200, message: "Email verified successfully" };
+    }
+
+    async login(userData : IAuthInput) {
         const findUser = await User.findOne({email: userData.email});
-        if(!findUser || !(await bcrypt.compare(userData.password, findUser.password))) {
-            return false;
-        } 
+        if(!findUser) {
+            return { status: 400, message: "Wrong email" };
+        } else if( !await bcrypt.compare(userData.password, findUser.password)){
+            return { status: 400, message: "Wrong password" };
+        }
         
         const token = await findUser.generateToken();
-        return {token, user_id : findUser.id};
+        return { status: 200, token, user_id : findUser.id};
     }
 
     async logout(token: string): Promise<void> {
@@ -42,7 +65,7 @@ export default class AuthService {
         if(!findUser) {
             return "User not found";
         }
-        const token = await findUser.generateToken();
+        const token = await findUser.generateToken(process.env.RESET_TOKEN_EXPIRE_TIME);
                 
         const message = `Please click on the following link to reset your password: ${resetUrl}/${token}`;
         try{
@@ -52,7 +75,7 @@ export default class AuthService {
                 message: message
             });
             return "Email sent successfully";
-        }catch(err ) {
+        }catch(err) {
             Token.findOneAndDelete({ token });
             return `Email could not be sent - ${err}`;
         }
@@ -96,35 +119,43 @@ export default class AuthService {
         return "Password reset, but unable to log in automatically"; 
     };
 
-    async verifyGoogleIdToken(idToken: string | any) : Promise<string | undefined > {
+    async verifyGoogleIdToken(idToken: string) : Promise<string> {
         const oauthClient = new OAuth2Client();
-    
-        idToken = await this.createNewUser({email: "default_email", username: "default_username", password: "default_password"});
+
         if (!idToken) {
-            return "Unable to create user";
+        return "ID Token is missing";
         }
-        console.log("idToken:", idToken);
         try {
             const response = await oauthClient.verifyIdToken({
                 idToken,
-                audience: [
-                    process.env.GOOGLE_CLIENT_ID as string,
-                ],
-            });
-            const payload = response.getPayload();
-    
+                audience: [process.env.GOOGLE_CLIENT_ID as string],
+        });
+
+        console.log("Using client ID:", process.env.GOOGLE_CLIENT_ID);
+
+        const payload = response.getPayload();
+
             if (payload) {
                 const { email, name } = payload;
-                
+
                 if (email && name) {
                     const defaultPassword = 'default_password';
-                    await this.createNewUser({ email, username: name, password: defaultPassword });
+
+                    const existingUser = await User.findOne({email});
+                    if (!existingUser) {
+                    await this.createNewUser({
+                        email,
+                        username: name,
+                        password: defaultPassword,
+                    });
+                    }
+
                     return "Logged in successfully";
                 } else {
                     return "Email or name is missing from payload";
                 }
             } else {
-                return "Token is invalid";
+                return "Invalid token";
             }
         } catch (e) {
             console.error('Error verifying token:', e);

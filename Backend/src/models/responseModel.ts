@@ -13,7 +13,7 @@ const ResponseSchema: Schema<IResponse> = new mongoose.Schema({
         required: true,
     },
     images: [{
-            type: String,
+        type: String,
     }],
     votes: [{
         userID: { 
@@ -23,11 +23,27 @@ const ResponseSchema: Schema<IResponse> = new mongoose.Schema({
         vote: Boolean,
         _id: false 
     }],
+    upVotes: {
+        type: Number,
+        default: 0,
+    },
+    downVotes: {
+        type: Number,
+        default: 0,
+    },
     isVerified: {
         type: Boolean,
         default: false,
     },
-    }, { timestamps: true });
+    note: {
+        message: String,
+        status:{ 
+            type: String,
+            enum: ["accepted", "rejected", "accepted but rejected"]
+        },
+    }
+
+}, { timestamps: true });
 
 const Response : Model<IResponse> = mongoose.model<IResponse>("Response", ResponseSchema);
 export default Response;

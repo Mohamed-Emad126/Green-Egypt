@@ -1,20 +1,20 @@
 {
 
   "scripts": {
-
     "start:dev": "nodemon src/server.ts",
-
-    "start:prod": "cross-env NODE_ENV=production tsc && node dist/app.js"
-
+    
+    "start:prod": "cross-env NODE_ENV=production tsc && node dist/server.js"
   },
 
   "devDependencies": {
+
+    "@types/axios": "^0.14.4",
 
     "@types/bcryptjs": "^2.4.6",
 
     "@types/express": "^4.17.21",
 
-    "@types/jsonwebtoken": "^9.0.6",
+    "@types/jsonwebtoken": "^9.0.9",
 
     "@types/morgan": "^1.9.9",
 
@@ -42,9 +42,15 @@
 
   "dependencies": {
 
+    "@types/jsonwebtoken": "^9.0.2",
+
+    "axios": "^1.8.4",
+
     "bcryptjs": "^2.4.3",
 
     "cloudinary": "^2.5.0",
+
+    "cors": "^2.8.5",
 
     "dotenv": "^16.4.5",
 
@@ -55,6 +61,10 @@
     "express-rate-limit": "^7.4.1",
 
     "express-validator": "^7.2.0",
+
+    "firebase-admin": "^13.4.0",
+
+    "form-data": "^4.0.3",
 
     "google-auth-library": "^9.14.2",
 
@@ -71,6 +81,8 @@
     "nodemailer": "^6.9.15",
 
     "passport": "^0.7.0",
+
+    "readdirp": "^4.1.2",
 
     "socket.io": "^4.8.1",
 

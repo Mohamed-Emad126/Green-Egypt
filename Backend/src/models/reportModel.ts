@@ -13,35 +13,51 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         maxLength: [600, 'Description cannot be more than 600 characters']
     },
     location: {
-        latitude: Number,
-        longitude: Number
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point',
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+            validate: {
+                validator: function (value: number[]) {
+                    return value.length === 2;
+                },
+                message: 'Coordinates must have exactly two elements [longitude, latitude]'
+            }
+        }
     },
-    images: [{
-        type: String,
-    }],
+    images: [
+        {
+            type: String,
+        }
+    ],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     treeID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: 'Tree',
-        required: true
     },
     upVotes: { 
         type: Number,
         default: 0, 
         min: [0, 'Up votes cannot be negative']
     },
-    upVoters: [{ 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+    upVoters: [
+        { 
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
     status: {
         type: String,
         default: 'Pending',
-        enum: ['Pending', 'In Progress', 'Resolved', 'Rejected'],
+        enum: ['Pending', 'In Progress', 'Resolved', 'Awaiting Verification'],
         required: true
     },
     modificationHistory: [{
@@ -52,8 +68,17 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         updatedAt: { 
             type: Date, 
             default: Date.now 
-        }
+        },
+        _id: false
     }],
+    volunteering: {
+        volunteer: {
+            type: mongoose.Types.ObjectId,
+            ref: 'User',
+            default: null
+        },
+        at: Date || null
+    },
     responses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Response'
@@ -63,6 +88,8 @@ const ReportSchema: Schema<IReport> = new mongoose.Schema({
         ref: 'Comment'
     }]
 }, { timestamps: true });
+
+ReportSchema.index({ location: '2dsphere' });
 
 const Report: Model<IReport> = mongoose.model<IReport>('Report', ReportSchema);
 export default Report;

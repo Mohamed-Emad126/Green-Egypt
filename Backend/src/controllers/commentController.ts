@@ -12,7 +12,7 @@ export default class CommentController {
         this.getCommentById = this.getCommentById.bind(this);
         this.createComment = this.createComment.bind(this);
         this.updateComment = this.updateComment.bind(this);
-        this.deleteComment = this.deleteComment.bind(this);
+        this.deleteCommentAndReplies = this.deleteCommentAndReplies.bind(this);
         this.getCommentReplies = this.getCommentReplies.bind(this);
     }
 
@@ -38,11 +38,13 @@ export default class CommentController {
      * @access    Public
     */
     getCommentsByReport = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const comments = await this.CommentService.getCommentsByReport(req.params.id);
+        const page: number = req.query.page ? +req.query.page : 1;
+        const limit: number = req.query.limit ? +req.query.limit : 6;
+        const comments = await this.CommentService.getCommentsByReport(page, limit, req.params.id);
         if(comments === false) {
             return next(new ApiError("Report not found", 404));
         } else {
-            res.json({ comments });
+            res.json({ length: comments.length, page: page, comments: comments });
         } 
         
     });
@@ -84,8 +86,9 @@ export default class CommentController {
      * @param     {string} id - Comment id
      * @access    Private
     */
-    deleteComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const commentAfterDelete = await this.CommentService.deleteComment(req.params.id);
+    deleteCommentAndReplies = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const { id, role } : {id: string, role: string} = req.body.user;
+        const commentAfterDelete = await this.CommentService.deleteCommentAndReplies(req.params.id, {role, id});
         if (commentAfterDelete) {
             res.json({ message: "Comment deleted successfully"});
         } else {
