@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gogreen/Registerpage.dart';
+import 'package:gogreen/profile/Registerpage.dart';
 import 'package:gogreen/Splashscreen.dart';
 import 'package:provider/provider.dart';
 import 'provider/onboarding_state.dart';

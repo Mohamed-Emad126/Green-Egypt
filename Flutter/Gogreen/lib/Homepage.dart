@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gogreen/Community.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:gogreen/EventDetails.dart';
+import 'package:gogreen/NotificationPage.dart';
+import 'package:gogreen/SearchScreen.dart';
+import 'package:gogreen/TreeDetails.dart';
 import 'package:latlong2/latlong.dart';
-
-bool showNurseryContent = false;
-
-
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
-
 
   @override
   _HomepageState createState() => _HomepageState();
@@ -18,28 +16,12 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
-  void _onItemTapped(int index) {
-    if (index == 0) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const Homepage()));
-    }
-
-    else {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
-  }
-
+  int _currentPage = 0;
+  bool _isNotificationPressed = false;
+  bool showNurseryContent = false;
 
   late List<bool> _isSelected;
   late int _currentIndex;
-  int _currentPage = 0;
-  bool _isNotificationPressed = false;
-  bool isTreePlantingSelected = false;
-  bool isCareSelected = false;
-  bool isTreeNurserySelected = false;
-
-  bool isEventsSelected = false;
   final PageController _pageController = PageController();
 
   @override
@@ -49,6 +31,19 @@ class _HomepageState extends State<Homepage> {
     _currentIndex = 0;
     _isSelected[_currentIndex] = true;
   }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   void _onIconTap(int index) {
     setState(() {
       for (int i = 0; i < _isSelected.length; i++) {
@@ -56,16 +51,18 @@ class _HomepageState extends State<Homepage> {
       }
       _isSelected[index] = true;
       _currentIndex = index;
+      _currentPage = index;
+      _pageController.jumpToPage(index);
     });
-  }
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(
+      context,
+      designSize: const Size(390, 844),
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -102,6 +99,12 @@ class _HomepageState extends State<Homepage> {
                         setState(() {
                           _isNotificationPressed = !_isNotificationPressed;
                         });
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationsPage(),
+                          ),
+                        );
                       },
                       child: Image.asset(
                         'images/img_28.png',
@@ -110,10 +113,20 @@ class _HomepageState extends State<Homepage> {
                       ),
                     ),
                     SizedBox(width: 24.w),
-                    Image.asset(
-                      'images/img_29.png',
-                      width: 31.w,
-                      height: 31.h,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SearchScreen(),
+                          ),
+                        );
+                      },
+                      child: Image.asset(
+                        'images/img_29.png',
+                        width: 31.w,
+                        height: 31.h,
+                      ),
                     ),
                   ],
                 ),
@@ -164,19 +177,15 @@ class _HomepageState extends State<Homepage> {
             ),
           ),
           SizedBox(height: 20.h),
-          Padding( padding: EdgeInsets.symmetric(horizontal: 2.w,vertical: 2.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _currentPage = 0;
-                      });
-                      _pageController.jumpToPage(0);
-                    },
+                    onTap: () => _onIconTap(0),
                     child: buildSmallContainerWithSelected(
                       'images/img_1.png',
                       'The planting guide',
@@ -184,14 +193,8 @@ class _HomepageState extends State<Homepage> {
                     ),
                   ),
                   SizedBox(width: 10.w),
-
                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _currentPage = 3;
-                      });
-                      _pageController.jumpToPage(3);
-                    },
+                    onTap: () => _onIconTap(3),
                     child: buildSmallContainerWithSelected(
                       'images/img_20.png',
                       'Care',
@@ -200,264 +203,307 @@ class _HomepageState extends State<Homepage> {
                   ),
                   SizedBox(width: 10.w),
                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _currentPage = 1;
-                      });
-                      _pageController.jumpToPage(1);
-                    },
+                    onTap: () => _onIconTap(1),
                     child: buildSmallContainerWithSelected(
                       'images/img_33.png',
                       'Events',
                       _currentPage == 1,
                     ),
                   ),
-
                   SizedBox(width: 10.w),
                   GestureDetector(
-                    onTap: () {
-                      showNurseryContent = true;
-
-                      setState(() {
-                        _currentPage = 4;
-                      });
-                      _pageController.jumpToPage(4);
-                    },
+                    onTap: () => _onIconTap(4),
                     child: buildSmallContainerWithSelected(
                       'images/img_8.png',
                       'Planting Location',
                       _currentPage == 4,
                     ),
                   ),
-                   SizedBox(width: 5.w),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _currentPage = 2;
-            });
-            _pageController.jumpToPage(2);
-          },
-          child: buildSmallContainerWithSelected(
-            'images/img_8.png',
-            'Tree Nursery',
-            _currentPage == 2,
-          ),
-        ),
-
+                  SizedBox(width: 10.w),
+                  GestureDetector(
+                    onTap: () => _onIconTap(2),
+                    child: buildSmallContainerWithSelected(
+                      'images/img_8.png',
+                      'Tree Nursery',
+                      _currentPage == 2,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-
-          // PageView
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           Expanded(
             child: PageView(
               controller: _pageController,
               onPageChanged: (index) {
                 setState(() {
                   _selectedIndex = index;
+                  _currentPage = index;
+                  for (int i = 0; i < _isSelected.length; i++) {
+                    _isSelected[i] = i == index;
+                  }
+                  _currentIndex = index;
                 });
               },
               physics: const NeverScrollableScrollPhysics(),
               children: [
-
-
-                GestureDetector(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15.w),
-                    height: 470.h,
-                    width: 376.w,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEBF3F1),
-                      borderRadius: BorderRadius.circular(20.r),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(16.w),
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 25.h,
-                          crossAxisSpacing: 20.w,
-                          childAspectRatio: 0.5,
-                        ),
-                        itemCount: gridItems.length,
-                        itemBuilder: (context, index) {
-                          return buildSmallContainerWithTitleDescriptionAndImage(
-                            gridItems[index]['image']!,
-                            gridItems[index]['title']!,
-                            gridItems[index]['description']!,
-                          );
-                        },
-                      ),
-                    ),
+                // Page 0: The Planting Guide
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 15.w),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEBF3F1),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
+                  child: const ChatBotScreen(),
                 ),
-
-                GestureDetector(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15),
-                    height: 350.h,
-                    width: 376.w,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFEBF3F1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          top: 10.h,
-                          left: 15.w,
-                          child: Row(
-                            children: [
-                              Text(
-                                'Search By',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                // Page 1: Events
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 15.w),
+                  height: 350.h,
+                  width: 376.w,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEBF3F1),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 10.h,
+                        left: 15.w,
+                        child: Row(
+                          children: [
+                            Text(
+                              'Search By',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Roboto',
                               ),
-                              SizedBox(width: 5.w),
-                              PopupMenuButton<String>(
-                                onSelected: (value) {
-                                  print(value);
-                                },
-                                offset: Offset(0, 40),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: "All Nurseries",
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.location_city, color: Colors.green),
-                                        SizedBox(width: 10.w),
-                                        Text("All Nurseries"),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: "My Location",
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.location_on, color: Colors.green),
-                                        SizedBox(width: 10.w),
-                                        Text("My Location"),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                            ),
+                            SizedBox(width: 5.w),
+                            PopupMenuButton<String>(
+                              onSelected: (value) {
+                                // Handle selection if needed
+                              },
+                              offset: Offset(0, 40.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: "All Nurseries",
                                   child: Row(
                                     children: [
-                                      Icon(Icons.location_on, color: Colors.black),
-                                      SizedBox(width: 8.w),
+                                      const Icon(Icons.location_city, color: Colors.green),
+                                      SizedBox(width: 10.w),
                                       Text(
-                                        'My Location',
-                                        style: TextStyle(
-                                          fontSize: 16.sp,
-                                          color: Colors.black,
-                                        ),
+                                        "All Nurseries",
+                                        style: TextStyle(fontSize: 14.sp),
                                       ),
                                     ],
                                   ),
                                 ),
+                                PopupMenuItem(
+                                  value: "My Location",
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.location_on, color: Colors.green),
+                                      SizedBox(width: 10.w),
+                                      Text(
+                                        "My Location",
+                                        style: TextStyle(fontSize: 14.sp),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      color: Colors.black,
+                                      size: 18.sp,
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Text(
+                                      'My Location',
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: Colors.black,
+                                        fontFamily: 'Roboto',
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-
-                        Positioned.fill(
-                          top: 50.h, 
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Expanded(child: _buildBox("images/img_43.png", "Fri, 20 Jul 2026", "Event Aim To Plant 50 Trees", "Zagazig", "120", "100")),
-                                      SizedBox(width: 10.w),
-                                      Expanded(child: _buildBox("images/img_44.png", "Fri, 20 Jul 2026", "Event Aim To Plant 50 Trees", "Zagazig", "120", "100")),
-                                    ],
-                                  ),
-
-                                  SizedBox(height: 10.h), 
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Expanded(child: _buildBox("images/img_45.png", "Fri, 20 Jul 2026", "Event Aim To Plant 50 Trees", "Zagazig", "120", "100")),
-                                      SizedBox(width: 10.w),
-                                      Expanded(child: _buildBox("images/img_46.png", "Fri, 20 Jul 2026", "Event Aim To Plant 50 Trees", "Zagazig", "120", "100")),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                      ),
+                      Positioned.fill(
+                        top: 50.h,
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 5.w),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: EventBox(
+                                        key: const ValueKey('event1'),
+                                        imagePath: "images/img_43.png",
+                                        date: "Fri, 20 Jul 2026",
+                                        title: "Event Aim To Plant 50 Trees",
+                                        location: "Zagazig",
+                                        interested: "120",
+                                        going: "100",
+                                        eventId: "event1",
+                                      ),
+                                    ),
+                                    SizedBox(width: 10.w),
+                                    Expanded(
+                                      child: EventBox(
+                                        key: const ValueKey('event2'),
+                                        imagePath: "images/img_44.png",
+                                        date: "Fri, 20 Jul 2026",
+                                        title: "Event Aim To Plant 50 Trees",
+                                        location: "Zagazig",
+                                        interested: "120",
+                                        going: "100",
+                                        eventId: "event2",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10.h),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: EventBox(
+                                        key: const ValueKey('event3'),
+                                        imagePath: "images/img_45.png",
+                                        date: "Fri, 20 Jul 2026",
+                                        title: "Event Aim To Plant 50 Trees",
+                                        location: "Zagazig",
+                                        interested: "120",
+                                        going: "100",
+                                        eventId: "event3",
+                                      ),
+                                    ),
+                                    SizedBox(width: 10.w),
+                                    Expanded(
+                                      child: EventBox(
+                                        key: const ValueKey('event4'),
+                                        imagePath: "images/img_46.png",
+                                        date: "Fri, 20 Jul 2026",
+                                        title: "Event Aim To Plant 50 Trees",
+                                        location: "Zagazig",
+                                        interested: "120",
+                                        going: "100",
+                                        eventId: "event4",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-    SingleChildScrollView(
-    physics: ClampingScrollPhysics(),
-    child: Column(
-    children: [
-    SizedBox(height: 10.h),
-
-    Container(
-    margin: EdgeInsets.symmetric(horizontal: 15.w),
-    padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-    width: 385.w,
-    decoration: BoxDecoration(
-    color: const Color(0xFFEBF3F1),
-    borderRadius: BorderRadius.circular(20.r),
-    ),
-    child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-    Row(
-    children: [
-    Text('Search By', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.black)),
-    SizedBox(width: 10.w),
-    Icon(Icons.location_on, color: Colors.black, size: 18.sp),
-    SizedBox(width: 5.w),
-    Text("My Location", style: TextStyle(fontSize: 14.sp, color: Colors.black)),
-    ],
-    ),
-    SizedBox(height: 15.h),
-
-    NurseryCard(imagePath: "images/img_38.png", title: "Egypt Green Nursery", location: "Cairo, Egypt", rating: 4.5, latitude: 30.0444, longitude: 31.2357),
-    SizedBox(height: 10.h),
-
-    NurseryCard(imagePath: "images/img_39.png", title: "Farming Nursery", location: "Alexandria, Egypt", rating: 4.0, latitude: 31.2001, longitude: 29.9187),
-    SizedBox(height: 10.h),
-
-    NurseryCard(imagePath: "images/img_40.png", title: "Flower & Plants Nursery", location: "Giza, Egypt", rating: 5.0, latitude: 29.9784, longitude: 31.1313),
-    SizedBox(height: 10.h),
-
-    ],
-    ),
-    ),
-    ],
-    ),
-    ),
-
-
-
-    SingleChildScrollView(
-                  physics: ClampingScrollPhysics(),
+                // Page 2: Tree Nursery
+                SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10.h),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 15.w),
+                        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+                        width: 385.w,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEBF3F1),
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Search By',
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(width: 10.w),
+                                Icon(
+                                  Icons.location_on,
+                                  color: Colors.black,
+                                  size: 18.sp,
+                                ),
+                                SizedBox(width: 5.w),
+                                Text(
+                                  "My Location",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 15.h),
+                            NurseryCard(
+                              imagePath: "images/img_38.png",
+                              title: "Egypt Green Nursery",
+                              location: "Cairo, Egypt",
+                              rating: 4.5,
+                              latitude: 30.0444,
+                              longitude: 31.2357,
+                            ),
+                            SizedBox(height: 10.h),
+                            NurseryCard(
+                              imagePath: "images/img_39.png",
+                              title: "Farming Nursery",
+                              location: "Alexandria, Egypt",
+                              rating: 4.0,
+                              latitude: 31.2001,
+                              longitude: 29.9187,
+                            ),
+                            SizedBox(height: 10.h),
+                            NurseryCard(
+                              imagePath: "images/img_40.png",
+                              title: "Flower & Plants Nursery",
+                              location: "Giza, Egypt",
+                              rating: 5.0,
+                              latitude: 29.9784,
+                              longitude: 31.1313,
+                            ),
+                            SizedBox(height: 10.h),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Page 3: Care
+                SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -504,12 +550,13 @@ class _HomepageState extends State<Homepage> {
                               ],
                             ),
                           ),
-
                           Positioned(
                             top: 30.h,
                             right: 30.w,
                             child: GestureDetector(
-
+                              onTap: () {
+                                // Handle add button tap
+                              },
                               child: Container(
                                 width: 44.w,
                                 height: 45.h,
@@ -530,167 +577,364 @@ class _HomepageState extends State<Homepage> {
                     ],
                   ),
                 ),
-
-                GestureDetector(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15),
-                    height: 350,
-                    width: 376,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFEBF3F1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Stack(
-                      children: [
-
-                        Positioned.fill(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: FlutterMap(
-                              options: MapOptions(
-                                center: LatLng(30.0444, 31.2357),
-                                zoom: 13.0,
-                              ),
-                              children: [
-                                TileLayer(
-                                  urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                  subdomains: ['a', 'b', 'c'],
-                                ),
-                                MarkerLayer(
-                                  markers: [
-                                    Marker(
-                                      point: LatLng(30.0444, 31.2357),
-                                      width: 40,
-                                      height: 40,
-                                      child: Icon(
-                                        Icons.location_pin,
-                                        color: Colors.red,
-                                        size: 40,
-                                      ),
-                                    ),
-
-                                  ],
-                                ),
-                              ],
+                // Page 4: Planting Location
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 15.w),
+                  height: 350.h,
+                  width: 376.w,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEBF3F1),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20.r),
+                          child: FlutterMap(
+                            options: const MapOptions(
+                              center: LatLng(30.0444, 31.2357),
+                              zoom: 13.0,
                             ),
-                          ),
-                        ),
-
-
-
-                        Positioned(
-                          top: 10,
-                          left: 15,
-                          child: Row(
                             children: [
-                              Text(
-                                'Search By',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              TileLayer(
+                                urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                subdomains: const ['a', 'b', 'c'],
                               ),
-                              SizedBox(width: 5),
-                              PopupMenuButton<String>(
-                                onSelected: (value) {
-                                  print(value);
-                                },
-                                offset: Offset(0, 40),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: "All Nurseries",
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    point: const LatLng(30.0444, 31.2357),
+                                    width: 80.w,
+                                    height: 40.h,
                                     child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Icon(Icons.location_city, color: Colors.green),
-                                        SizedBox(width: 10),
-                                        Text("All Nurseries"),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: "My Location",
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.location_on, color: Colors.green),
-                                        SizedBox(width: 10),
-                                        Text("My Location"),
+                                        Icon(
+                                          Icons.location_pin,
+                                          color: Colors.red,
+                                          size: 40.sp,
+                                        ),
+                                        SizedBox(width: 5.w),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => const TreeDetails(),
+                                              ),
+                                            );
+                                          },
+                                          child: Image.asset(
+                                            'images/img_64.png',
+                                            color: const Color(0xFF147351),
+                                            width: 32.w,
+                                            height: 40.h,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
                                 ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 10.h,
+                        left: 15.w,
+                        child: Row(
+                          children: [
+                            Text(
+                              'Search By',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 5.w),
+                            PopupMenuButton<String>(
+                              onSelected: (value) {
+                                // Handle selection if needed
+                              },
+                              offset: Offset(0, 40.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: "All Nurseries",
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.location_city, color: Colors.green),
+                                      SizedBox(width: 10.w),
+                                      Text(
+                                        "All Nurseries",
+                                        style: TextStyle(fontSize: 14.sp),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: "My Location",
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.location_on, color: Colors.green),
+                                      SizedBox(width: 10.w),
+                                      Text(
+                                        "My Location",
+                                        style: TextStyle(fontSize: 14.sp),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
                                 child: Row(
                                   children: [
-                                    SizedBox(width: 5),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.location_on, color: Colors.black),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            'My Location',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
+                                    Icon(
+                                      Icons.location_on,
+                                      color: Colors.black,
+                                      size: 18.sp,
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Text(
+                                      'My Location',
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: Colors.black,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          top: 30.h,
-                          right: 30.w,
-                          child: GestureDetector(
-
-                            child: Container(
-                              width: 44.w,
-                              height: 45.h,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF147351),
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              child: Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 26.sp,
-                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-
-
                 ),
               ],
             ),
-          )
-
+          ),
         ],
-
       ),
+    );
+  }
 
-
-
+  Widget buildSmallContainerWithSelected(String imagePath, String text, bool isSelected) {
+    return Container(
+      padding: EdgeInsets.all(10.w),
+      decoration: BoxDecoration(
+        color: isSelected ? const Color(0xFFADCEC2) : const Color(0xFFEBF3F1),
+        borderRadius: BorderRadius.circular(10.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            blurRadius: 4,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Text(
+            text,
+            style: TextStyle(
+              color: isSelected ? Colors.black : const Color(0xFF147351),
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(width: 5.w),
+          Image.asset(
+            imagePath,
+            width: 30.w,
+            height: 30.h,
+          ),
+        ],
+      ),
     );
   }
 }
 
+class EventBox extends StatefulWidget {
+  final String imagePath;
+  final String date;
+  final String title;
+  final String location;
+  final String interested;
+  final String going;
+  final String eventId;
+
+  const EventBox({
+    super.key,
+    required this.imagePath,
+    required this.date,
+    required this.title,
+    required this.location,
+    required this.interested,
+    required this.going,
+    required this.eventId,
+  });
+
+  @override
+  _EventBoxState createState() => _EventBoxState();
+}
+
+class _EventBoxState extends State<EventBox> {
+  bool isInterested = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsScreen(eventId: widget.eventId),
+          ),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(10.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 4.r,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 160.h,
+              width: 182.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                image: DecorationImage(
+                  image: AssetImage(widget.imagePath),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              widget.date,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: const Color(0xFF003C26),
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            SizedBox(height: 4.h),
+            Text(
+              widget.title,
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: const Color(0xFF003C26),
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 4.h),
+            Row(
+              children: [
+                Icon(
+                  Icons.location_on,
+                  size: 14.sp,
+                  color: const Color(0xFF003C26),
+                ),
+                SizedBox(width: 4.w),
+                Text(
+                  widget.location,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: const Color(0xFF6F9283),
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 4.h),
+            Text(
+              '${widget.interested} interested. ${widget.going} going',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: const Color(0xFF709283),
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isInterested = !isInterested;
+                });
+              },
+              child: Container(
+                width: 110.w,
+                height: 30.h,
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                decoration: ShapeDecoration(
+                  color: const Color(0xFFDCECE8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+                  shadows: [
+                    BoxShadow(
+                      color: const Color(0xFF003C26),
+                      blurRadius: 1,
+                      offset: const Offset(0, 0),
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isInterested ? Icons.star : Icons.star_border,
+                      size: 14.sp,
+                      color: const Color(0xFF013D26),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      'Interested',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: const Color(0xFF013D26),
+                        fontSize: 12.sp,
+                        fontFamily: 'Roboto',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class NurseryCard extends StatefulWidget {
   final String imagePath;
@@ -701,6 +945,7 @@ class NurseryCard extends StatefulWidget {
   final double longitude;
 
   const NurseryCard({
+    super.key,
     required this.imagePath,
     required this.title,
     required this.location,
@@ -748,18 +993,29 @@ class _NurseryCardState extends State<NurseryCard> {
                       widget.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: const Color(0xFF147351)),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF147351),
+                      ),
                     ),
                     Row(
                       children: [
-                        Icon(Icons.location_on, color: const Color(0xFF147351), size: 18.sp),
+                        Icon(
+                          Icons.location_on,
+                          color: const Color(0xFF147351),
+                          size: 18.sp,
+                        ),
                         SizedBox(width: 5.w),
                         Expanded(
                           child: Text(
                             widget.location,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 11.sp, color: Colors.grey),
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
                       ],
@@ -775,11 +1031,15 @@ class _NurseryCardState extends State<NurseryCard> {
                         SizedBox(width: 5.w),
                         Text(
                           widget.rating.toString(),
-                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: GestureDetector(
@@ -798,7 +1058,11 @@ class _NurseryCardState extends State<NurseryCard> {
                           child: Center(
                             child: Text(
                               _showMap ? "Hide Location" : "View Location",
-                              style: TextStyle(fontSize: 12.sp, color: Colors.white, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -810,19 +1074,18 @@ class _NurseryCardState extends State<NurseryCard> {
             ],
           ),
         ),
-
-        if (_showMap) _buildMapContainer(widget.latitude, widget.longitude),
+        if (_showMap) _buildMapContainer(context),
       ],
     );
   }
 
-  Widget _buildMapContainer(double latitude, double longitude) {
+  Widget _buildMapContainer(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
       height: 350.h,
       width: 376.w,
       decoration: BoxDecoration(
-        color: Color(0xFFEBF3F1),
+        color: const Color(0xFFEBF3F1),
         borderRadius: BorderRadius.circular(20.r),
       ),
       child: Stack(
@@ -832,22 +1095,51 @@ class _NurseryCardState extends State<NurseryCard> {
               borderRadius: BorderRadius.circular(20.r),
               child: FlutterMap(
                 options: MapOptions(
-                  center: LatLng(latitude, longitude),
+                  center: LatLng(widget.latitude, widget.longitude),
                   zoom: 13.0,
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate: "https://tile.openstreetmap.de/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c'],
+                    urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    subdomains: const ['a', 'b', 'c'],
                   ),
-
                   MarkerLayer(
                     markers: [
                       Marker(
-                        point: LatLng(latitude, longitude),
-                        width: 40.w,
+                        point: LatLng(widget.latitude, widget.longitude),
+                        width: 80.w,
                         height: 40.h,
-                        child: Icon(Icons.location_pin, color: Colors.red, size: 40.sp),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.location_pin,
+                              color: Colors.red,
+                              size: 40.sp,
+                            ),
+                            SizedBox(width: 5.w),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const TreeDetails(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: 31.w,
+                                height: 32.h,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage("https://placehold.co/31x32"),
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -860,202 +1152,115 @@ class _NurseryCardState extends State<NurseryCard> {
     );
   }
 }
-Widget _buildBox(String imagePath, String date, String title, String location, String interested, String going, {double? width}) {
-  return Container(
-    width: width ?? 0.44.sw,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 5,
-          spreadRadius: 2,
-          offset: Offset(2, 3),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          child: Image.asset(
-            imagePath,
-            width: double.infinity,
-            height: 100.h,
-            fit: BoxFit.cover,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(date, style: TextStyle(fontSize: 10.sp, color: Colors.grey[700])),
-              SizedBox(height: 2.h),
-              Text(
-                title,
-                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: Color(0xFF013D26)),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 2.h),
-              Row(
-                children: [
-                  Icon(Icons.location_on, size: 12, color: Colors.grey[600]),
-                  Expanded(
-                    child: Text(
-                      location,
-                      style: TextStyle(fontSize: 10.sp, color: Colors.grey[700]),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 2.h),
-              Text(
-                "$interested interested. $going going",
-                style: TextStyle(fontSize: 10.sp, color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
 
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFEBF3F1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    padding: EdgeInsets.symmetric(vertical: 8.h),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.star_border, color: Color(0xFF013D26), size: 16),
-                      SizedBox(width: 5.w),
-                      Text(
-                        "Interested",
-                        style: TextStyle(fontSize: 12.sp, color: Color(0xFF013D26),),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+class ChatBotScreen extends StatefulWidget {
+  const ChatBotScreen({super.key});
 
-              SizedBox(width: 8.w),
-              Container(
-                width: 35.w,
-                height: 35.h,
-                decoration: BoxDecoration(
-                  color: Color(0xFFEBF3F1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: IconButton(
-                  icon: Transform.flip(
-                    flipX: true,
-                    child: Icon(Icons.reply, size: 18, color: Colors.green[900]),
-                  ),
-                  onPressed: () {
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
+  @override
+  State<ChatBotScreen> createState() => _ChatBotScreenState();
 }
 
-Widget buildSmallContainerWithSelected(String imagePath, String text, bool isSelected) {
-  return Container(
+class _ChatBotScreenState extends State<ChatBotScreen> {
+  final List<Map<String, String>> _messages = [
+    {'sender': 'bot', 'text': 'مرحبا بك انا خِضر'},
+    {'sender': 'user', 'text': 'مرحبا يا خِضر احتاج مساعدتك'},
+    {'sender': 'bot', 'text': 'بالطبع هيا اسألني في أي شئ يخص الأشجار وسأقوم بمساعدتك'},
+    {'sender': 'user', 'text': 'اريد زراعة شجرة جديدة ما الخطوات التي يجب ان اقوم بها'},
+  ];
 
-      padding: EdgeInsets.all(10.w),
+  final TextEditingController _controller = TextEditingController();
+
+  void _sendMessage() {
+    if (_controller.text.trim().isEmpty) return;
+
+    setState(() {
+      _messages.add({'sender': 'user', 'text': _controller.text.trim()});
+      _messages.add({'sender': 'bot', 'text': 'جارٍ معالجة رسالتك...'});
+    });
+    _controller.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 15.w),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFADCEC2) : const Color(0xFFEBF3F1),
-        borderRadius: BorderRadius.circular(10.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            blurRadius: 4,
-            offset: const Offset(0, 3),
+        color: const Color(0xFFEBF3F1),
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.all(16.w),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                final isUser = message['sender'] == 'user';
+
+                return Align(
+                  alignment: isUser ? Alignment.centerLeft : Alignment.centerRight,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 6.h),
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      color: isUser ? Colors.white : const Color(0xFF147351),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Text(
+                      message['text']!,
+                      style: TextStyle(
+                        color: isUser ? Colors.black : Colors.white,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Roboto',
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFECF0EE),
+                      border: Border.all(color: const Color(0xFFD7DAD9), width: 0.5.w),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Type a message to Khedr',
+                        hintStyle: TextStyle(color: Color(0xFF939896), fontSize: 13),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10.w),
+                GestureDetector(
+                  onTap: _sendMessage,
+                  child: Container(
+                    width: 49.w,
+                    height: 49.h,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF147351),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.send, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Text(
-            text,
-            style: TextStyle(
-              color: isSelected ? Colors.black : const Color(0xFF147351),
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(width: 5.w),
-          Image.asset(imagePath, width: 30.w, height: 30.h),
-        ],
-      ));
+    );
+  }
 }
-Widget buildSmallContainerWithTitleDescriptionAndImage(String imagePath, String title, String description) {
-  return Container(
-    padding: EdgeInsets.all(8.w),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(10.r),
-      border: Border.all(color: Colors.green, width: 2.w),
-    ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Image.asset(imagePath, width: 100.w, height: 100.h),
-        SizedBox(height: 10.h),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 5.h),
-        Text(
-          description,
-          style: TextStyle(
-            fontSize: 10.sp,
-
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-final List<Map<String, String>> gridItems = [
-  {
-    'image': 'images/img_2.png',
-    'title': 'How Choose Suitable Tree?',
-    'description': 'Details on selecting a type of tree suitable for the local climate and soil.',
-  },
-  {
-    'image': 'images/img_4.png',
-    'title': 'Tree Benefits',
-    'description': 'Learn about the environmental and health benefits of planting trees.',
-  },
-  {
-    'image': 'images/img_6.png',
-    'title': 'What Are the Essential Needs of Tree for Healthy Growth?',
-    'description': 'Tips on watering, fertilizing, and protecting trees from pests.',
-  },
-];

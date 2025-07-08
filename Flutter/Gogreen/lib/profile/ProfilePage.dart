@@ -140,7 +140,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     _buildProfileOption('Saved', Icons.bookmark),
                     _buildProfileOption('Events', Icons.event),
-                    _buildProfileOption('Responses', Icons.feedback),
                   ],
                 ),
                 Spacer(),

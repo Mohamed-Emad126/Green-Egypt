@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gogreen/NavigationBar.dart';
-import 'package:gogreen/Signingoogle.dart';
-import 'package:gogreen/Forgetpasword.dart';
+import 'package:gogreen/profile/Signingoogle.dart';
 import 'package:gogreen/Homepage.dart';
-import 'package:gogreen/Registerpage.dart';
-import 'package:gogreen/main.dart';
+import 'package:gogreen/profile/Registerpage.dart';
 import 'package:gogreen/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class Loginpage extends StatefulWidget {
+  const Loginpage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginpageState createState() => _LoginpageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginpageState extends State<Loginpage> {
   bool _isChecked = false;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -192,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => RegisterPage()),
+                                builder: (context) =>  RegisterPage()),
                           );
                         },
                         child: Text(
@@ -227,10 +225,7 @@ class _LoginPageState extends State<LoginPage> {
           alignment: Alignment.centerRight,
           child: GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ForgetPassword()),
-              );
+              Navigator.pushNamed(context, '/forgot-password');
             },
             child: Text(
               'Forgot Password?',
