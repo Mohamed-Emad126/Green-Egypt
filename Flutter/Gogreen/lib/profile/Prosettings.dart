@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:carbon_icons/carbon_icons.dart'; // أيقونات Carbon
+import 'package:carbon_icons/carbon_icons.dart';
+import 'package:gogreen/password/UpdatePassword.dart'; // تأكد من المسار حسب موقع الملف
 
 class ProfileSettings extends StatefulWidget {
   @override
@@ -105,8 +106,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         isExpanded: isLanguageExpanded,
                         onTap: toggleLanguageDropdown,
                       ),
-                      if (isLanguageExpanded)
-                        buildLanguageOptions(),
+                      if (isLanguageExpanded) buildLanguageOptions(),
 
                       SizedBox(height: 30),
                       buildSettingItem(
@@ -115,14 +115,46 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         isExpanded: isNotificationsExpanded,
                         onTap: toggleNotificationsDropdown,
                       ),
-                      if (isNotificationsExpanded)
-                        buildNotificationOptions(),
+                      if (isNotificationsExpanded) buildNotificationOptions(),
 
                       SizedBox(height: 30),
                       buildSettingItem(
                         icon: Icons.nightlight_round_outlined,
                         title: 'Dark Mode',
                         trailing: FontistoToggleOff(),
+                      ),
+
+                      SizedBox(height: 30),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => UpdatePassword()),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFFEBF3F1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: EdgeInsets.all(10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(CarbonIcons.logout, color: Color(0xFF147351)),
+                              SizedBox(width: 8),
+                              Text(
+                                'Update password',
+                                style: TextStyle(
+                                  color: Color(0xFF147351),
+                                  fontSize: 16,
+                                  fontFamily: 'Roboto',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
 
                       SizedBox(height: 30),
@@ -137,9 +169,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                           ),
                           padding: EdgeInsets.all(10),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Icon(CarbonIcons.logout, color: Color(0xFF147351)),
+                              Icon(Icons.logout, color: Color(0xFF147351)),
                               SizedBox(width: 8),
                               Text(
                                 'Logout',
@@ -154,7 +185,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                           ),
                         ),
                       ),
-
                       SizedBox(height: 30),
                       GestureDetector(
                         onTap: () {
@@ -294,16 +324,11 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   children: [
                     Image.asset('images/img_49.png', width: 24, height: 24),
                     SizedBox(width: 8),
-                    Text(
-                      'Community',
-                      style: TextStyle(color: Color(0xFF003C26), fontSize: 16),
-                    ),
+                    Text('Community', style: TextStyle(color: Color(0xFF003C26), fontSize: 16)),
                   ],
                 ),
                 Icon(
-                  isCommunityExpanded
-                      ? Icons.keyboard_arrow_down
-                      : Icons.keyboard_arrow_right,
+                  isCommunityExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
                   color: Color(0xFF147351),
                 ),
               ],
@@ -321,11 +346,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildCommunityItem('Pages you follow'),
-                  _buildCommunityItem('Friend Requests'),
                   _buildCommunityItem('Events'),
                   _buildCommunityItem('Comments'),
-                  _buildCommunityItem('Tags'),
                 ],
               ),
             ),
@@ -335,9 +357,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               children: [
                 Text('PlantCare', style: TextStyle(color: Color(0xFF003C26), fontSize: 16)),
                 Icon(
-                  isPlantCareExpanded
-                      ? Icons.keyboard_arrow_down
-                      : Icons.keyboard_arrow_right,
+                  isPlantCareExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
                   color: Color(0xFF147351),
                 ),
               ],

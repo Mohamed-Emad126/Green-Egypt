@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:gogreen/CommunityPage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gogreen/Community/CommunityPage.dart';
 import 'package:gogreen/Homepage.dart';
 import 'package:gogreen/Profile/ProfilePage.dart';
 import 'package:gogreen/RwardsPage.dart';
+import 'package:gogreen/scan/Scan_Page.dart';
 
 class BottomNavBarExample extends StatefulWidget {
+  const BottomNavBarExample({Key? key}) : super(key: key);
+
   @override
   _BottomNavBarExampleState createState() => _BottomNavBarExampleState();
 }
@@ -14,10 +17,10 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    Homepage(),
-    CommunityPostScreen(),
-    RewardsScreen(),
-    ProfileScreen(),
+    const Homepage(),
+     CommunityPostScreen(),
+     RewardsScreen(),
+     ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -26,20 +29,13 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
     });
   }
 
-  Future<void> _openCamera() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-
-    if (pickedFile != null) {
-      print('Image path: ${pickedFile.path}');
-      // هنا ممكن تعرض الصورة في Dialog أو تبعتها لأي صفحة حسب ما تحب
-    } else {
-      print('لم يتم اختيار صورة');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(
+      context,
+      designSize: const Size(390, 844),
+    );
+
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
@@ -55,7 +51,15 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
             unselectedItemColor: Colors.black,
             currentIndex: _selectedIndex > 2 ? 3 : _selectedIndex,
             onTap: (index) {
-              if (index == 2) return; // تجاهل الضغط على الزر الأوسط
+              if (index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ScanPage(),
+                  ),
+                );
+                return;
+              }
               _onItemTapped(index > 2 ? index - 1 : index);
             },
             items: [
@@ -81,18 +85,23 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
               ),
             ],
           ),
-
-          // الزر الأوسط (كاميرا)
           Positioned(
-            left: MediaQuery.of(context).size.width / 2 - 30,
-            bottom: 25,
+            left: MediaQuery.of(context).size.width / 2 - 30.w,
+            bottom: 25.h,
             child: GestureDetector(
-              onTap: _openCamera,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ScanPage(),
+                  ),
+                );
+              },
               child: Container(
-                width: 60,
-                height: 60,
+                width: 60.w,
+                height: 60.h,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: const Color(0xFF147351),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -106,8 +115,9 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
                 child: Center(
                   child: Image.asset(
                     'images/img_23.png',
-                    width: 40,
-                    height: 40,
+                    width: 60.w,
+                    height: 60.h,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
@@ -134,8 +144,8 @@ class _NavIcon extends StatelessWidget {
       ),
       child: Image.asset(
         path,
-        width: 24,
-        height: 24,
+        width: 24.w,
+        height: 24.h,
         cacheWidth: 24,
         cacheHeight: 24,
       ),
