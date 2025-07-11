@@ -41,7 +41,6 @@ void main() {
     ),
   );
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -51,56 +50,54 @@ class MyApp extends StatelessWidget {
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (_, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'GoGreen',
-          theme: ThemeData(
-            primarySwatch: Colors.green,
-          ),
-          routes: {
-            '/DiagnoseGood0': (context) {
-              final args = ModalRoute.of(context)!.settings.arguments;
-              return DiagnoseGood0(imagePath: args is String ? args : null);
-            },
-            '/DiagnoseBad': (context) {
-              final args = ModalRoute.of(context)!.settings.arguments;
-              return DiagnoseBad(imagePath: args is String ? args : null);
-            },
-            '/DiagnoseGood': (context) {
-              final args = ModalRoute.of(context)!.settings.arguments;
-              return DiagnoseGood(imagePath: args is String ? args : null);
-            },
-            '/createPost': (context) => const CreatePost(),
-            '/comments': (context) => const CommentsScreen(),
-            '/addTree': (context) => const AddTree(),
-            '/scanPage': (context) => const ScanPage(), // ScanPage
-            '/': (context) => const Splashscreen(),
-            '/login': (context) => const Loginpage(),
-            '/register': (context) => RegisterPage(),
-            '/home': (context) => const Homepage(),
-            '/forgot-password': (context) => const ForgetPassword(),
-            '/valid-verification': (context) => const ValidVerification(),
-            '/profile': (context) => ProfileScreen(),
-            '/sign-in-google': (context) => const Signingoogle(),
-            '/sign-up': (context) => const Signingup(),
-            '/onboarding': (context) => OnboardingPages(),
-            '/createPost2': (context) {
-              final args = ModalRoute.of(context)!.settings.arguments;
-              if (args is File) {
-                return CreatePost2(selectedImage: args);
-              } else if (args is String) {
-                return CreatePost2(selectedImage: File(args));
-              }
-              return CreatePost2(selectedImage: null);
-            },
-            '/selectresponse': (context) => SelectResponse(),
-            '/uploadResponse': (context) => const UploadResponse(),
-            '/VerificationTree': (context) => const VerificationTree(),
-
+      builder: (context, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'GoGreen',
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+        ),
+        initialRoute: '/',
+        routes: {
+          '/DiagnoseGood0': (context) {
+            final args = ModalRoute.of(context)!.settings.arguments;
+            return DiagnoseGood0(imagePath: args is String ? args : null);
           },
-        );
-      },
+          '/DiagnoseBad': (context) {
+            final args = ModalRoute.of(context)!.settings.arguments;
+            return DiagnoseBad(imagePath: args is String ? args : null);
+          },
+          '/DiagnoseGood': (context) {
+            final args = ModalRoute.of(context)!.settings.arguments;
+            return DiagnoseGood(imagePath: args is String ? args : null);
+          },
+          '/createPost': (context) => const CreatePost(),
+          '/comments': (context) => const CommentsScreen(),
+          '/addTree': (context) => const AddTree(),
+          '/scanPage': (context) => const ScanPage(),
+          '/': (context) => const Splashscreen(),
+          '/login': (context) => const Loginpage(),
+          '/register': (context) => RegisterPage(),
+          '/home': (context) => const Homepage(),
+          '/forgot-password': (context) => const ForgetPassword(),
+          '/valid-verification': (context) => const ValidVerification(),
+          '/profile': (context) => ProfileScreen(),
+          '/sign-in-google': (context) => const Signingoogle(),
+          '/sign-up': (context) => const Signingup(),
+          '/onboarding': (context) => OnboardingPages(),
+          '/createPost2': (context) {
+            final args = ModalRoute.of(context)!.settings.arguments;
+            if (args is File) {
+              return CreatePost2(selectedImage: args);
+            } else if (args is String) {
+              return CreatePost2(selectedImage: File(args));
+            }
+            return CreatePost2(selectedImage: null);
+          },
+          '/selectresponse': (context) => SelectResponse(),
+          '/uploadResponse': (context) => const UploadResponse(),
+          '/VerificationTree': (context) => const VerificationTree(),
+        },
+      ),
     );
   }
 }

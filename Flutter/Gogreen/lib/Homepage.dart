@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -5,6 +8,7 @@ import 'package:gogreen/EventDetails.dart';
 import 'package:gogreen/NotificationPage.dart';
 import 'package:gogreen/SearchScreen.dart';
 import 'package:gogreen/TreeDetails.dart';
+import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
 class Homepage extends StatefulWidget {
@@ -25,6 +29,7 @@ class _HomepageState extends State<Homepage> {
   final PageController _pageController = PageController();
 
   @override
+
   void initState() {
     super.initState();
     _isSelected = List.generate(5, (_) => false);
@@ -187,8 +192,8 @@ class _HomepageState extends State<Homepage> {
                   GestureDetector(
                     onTap: () => _onIconTap(0),
                     child: buildSmallContainerWithSelected(
-                      'images/img_1.png',
-                      'The planting guide',
+                      'images/img_63.png',
+                      'Khedr Chatbot',
                       _currentPage == 0,
                     ),
                   ),
@@ -248,7 +253,6 @@ class _HomepageState extends State<Homepage> {
               },
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                // Page 0: The Planting Guide
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 15.w),
                   decoration: BoxDecoration(
@@ -599,7 +603,7 @@ class _HomepageState extends State<Homepage> {
                             children: [
                               TileLayer(
                                 urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                subdomains: const ['a', 'b', 'c'],
+                                userAgentPackageName: 'com.example.gogreen',
                               ),
                               MarkerLayer(
                                 markers: [
@@ -1101,7 +1105,7 @@ class _NurseryCardState extends State<NurseryCard> {
                 children: [
                   TileLayer(
                     urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: const ['a', 'b', 'c'],
+                    userAgentPackageName: 'com.example.gogreen',
                   ),
                   MarkerLayer(
                     markers: [
@@ -1161,23 +1165,159 @@ class ChatBotScreen extends StatefulWidget {
 }
 
 class _ChatBotScreenState extends State<ChatBotScreen> {
+  // ✅ غيّر ده بـ رابط ngrok الحالي
+  final String _baseUrl = "https://ffbf56b9b1bb.ngrok-free.app";
+
   final List<Map<String, String>> _messages = [
-    {'sender': 'bot', 'text': 'مرحبا بك انا خِضر'},
-    {'sender': 'user', 'text': 'مرحبا يا خِضر احتاج مساعدتك'},
-    {'sender': 'bot', 'text': 'بالطبع هيا اسألني في أي شئ يخص الأشجار وسأقوم بمساعدتك'},
-    {'sender': 'user', 'text': 'اريد زراعة شجرة جديدة ما الخطوات التي يجب ان اقوم بها'},
+    {'sender': 'bot', 'text': 'مرحبا بك أنا خِضر'},
   ];
 
   final TextEditingController _controller = TextEditingController();
+  bool _isSending = false;
+  final String user_id = "67da4fd880c2917bff17a47f";
 
-  void _sendMessage() {
+  @override
+  void initState() {
+    super.initState();
+    _fetchChatHistory();
+  }
+
+  Future<void> _fetchChatHistory() async {
+    setState(() {
+      _isSending = true;
+    });
+
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/history/$user_id'),
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        },
+      ).timeout(const Duration(seconds: 60));
+
+      print('History status: ${response.statusCode}');
+      print('History body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> history = data['data'];
+
+        setState(() {
+          _messages.clear();
+          _messages.add({'sender': 'bot', 'text': 'مرحبا بك أنا خِضر'});
+          for (final item in history) {
+            _messages.add({'sender': 'user', 'text': item['text'] ?? ''});
+            _messages.add({
+              'sender': 'bot',
+              'text': 'تصنيف الرسالة: ${item['label'] ?? 'غير معروف'}',
+            });
+          }
+        });
+      } else {
+        print('فشل في جلب السجل: ${response.body}');
+      }
+    } catch (e) {
+      print('حدث خطأ في جلب السجل: $e');
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
+    }
+  }
+
+  Future<String> _sendMessageToBot(String message) async {
+    setState(() {
+      _isSending = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/chat'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        body: jsonEncode({
+          'text': message,
+          'user_id': user_id,
+        }),
+      ).timeout(const Duration(seconds: 60));
+
+      print('Chat API status: ${response.statusCode}');
+      print('Chat API body: ${response.body}');
+
+      if (!response.headers['content-type']!.contains('application/json')) {
+        return '⚠️ السيرفر رد بـ HTML أو غير JSON:\n\n${response.body}';
+      }
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['response'] ?? 'لا يوجد رد';
+      } else {
+        return 'خطأ: ${response.statusCode} - ${response.body}';
+      }
+    } catch (e) {
+      print('خطأ أثناء إرسال الرسالة: $e');
+      return 'فشل الاتصال: $e';
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
+    }
+  }
+/*
+  Future<String> _classifyIntent(String message) async {
+    try {
+      print('Calling classifyIntent...');
+      final response = await http.post(
+        Uri.parse('$_baseUrl/intent'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        body: jsonEncode({
+          'text': message,
+          'user_id': user_id,
+        }),
+      ).timeout(const Duration(seconds: 60));
+
+      print('Intent API status: ${response.statusCode}');
+      print('Intent API body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final intent = data['data']?['intent'];
+        return intent ?? 'Intent غير معروف';
+      } else {
+        return 'فشل تحديد النية: ${response.body}';
+      }
+    } catch (e) {
+      print('Error in classifyIntent: $e');
+      return 'خطأ في تحليل النية: $e';
+    }
+  }*/
+
+  void _sendMessage() async {
     if (_controller.text.trim().isEmpty) return;
 
+    final userMessage = _controller.text.trim();
+
     setState(() {
-      _messages.add({'sender': 'user', 'text': _controller.text.trim()});
+      _messages.add({'sender': 'user', 'text': userMessage});
       _messages.add({'sender': 'bot', 'text': 'جارٍ معالجة رسالتك...'});
     });
     _controller.clear();
+
+    final botResponse = await _sendMessageToBot(userMessage);
+    //final intentResponse = await _classifyIntent(userMessage);
+
+    setState(() {
+      _messages.removeLast();
+      _messages.add({'sender': 'bot', 'text': botResponse});
+      //_messages.add({'sender': 'bot', 'text': 'نية الرسالة: $intentResponse'});
+    });
   }
 
   @override
@@ -1204,13 +1344,13 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                     margin: EdgeInsets.symmetric(vertical: 6.h),
                     padding: EdgeInsets.all(12.w),
                     decoration: BoxDecoration(
-                      color: isUser ? Colors.white : const Color(0xFF147351),
+                      color: isUser ? const Color(0xFF147351) : Colors.white,
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Text(
                       message['text']!,
                       style: TextStyle(
-                        color: isUser ? Colors.black : Colors.white,
+                        color: isUser ? Colors.white : Colors.black,
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w500,
                         fontFamily: 'Roboto',
@@ -1230,22 +1370,24 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     decoration: BoxDecoration(
                       color: const Color(0xFFECF0EE),
-                      border: Border.all(color: const Color(0xFFD7DAD9), width: 0.5.w),
+                      border: Border.all(
+                          color: const Color(0xFFD7DAD9), width: 0.5.w),
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: TextField(
                       controller: _controller,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Type a message to Khedr',
-                        hintStyle: TextStyle(color: Color(0xFF939896), fontSize: 13),
+                        hintText: 'اكتب رسالة إلى خِضر',
+                        hintStyle: TextStyle(
+                            color: Color(0xFF939896), fontSize: 13),
                       ),
                     ),
                   ),
                 ),
                 SizedBox(width: 10.w),
                 GestureDetector(
-                  onTap: _sendMessage,
+                  onTap: _isSending ? null : _sendMessage,
                   child: Container(
                     width: 49.w,
                     height: 49.h,
@@ -1253,7 +1395,9 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                       color: Color(0xFF147351),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.send, color: Colors.white),
+                    child: _isSending
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Icon(Icons.send, color: Colors.white),
                   ),
                 ),
               ],

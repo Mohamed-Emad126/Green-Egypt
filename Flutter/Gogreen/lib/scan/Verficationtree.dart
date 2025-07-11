@@ -1,46 +1,105 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart' as path;
 
 class VerificationTree extends StatelessWidget {
   final String? imagePath;
 
   const VerificationTree({Key? key, this.imagePath}) : super(key: key);
 
-  // Placeholder function لتحليل الصورة (هنستبدلها بالـ API لما يجهز)
+  String _getImageMimeSubtype(String filePath) {
+    final ext = path.extension(filePath).toLowerCase();
+    if (ext == '.png') return 'png';
+    return 'jpeg';
+  }
+
   Future<String> _diagnoseTree(String? imagePath, BuildContext context) async {
-    // لو مفيش صورة أو الصورة مش موجودة، يعتبرها غير واضحة
     if (imagePath == null || !File(imagePath).existsSync()) {
-      return '/DiagnoseGood0'; // صورة غير واضحة
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('الصورة غير موجودة أو غير صالحة')),
+      );
+      return '/DiagnoseGood0';
     }
 
-    // هنا المفروض ندعو الـ API لتحليل الصورة
-    // مثال مؤقت: نفترض إن الصورة سليمة أو مريضة بناءً على شرط عشوائي
-    // استبدل المنطق ده بالـ API response
-    bool isHealthy = DateTime.now().second % 2 == 0; // مثال عشوائي
-    bool isClear = DateTime.now().second % 3 != 0; // مثال عشوائي للتحقق من الوضوح
+    try {
+      print('--- IMAGE DEBUG ---');
+      print('Path: $imagePath');
+      print('Exists: ${File(imagePath).existsSync()}');
+      print('Size: ${File(imagePath).lengthSync()} bytes');
 
-    if (!isClear) {
-      return '/DiagnoseGood0'; // صورة غير واضحة
-    } else if (isHealthy) {
-      return '/DiagnoseGood'; // شجرة سليمة
-    } else {
-      return '/DiagnoseBad'; // شجرة مريضة
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://fd2d0818a39b.ngrok-free.app/api/model/detect-disease'),
+      );
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          imagePath,
+          contentType: MediaType('image', _getImageMimeSubtype(imagePath)),
+        ),
+      );
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      print('API Response: $responseBody');
+      var data = jsonDecode(responseBody);
+
+      if (response.statusCode == 200) {
+        final className = data['data']['class']?.toString().toLowerCase() ?? 'unclear';
+        final confidence = data['data']['confidence']?.toDouble() ?? 0.0;
+
+        if (confidence < 0.5 || className.contains('unclear')) {
+          return '/DiagnoseGood0';
+        } else if (className.contains('healthy') || className.contains('good')) {
+          return '/DiagnoseGood';
+        } else if (className.contains('blight') || className.contains('rust')) {
+          return '/DiagnoseBad';
+        } else {
+          return '/DiagnoseGood0';
+        }
+      } else if (response.statusCode == 400) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ: ${data['errors']?.first['msg'] ?? 'صورة غير صالحة'}')),
+        );
+        return '/DiagnoseGood0';
+      } else if (response.statusCode == 401) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('غير مصرح، تحقق من الـ API')),
+        );
+        return '/DiagnoseGood0';
+      } else if (response.statusCode == 503) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('الخدمة غير متاحة حاليًا')),
+        );
+        return '/DiagnoseGood0';
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ: ${response.statusCode} - $responseBody')),
+        );
+        return '/DiagnoseGood0';
+      }
+    } catch (e) {
+      print('Exception Details: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('فشل إرسال الصورة: $e')),
+      );
+      return '/DiagnoseGood0';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(
-      context,
-      designSize: const Size(390, 844),
-    );
+    ScreenUtil.init(context, designSize: const Size(390, 844));
 
     return Scaffold(
       body: Container(
         width: 390.w,
         height: 844.h,
-        clipBehavior: Clip.antiAlias,
         decoration: ShapeDecoration(
           color: const Color(0xFFE5F5EF),
           shape: RoundedRectangleBorder(
@@ -49,36 +108,6 @@ class VerificationTree extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // Status bar
-            Positioned(
-              left: 0,
-              top: 0,
-              child: Container(
-                width: 390.w,
-                height: 44.h,
-                clipBehavior: Clip.antiAlias,
-                decoration: const BoxDecoration(),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 21.w,
-                      top: 12.h,
-                      child: Container(
-                        width: 54.w,
-                        height: 21.h,
-                        decoration: ShapeDecoration(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32.r),
-                          ),
-                        ),
-                        child: const Stack(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Close 'X' icon
             Positioned(
               left: 17.w,
               top: 65.h,
@@ -86,18 +115,9 @@ class VerificationTree extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: Container(
-                  width: 47.w,
-                  height: 47.h,
-                  child: Icon(
-                    Icons.close,
-                    color: const Color(0xFF003C26),
-                    size: 30.sp,
-                  ),
-                ),
+                child: Icon(Icons.close, size: 30.sp, color: const Color(0xFF003C26)),
               ),
             ),
-            // Main image
             Positioned(
               left: 64.w,
               top: 148.h,
@@ -108,7 +128,7 @@ class VerificationTree extends StatelessWidget {
                   image: DecorationImage(
                     image: imagePath != null
                         ? FileImage(File(imagePath!))
-                        : const AssetImage("images/img_verification_tree.png"),
+                        : const AssetImage("assets/images/img_verification_tree.png") as ImageProvider,
                     fit: BoxFit.fill,
                   ),
                   shape: RoundedRectangleBorder(
@@ -117,94 +137,52 @@ class VerificationTree extends StatelessWidget {
                 ),
               ),
             ),
-            // Dark overlay
             Positioned(
               left: 64.90.w,
               top: 148.h,
               child: Opacity(
-                opacity: 0.50,
+                opacity: 0.5,
                 child: Container(
                   width: 262.10.w,
                   height: 322.h,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: ShapeDecoration(
+                  decoration: BoxDecoration(
                     color: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                 ),
               ),
             ),
-            // Circular gradient button
             Positioned(
-              left: 148.w,
-              top: 260.h,
-              child: Container(
-                width: 94.w,
-                height: 94.h,
-                decoration: ShapeDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment(0.50, 0.15),
-                    end: Alignment(0.19, 0.68),
-                    colors: [Color(0xFF147351), Color(0xFFD9D9D9)],
-                  ),
-                  shape: const OvalBorder(),
-                ),
-              ),
-            ),
-            // Placeholder stack
-            Positioned(
-              left: 17.w,
-              top: 54.h,
-              child: Container(
-                width: 47.w,
-                height: 47.h,
-                child: const Stack(),
-              ),
-            ),
-            // Action buttons
-            Positioned(
-              left: 63.5.w, // Centered to match design
+              left: 63.5.w,
               top: 503.h,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      // تشخيص الصورة وتحديد الصفحة المناسبة
                       final result = await _diagnoseTree(imagePath, context);
                       Navigator.pushNamed(context, result, arguments: imagePath);
                     },
                     child: Container(
                       width: 263.w,
-                      height: 60.h, // Fixed height for consistency
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      decoration: ShapeDecoration(
+                      height: 60.h,
+                      decoration: BoxDecoration(
                         color: const Color(0xFF147351),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                        ),
-                        shadows: const [
+                        borderRadius: BorderRadius.circular(15.r),
+                        boxShadow: const [
                           BoxShadow(
                             color: Color(0x3F000000),
                             blurRadius: 4,
                             offset: Offset(0, 2),
-                            spreadRadius: 0,
                           ),
                         ],
                       ),
                       child: Center(
                         child: Text(
                           'Diagnose Tree',
-                          textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24.sp,
                             fontFamily: '18 Khebrat Musamim',
-                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -217,31 +195,18 @@ class VerificationTree extends StatelessWidget {
                     },
                     child: Container(
                       width: 263.w,
-                      height: 60.h, // Fixed height for consistency
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      decoration: ShapeDecoration(
+                      height: 60.h,
+                      decoration: BoxDecoration(
                         color: const Color(0xFF147351),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                        ),
-                        shadows: const [
-                          BoxShadow(
-                            color: Color(0x3F000000),
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                            spreadRadius: 0,
-                          ),
-                        ],
+                        borderRadius: BorderRadius.circular(15.r),
                       ),
                       child: Center(
                         child: Text(
                           'Post In Community',
-                          textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24.sp,
                             fontFamily: '18 Khebrat Musamim',
-                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -250,41 +215,27 @@ class VerificationTree extends StatelessWidget {
                   SizedBox(height: 24.h),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, '/VerificationTree');
+                      Navigator.pushNamed(context, '/scanPage');
                     },
                     child: Container(
                       width: 263.w,
-                      height: 60.h, // Fixed height for consistency
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      decoration: ShapeDecoration(
+                      height: 60.h,
+                      decoration: BoxDecoration(
                         color: const Color(0xFF147351),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                        ),
-                        shadows: const [
-                          BoxShadow(
-                            color: Color(0x3F000000),
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                            spreadRadius: 0,
-                          ),
-                        ],
+                        borderRadius: BorderRadius.circular(15.r),
                       ),
                       child: Center(
                         child: Text(
                           'Add a new Tree',
-                          textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24.sp,
                             fontFamily: '18 Khebrat Musamim',
-                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 24.h),
                 ],
               ),
             ),
