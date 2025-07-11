@@ -11,12 +11,14 @@ class VerificationTree extends StatelessWidget {
 
   const VerificationTree({Key? key, this.imagePath}) : super(key: key);
 
+  // تحديد نوع الصورة (png or jpeg)
   String _getImageMimeSubtype(String filePath) {
     final ext = path.extension(filePath).toLowerCase();
     if (ext == '.png') return 'png';
     return 'jpeg';
   }
 
+  // دالة إرسال الصورة وتشخيص الحالة
   Future<String> _diagnoseTree(String? imagePath, BuildContext context) async {
     if (imagePath == null || !File(imagePath).existsSync()) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -36,6 +38,7 @@ class VerificationTree extends StatelessWidget {
         Uri.parse('https://fd2d0818a39b.ngrok-free.app/api/model/detect-disease'),
       );
 
+      // ✅ مهم: لا تضف Content-Type بنفسك
       request.files.add(
         await http.MultipartFile.fromPath(
           'image',

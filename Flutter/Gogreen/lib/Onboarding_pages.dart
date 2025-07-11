@@ -131,7 +131,9 @@ class OnboardingPages extends StatelessWidget {
         ),
       ],
     );
+
   }
+
 }
 
 class OnboardingState with ChangeNotifier {

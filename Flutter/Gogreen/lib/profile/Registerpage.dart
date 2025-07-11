@@ -132,7 +132,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFFEAF3F0),
-                          padding: EdgeInsets.symmetric(horizontal: 35.w, vertical: 13.h),
+                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 13.h),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.r),
                           ),
