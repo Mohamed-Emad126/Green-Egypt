@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:camera/camera.dart';
 import 'package:gogreen/scan/Verficationtree.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -19,7 +18,9 @@ class _ScanPageState extends State<ScanPage> {
   CameraController? _cameraController;
   Future<void>? _initializeControllerFuture;
   String? _imagePath;
-  final String _baseUrl = "https://647aef618e72.ngrok-free.app"; // تأكد إن الرابط شغال
+
+  // تأكد من تغيير هذا إلى رابط ngrok الخاص بك
+  final String _baseUrl = "https://c7f4a211929c.ngrok-free.app";
 
   @override
   void initState() {
@@ -32,7 +33,7 @@ class _ScanPageState extends State<ScanPage> {
       final cameras = await availableCameras();
       if (cameras.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('لا توجد كاميرا متاحة')),
+          const SnackBar(content: Text('لا توجد كاميرا متاحة')),
         );
         return;
       }
@@ -45,7 +46,7 @@ class _ScanPageState extends State<ScanPage> {
       setState(() {});
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطأ: $e. تأكد من تثبيت الإضافة وإعادة بناء التطبيق')),
+        SnackBar(content: Text('خطأ: $e')),
       );
     }
   }
@@ -54,9 +55,10 @@ class _ScanPageState extends State<ScanPage> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('$_baseUrl/api/object/detect-objects'),
+        Uri.parse('$_baseUrl/api/object/detect-objects'), // مهم: مطابق للـ route في Express
       );
-      request.files.add(await http.MultipartFile.fromPath('image', imagePath));
+      request.files.add(await http.MultipartFile.fromPath('image', imagePath)); // مهم: اسم الحقل
+
       request.headers['ngrok-skip-browser-warning'] = 'true';
 
       var response = await request.send();
@@ -65,11 +67,15 @@ class _ScanPageState extends State<ScanPage> {
 
       if (response.statusCode == 200) {
         var detections = data['data']['detections'] as List;
-        bool isTree = detections.any((d) => d['label'] == 'tree' && d['confidence'] > 0.5);
+
+        // شوف إذا فيه شجرة بثقة عالية
+        bool isTree = detections.any(
+              (d) => (d['label'].toString().toLowerCase() == 'tree') && (d['confidence'] > 0.5),
+        );
 
         if (isTree) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Object detection completed successfully')),
+            const SnackBar(content: Text('تم التعرف على شجرة بنجاح')),
           );
           Navigator.push(
             context,
@@ -79,36 +85,15 @@ class _ScanPageState extends State<ScanPage> {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('الكائن ليس شجرة، أعد المحاولة')),
+            const SnackBar(content: Text('الصورة ليست لشجرة، أعد المحاولة')),
           );
           setState(() {
-            _imagePath = null; // مسح الصورة
+            _imagePath = null;
           });
         }
-      } else if (response.statusCode == 400) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ: ${data['errors'][0]['msg']}')),
-        );
-        setState(() {
-          _imagePath = null;
-        });
-      } else if (response.statusCode == 401) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('غير مخول: ${data['message']}')),
-        );
-        setState(() {
-          _imagePath = null;
-        });
-      } else if (response.statusCode == 503) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('الخدمة غير متوفرة حاليًا')),
-        );
-        setState(() {
-          _imagePath = null;
-        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ: ${response.statusCode}')),
+          SnackBar(content: Text('خطأ في الاستجابة: ${response.statusCode}')),
         );
         setState(() {
           _imagePath = null;
@@ -116,7 +101,7 @@ class _ScanPageState extends State<ScanPage> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطأ أثناء الكشف عن الأشياء: $e')),
+        SnackBar(content: Text('خطأ أثناء الكشف: $e')),
       );
       setState(() {
         _imagePath = null;
@@ -124,7 +109,6 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
-  // دالة لالتقاط الصورة
   Future<void> _takePicture() async {
     try {
       if (_cameraController != null && _cameraController!.value.isInitialized) {
@@ -133,10 +117,10 @@ class _ScanPageState extends State<ScanPage> {
         setState(() {
           _imagePath = image.path;
         });
-        await _detectObjects(_imagePath!); // استدعاء الكشف عن الأشياء
+        await _detectObjects(_imagePath!);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('الكاميرا غير جاهزة')),
+          const SnackBar(content: Text('الكاميرا غير جاهزة')),
         );
       }
     } catch (e) {
@@ -206,10 +190,11 @@ class _ScanPageState extends State<ScanPage> {
                   future: _initializeControllerFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
-                      if (_cameraController != null && _cameraController!.value.isInitialized) {
+                      if (_cameraController != null &&
+                          _cameraController!.value.isInitialized) {
                         return CameraPreview(_cameraController!);
                       } else {
-                        return Center(child: Text('فشل تحميل الكاميرا'));
+                        return const Center(child: Text('فشل تحميل الكاميرا'));
                       }
                     } else if (snapshot.hasError) {
                       return Center(child: Text('خطأ: ${snapshot.error}'));
@@ -248,13 +233,7 @@ class _ScanPageState extends State<ScanPage> {
                   height: 87.h,
                   decoration: ShapeDecoration(
                     color: const Color(0xFF147351),
-                    shape: OvalBorder(
-                      side: BorderSide(
-                        width: 0.50.w,
-                        strokeAlign: BorderSide.strokeAlignOutside,
-                        color: const Color(0xFFDADADA),
-                      ),
-                    ),
+                    shape: const OvalBorder(),
                   ),
                   child: Center(
                     child: Icon(
@@ -276,13 +255,7 @@ class _ScanPageState extends State<ScanPage> {
                   height: 45.h,
                   decoration: ShapeDecoration(
                     color: const Color(0xFFADCEC2),
-                    shape: OvalBorder(
-                      side: BorderSide(
-                        width: 0.50.w,
-                        strokeAlign: BorderSide.strokeAlignOutside,
-                        color: const Color(0xFFDADADA),
-                      ),
-                    ),
+                    shape: const OvalBorder(),
                   ),
                   child: Icon(
                     Icons.photo_library,

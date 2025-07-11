@@ -10,6 +10,6 @@ const objectRouter = Router();
 const service = new ObjectDetectionService();
 const { detectObjects } = new ObjectDetectionController(service);
 
-objectRouter.post('/detect-objects', verifyToken, uploadImage, detectObjectsValidator, detectObjects);
+objectRouter.post('/detect-objects', uploadImage, detectObjectsValidator, detectObjects);
 
 export default objectRouter;
