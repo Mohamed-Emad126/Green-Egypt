@@ -45,7 +45,7 @@ export default class NotificationController {
             res.json({ message: "Push notification sent successfully" });
             return;
         }else{
-            return next(new ApiError("Error sending push notification", 500));
+            return next(new ApiError(fcm.error || "Error sending push notification", 500));
         }
     });
 
@@ -62,7 +62,7 @@ export default class NotificationController {
             res.json({ message: "Notification saved and push notification sent successfully" });
             return;
         }else{
-            return next(new ApiError("Error sending notification with save", 500));
+            return next(new ApiError(notification.error || "Error sending push notification", 500));
         }
     });
 

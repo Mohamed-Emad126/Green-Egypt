@@ -37,9 +37,16 @@ export default class NotificationService {
     async sendPushNotification(userId: string, title: string, message: string){
         const user = await UserModel.findById(userId);
 
-        if (!user || !user.deviceToken) {
-            return { success: false, error: 'User not found or device token missing' };
+        if (!user) {
+            console.error('User not found with ID:', userId);
+            return { success: false, error: 'User not found' };
         }
+
+        if (!user.deviceToken) {
+            console.error('User deviceToken missing for user:', userId);
+            return { success: false, error: 'Device token missing' };
+        }
+
         const payload: admin.messaging.Message = {
             notification: { title, body: message },  // structure used in the Firebase Admin SDK notification: {title: string;body: string;}
             token: user.deviceToken,
@@ -47,23 +54,44 @@ export default class NotificationService {
         try {
             const response = await admin.messaging().send(payload);
             return { success: true, response };
-        } catch (error) {
-            console.error('FCM Error:', error);
-            return { success: false, error };
+        }catch (error: any) {
+        console.error('FCM Error:', error);
+        return { success: false, error: error.message || error.toString() };
         }
     }
 
     async sendNotificationWithSave(notificationData: INotificationInput){
         const { userId, type, title, message, reportId } = notificationData;
 
+        try{
         const user = await UserModel.findById(userId);
-        if (!user || !user.deviceToken) {
-            return { success: false, error: 'User not found or device token missing' };
+
+        if (!user) {
+            console.error('User not found with ID:', userId);
+            return { success: false, error: 'User not found' };
+        }
+
+        if (!user.deviceToken) {
+            console.error('User deviceToken missing for user:', userId);
+            return { success: false, error: 'Device token missing' };
         }
 
         const savedNotification = await this.createNotification({ userId, type, title, message, reportId});
         const fcmResult = await this.sendPushNotification(userId, title, message);
-        return { savedNotification, fcmResult };
+
+        if (!fcmResult.success) {
+            console.error(`[NotificationService] FCM send failed: ${fcmResult.error}`);
+        }
+
+        return {
+            success: true,
+            savedNotification,
+            fcmResult
+        };
+    } catch (error: any) {
+        console.error('[NotificationService] Unexpected error in sendNotificationWithSave:', error);
+        return { success: false, error: error.message || 'Unexpected error occurred' };
+    }
     }
 
     async getUserNotifications(userId: string,type?: string){

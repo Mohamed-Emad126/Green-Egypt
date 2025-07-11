@@ -130,9 +130,7 @@ export default class AuthService {
                 idToken,
                 audience: [process.env.GOOGLE_CLIENT_ID as string],
         });
-
-        console.log("Using client ID:", process.env.GOOGLE_CLIENT_ID);
-
+        
         const payload = response.getPayload();
 
             if (payload) {
