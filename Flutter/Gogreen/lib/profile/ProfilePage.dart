@@ -49,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-        child: Stack( // استخدام Stack لتمكين إضافة الـ Container في الزاوية العليا
+        child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,13 +145,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Spacer(),
               ],
             ),
-            // إضافة الـ Container في الزاوية العليا اليمنى باستخدام Positioned
             Positioned(
               right: 20,
               top: 20,
               child: GestureDetector(
                 onTap: () {
-                  // الانتقال إلى صفحة الإعدادات عند النقر على الأيقونة
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => ProfileSettings()),

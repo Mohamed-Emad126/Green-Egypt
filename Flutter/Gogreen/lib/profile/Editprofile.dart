@@ -131,7 +131,6 @@ class _EditProfileState extends State<EditProfile> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {
-                    // حفظ الصورة و البيانات في SharedPreferences
                     if (_imageFile != null) {
                       SharedPreferences prefs = await SharedPreferences.getInstance();
                       await prefs.setString('profile_image_path', _imageFile!.path);
