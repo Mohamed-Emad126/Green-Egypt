@@ -276,7 +276,7 @@ export default class EventService {
         }
 
         if (event && event.interestedIn) {
-            event.interestedIn = event.interestedIn.filter(id => id !== userID);
+            event.interestedIn = event.interestedIn.filter(id => id.toString() !== userID);
             await event.save();
             return true;
         }

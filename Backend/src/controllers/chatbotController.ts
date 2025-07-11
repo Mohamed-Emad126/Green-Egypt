@@ -48,11 +48,11 @@ export default class ChatbotController {
 
     /**
      * @desc      Get chat history for user
-     * @route     GET /api/chatbot/history/:user_id
+     * @route     GET /api/chatbot/history/:id
      * @access    Public
      */
     getHistory = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const result = await this.service.getChatHistory(req.params.user_id);
+        const result = await this.service.getChatHistory(req.params.id);
 
         if (result.status !== 200) {
             return next(new ApiError(result.error, result.status));
