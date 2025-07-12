@@ -112,7 +112,7 @@ export default class EventService {
                 
             case 'nextWeek':
                 const nextWeekStart = new Date(now);
-                nextWeekStart.setDate(now.getDate() + (6 - ((now.getDay() + 1) % 7)));
+                nextWeekStart.setDate(now.getDate() + (6 - ((now.getDay() + 1) % 7)) +1);
                 nextWeekStart.setHours(0, 0, 0, 0);
                 
                 const nextWeekEnd = new Date(nextWeekStart);
